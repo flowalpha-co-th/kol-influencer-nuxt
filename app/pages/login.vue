@@ -3,11 +3,8 @@
     <div class="w-full max-w-md">
       <!-- Logo -->
       <div class="text-center mb-8">
-        <NuxtLink to="/" class="inline-flex items-center gap-2">
-          <div class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
-            <span class="text-white font-bold text-2xl">P</span>
-          </div>
-          <span class="font-bold text-2xl text-gray-900">Prakit Media</span>
+        <NuxtLink to="/" class="inline-flex items-center">
+          <img src="/logo.svg" alt="Prakast" class="h-14 w-auto" />
         </NuxtLink>
       </div>
 

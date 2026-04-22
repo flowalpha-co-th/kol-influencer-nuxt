@@ -38,7 +38,7 @@
         <div class="mt-12 p-6 bg-gray-50 rounded-xl">
           <p class="text-gray-600 text-sm">
             For cookie-related questions, contact us at
-            <a href="mailto:privacy@prakit.com" class="text-primary hover:underline">privacy@prakit.com</a>.
+            <a href="mailto:privacy@prakast.com" class="text-primary hover:underline">privacy@prakast.com</a>.
           </p>
         </div>
       </div>

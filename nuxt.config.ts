@@ -17,9 +17,12 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: 'Prakit Media',
+      title: 'Prakast',
       meta: [
-        { name: 'description', content: 'Thailand\'s leading media agency with 41 years of expertise' },
+        { name: 'description', content: 'Modern KOL & influencer marketplace — where brands meet creators' },
+      ],
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
       ],
     },
   },

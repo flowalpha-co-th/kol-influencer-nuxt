@@ -8,11 +8,8 @@
     <div class="max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-20">
         <!-- Logo -->
-        <NuxtLink to="/" class="flex items-center gap-2">
-          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-            <span class="text-white font-bold text-xl">K</span>
-          </div>
-          <span class="font-bold text-xl" style="color: #5A5A5A">Prakit Media</span>
+        <NuxtLink to="/" class="flex items-center">
+          <img src="/logo.svg" alt="Prakast" class="h-10 w-auto" />
         </NuxtLink>
 
         <!-- Desktop Navigation -->

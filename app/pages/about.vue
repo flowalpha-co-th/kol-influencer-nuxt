@@ -136,10 +136,10 @@ const values = computed(() => [
 ])
 
 const team = computed(() => [
-  { name: languageStore.t('about.team.member1Name'), role: languageStore.t('about.team.member1Role'), image: 'https://static.wixstatic.com/media/1798de_d1f95bb8bacc4c3da8756b1d64724b8f~mv2.jpg/v1/crop/x_0,y_204,w_2992,h_3054/fill/w_558,h_570,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/IMG_0273.jpg' },
-  { name: languageStore.t('about.team.member2Name'), role: languageStore.t('about.team.member2Role'), image: 'https://static.wixstatic.com/media/1798de_ed418756f1cb45ecbe4b9a351f51e3fc~mv2.jpg/v1/crop/x_0,y_395,w_4789,h_4897/fill/w_558,h_570,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/20220309PCP(03)-0292.jpg' },
-  { name: languageStore.t('about.team.member3Name'), role: languageStore.t('about.team.member3Role'), image: 'https://static.wixstatic.com/media/1798de_f252810ba4584cc7bb7fa13b8aa9a491~mv2.jpg/v1/crop/x_0,y_312,w_4834,h_4934/fill/w_558,h_570,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/20220309PCP(03)-0237.jpg' },
-  { name: languageStore.t('about.team.member4Name'), role: languageStore.t('about.team.member4Role'), image: 'https://static.wixstatic.com/media/1798de_fa97a63e1540428ca98a41b2d371ccb0~mv2.jpg/v1/crop/x_0,y_255,w_4750,h_4848/fill/w_558,h_570,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/20220309PCP(03)-0196%2B.jpg' },
+  { name: languageStore.t('about.team.member1Name'), role: languageStore.t('about.team.member1Role'), image: 'https://i.pravatar.cc/600?img=68' },
+  { name: languageStore.t('about.team.member2Name'), role: languageStore.t('about.team.member2Role'), image: 'https://i.pravatar.cc/600?img=47' },
+  { name: languageStore.t('about.team.member3Name'), role: languageStore.t('about.team.member3Role'), image: 'https://i.pravatar.cc/600?img=13' },
+  { name: languageStore.t('about.team.member4Name'), role: languageStore.t('about.team.member4Role'), image: 'https://i.pravatar.cc/600?img=32' },
 ])
 
 const features = computed(() => [

@@ -51,7 +51,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           <p class="text-sm text-gray-600">
             มีคำถามเกี่ยวกับความเป็นส่วนตัว? ติดต่อเราได้ที่
-            <a href="mailto:privacy@prakit.com" class="text-primary font-medium hover:underline">privacy@prakit.com</a>
+            <a href="mailto:privacy@prakast.com" class="text-primary font-medium hover:underline">privacy@prakast.com</a>
           </p>
         </div>
       </div>

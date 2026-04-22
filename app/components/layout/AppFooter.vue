@@ -4,11 +4,8 @@
       <div class="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
         <!-- Brand -->
         <div class="lg:col-span-1">
-          <NuxtLink to="/" class="flex items-center gap-2 mb-6">
-            <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-              <span class="text-white font-bold text-xl">P</span>
-            </div>
-            <span class="font-bold text-xl text-gray-900">Prakit Media</span>
+          <NuxtLink to="/" class="flex items-center mb-6">
+            <img src="/logo.svg" alt="Prakast" class="h-10 w-auto" />
           </NuxtLink>
           <p class="text-gray-600 text-sm mb-6 leading-relaxed">{{ languageStore.t('footer.description') }}</p>
           <div class="flex gap-2.5">

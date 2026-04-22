@@ -60,3 +60,38 @@
     font-family: 'Kanit', sans-serif;
   }
 }
+
+/* Home page scoped themes — overrides --primary/--accent for the wrapper scope only */
+.theme-corporate {
+  --theme-gradient-from: 221 83% 53%;
+  --theme-gradient-via: 231 48% 48%;
+  --theme-gradient-to: 263 70% 50%;
+  --theme-blob: #ff4b2f;
+  --theme-blob-opacity: 0.3;
+}
+
+.theme-neon {
+  --primary: 327 100% 50%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 189 100% 50%;
+  --accent-foreground: 0 0% 10%;
+  --ring: 327 100% 50%;
+  --theme-gradient-from: 327 100% 50%;
+  --theme-gradient-via: 271 91% 65%;
+  --theme-gradient-to: 189 100% 50%;
+  --theme-blob: #9333EA;
+  --theme-blob-opacity: 0.45;
+}
+
+.theme-premium {
+  --primary: 270 58% 45%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 41 100% 50%;
+  --accent-foreground: 0 0% 10%;
+  --ring: 270 58% 45%;
+  --theme-gradient-from: 270 58% 45%;
+  --theme-gradient-via: 270 58% 55%;
+  --theme-gradient-to: 41 100% 50%;
+  --theme-blob: #FFB800;
+  --theme-blob-opacity: 0.35;
+}

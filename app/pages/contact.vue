@@ -106,7 +106,7 @@ const isLoading = ref(false)
 const formData = reactive({ name: '', email: '', subject: '', message: '' })
 
 const contactInfo = [
-  { icon: Mail, titleKey: 'contact.info.emailTitle', content: 'info@prakit.com', descKey: 'contact.info.emailDesc' },
+  { icon: Mail, titleKey: 'contact.info.emailTitle', content: 'info@prakast.com', descKey: 'contact.info.emailDesc' },
   { icon: Phone, titleKey: 'contact.info.phoneTitle', content: '02-715-3000', descKey: 'contact.info.phoneDesc' },
   { icon: MapPin, titleKey: 'contact.info.officeTitle', content: 'Bangkok, Thailand', descKey: 'contact.info.officeDesc' },
   { icon: Clock, titleKey: 'contact.info.hoursTitle', content: 'Mon - Fri: 9AM - 6PM', descKey: 'contact.info.hoursDesc' },
