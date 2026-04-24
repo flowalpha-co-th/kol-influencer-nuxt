@@ -5,7 +5,7 @@
         <!-- Brand -->
         <div class="lg:col-span-1">
           <NuxtLink to="/" class="flex items-center mb-6">
-            <img src="/logo.svg" alt="Prakast" class="h-10 w-auto" />
+            <img src="/logo.svg" alt="Ripples" class="h-10 w-auto" />
           </NuxtLink>
           <p class="text-gray-600 text-sm mb-6 leading-relaxed">{{ languageStore.t('footer.description') }}</p>
           <div class="flex gap-2.5">
@@ -128,11 +128,14 @@ import { Send } from 'lucide-vue-next'
 const languageStore = useLanguageStore()
 const email = ref('')
 
+const authStore = useAuthStore()
+const { isAuthenticated } = storeToRefs(authStore)
+
 const quickLinks = computed(() => [
   { href: '/', label: languageStore.t('nav.home') },
   { href: '/about', label: languageStore.t('nav.about') },
   { href: '/services', label: languageStore.t('nav.services') },
-  { href: '/campaigns', label: languageStore.t('nav.campaigns') },
+  ...(isAuthenticated.value ? [{ href: '/portal/campaigns', label: languageStore.t('nav.campaigns') }] : []),
   { href: '/blog', label: languageStore.t('nav.blog') },
   { href: '/contact', label: languageStore.t('nav.contact') },
 ])

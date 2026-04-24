@@ -9,7 +9,7 @@
       <div class="flex items-center justify-between h-20">
         <!-- Logo -->
         <NuxtLink to="/" class="flex items-center">
-          <img src="/logo.svg" alt="Prakast" class="h-10 w-auto" />
+          <img src="/logo.svg" alt="Ripples" class="h-10 w-auto" />
         </NuxtLink>
 
         <!-- Desktop Navigation -->
@@ -121,7 +121,7 @@ const navLinks = computed(() => [
   { href: '/', label: languageStore.t('nav.home') },
   { href: '/about', label: languageStore.t('nav.about') },
   { href: '/services', label: languageStore.t('nav.services') },
-  { href: '/campaigns', label: languageStore.t('nav.campaigns') },
+  ...(isAuthenticated.value ? [{ href: '/portal/campaigns', label: languageStore.t('nav.campaigns') }] : []),
   // { href: '/blog', label: languageStore.t('nav.blog') }, // hidden - not ready for client
   { href: '/contact', label: languageStore.t('nav.contact') },
 ])

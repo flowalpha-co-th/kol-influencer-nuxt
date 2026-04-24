@@ -17,7 +17,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: 'Prakast',
+      title: 'Ripples',
       meta: [
         { name: 'description', content: 'Modern KOL & influencer marketplace — where brands meet creators' },
       ],
@@ -30,5 +30,9 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000/api',
     },
+  },
+  routeRules: {
+    '/campaigns': { redirect: '/portal/campaigns' },
+    '/campaigns/**': { redirect: '/portal/campaigns' },
   },
 })

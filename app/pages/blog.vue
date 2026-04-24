@@ -4,11 +4,9 @@
     <section class="py-20 bg-gradient-to-br from-primary/5 via-white to-primary/10">
       <div class="max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center max-w-2xl mx-auto">
-          <UiBadge variant="secondary" class="bg-primary/10 text-primary border-0 mb-6">Our Blog</UiBadge>
-          <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">Latest Insights & Tips</h1>
-          <p class="text-xl text-gray-600">
-            Discover strategies, tips, and insights to grow your influence and succeed in the digital world.
-          </p>
+          <UiBadge variant="secondary" class="bg-primary/10 text-primary border-0 mb-6">{{ languageStore.t('blog.badge') }}</UiBadge>
+          <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">{{ languageStore.t('blog.title') }}</h1>
+          <p class="text-xl text-gray-600">{{ languageStore.t('blog.subtitle') }}</p>
         </div>
       </div>
     </section>
@@ -19,7 +17,7 @@
         <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
           <div class="relative w-full sm:w-96">
             <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <UiInput v-model="searchQuery" placeholder="Search articles..." class="pl-10" />
+            <UiInput v-model="searchQuery" :placeholder="languageStore.t('blog.searchPlaceholder')" class="pl-10" />
           </div>
           <div class="flex gap-2 flex-wrap justify-center">
             <UiButton
@@ -30,7 +28,7 @@
               :class="selectedCategory === category ? 'bg-primary' : ''"
               @click="selectedCategory = category"
             >
-              {{ category.charAt(0).toUpperCase() + category.slice(1) }}
+              {{ languageStore.t(`blog.categories.${category}`) }}
             </UiButton>
           </div>
         </div>
@@ -53,7 +51,7 @@
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div class="absolute top-4 left-4">
-                <UiBadge class="bg-white/90 text-gray-900 backdrop-blur-sm">{{ post.category }}</UiBadge>
+                <UiBadge class="bg-white/90 text-gray-900 backdrop-blur-sm">{{ languageStore.t(`blog.categories.${post.category}`) }}</UiBadge>
               </div>
             </div>
             <UiCardContent class="p-6">
@@ -64,7 +62,7 @@
                 </span>
                 <span class="flex items-center gap-1">
                   <Clock class="h-4 w-4" />
-                  {{ post.readTime }} min read
+                  {{ post.readTime }} {{ languageStore.t('blog.minRead') }}
                 </span>
               </div>
               <h3 class="text-xl font-semibold text-gray-900 mb-3 line-clamp-2 group-hover:text-primary transition-colors">
@@ -77,7 +75,7 @@
                   <span class="text-sm text-gray-600">{{ post.author.name }}</span>
                 </div>
                 <UiButton variant="ghost" size="sm" class="text-primary">
-                  Read More
+                  {{ languageStore.t('blog.readMore') }}
                   <ArrowRight class="ml-1 h-4 w-4" />
                 </UiButton>
               </div>
@@ -86,7 +84,7 @@
         </div>
 
         <div v-if="filteredPosts.length === 0" class="text-center py-16">
-          <p class="text-gray-500">No articles found matching your criteria.</p>
+          <p class="text-gray-500">{{ languageStore.t('blog.noResults') }}</p>
         </div>
       </div>
     </section>
@@ -98,6 +96,8 @@ import { Search, Calendar, Clock, ArrowRight, User } from 'lucide-vue-next'
 import { mockBlogPosts } from '~/data/mockData'
 
 definePageMeta({ layout: 'default' })
+
+const languageStore = useLanguageStore()
 
 // Hidden - not ready for client. Redirect to home if accessed directly.
 const router = useRouter()

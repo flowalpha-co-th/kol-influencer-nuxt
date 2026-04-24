@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 
 export type Theme = 'corporate' | 'neon' | 'premium'
-const STORAGE_KEY = 'prakast-theme'
+const STORAGE_KEY = 'ripples-theme'
 const VALID: Theme[] = ['corporate', 'neon', 'premium']
 
 export const useThemeStore = defineStore('theme', () => {

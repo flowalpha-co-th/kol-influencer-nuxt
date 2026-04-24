@@ -4,7 +4,7 @@
       <!-- Logo -->
       <div class="text-center mb-8">
         <NuxtLink to="/" class="inline-flex items-center">
-          <img src="/logo.svg" alt="Prakast" class="h-14 w-auto" />
+          <img src="/logo.svg" alt="Ripples" class="h-14 w-auto" />
         </NuxtLink>
       </div>
 

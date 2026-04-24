@@ -189,7 +189,7 @@
           <div class="about-content space-y-6">
             <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20">
               <Sparkles class="w-4 h-4 text-primary" />
-              <span class="text-sm font-semibold text-primary">เกี่ยวกับ Prakast</span>
+              <span class="text-sm font-semibold text-primary">เกี่ยวกับ Ripples</span>
             </span>
             <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 leading-tight">{{ languageStore.t('about.title') }}</h2>
             <p class="text-gray-600 text-lg leading-relaxed">{{ languageStore.t('about.description') }}</p>
@@ -353,7 +353,7 @@
             </h2>
             <p class="text-gray-600 text-lg mt-3">Campaign ที่กำลัง live พร้อมรับ Creator</p>
           </div>
-          <NuxtLink to="/campaigns">
+          <NuxtLink to="/portal/campaigns">
             <UiButton variant="outline" class="border-gray-300 text-gray-700 hover:bg-white h-12 px-6">
               {{ languageStore.t('expertise.viewAll') }} <ArrowRight class="ml-2 h-4 w-4" />
             </UiButton>
@@ -363,7 +363,7 @@
         <!-- Asymmetric grid: 1 big + 2 small -->
         <div class="grid lg:grid-cols-3 gap-6">
           <!-- Featured (big) -->
-          <NuxtLink v-if="featuredCampaigns[0]" :to="`/campaigns/${featuredCampaigns[0].id}`" class="campaign-card group relative lg:col-span-2 lg:row-span-2 overflow-hidden rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 min-h-[520px]">
+          <NuxtLink v-if="featuredCampaigns[0]" to="/portal/campaigns" class="campaign-card group relative lg:col-span-2 lg:row-span-2 overflow-hidden rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 min-h-[520px]">
             <img :src="featuredCampaigns[0].image" :alt="featuredCampaigns[0].title" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
 
@@ -399,7 +399,7 @@
           </NuxtLink>
 
           <!-- Small cards -->
-          <NuxtLink v-for="campaign in featuredCampaigns.slice(1, 3)" :key="campaign.id" :to="`/campaigns/${campaign.id}`" class="campaign-card group relative overflow-hidden rounded-3xl shadow-md hover:shadow-2xl transition-all duration-500 bg-white">
+          <NuxtLink v-for="campaign in featuredCampaigns.slice(1, 3)" :key="campaign.id" to="/portal/campaigns" class="campaign-card group relative overflow-hidden rounded-3xl shadow-md hover:shadow-2xl transition-all duration-500 bg-white">
             <div class="relative h-48 overflow-hidden">
               <img :src="campaign.image" :alt="campaign.title" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
               <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-sm text-gray-900 text-[10px] font-bold">
@@ -518,7 +518,7 @@
               <ArrowRight class="ml-2 h-5 w-5" />
             </UiButton>
           </NuxtLink>
-          <NuxtLink to="/campaigns">
+          <NuxtLink to="/portal/campaigns">
             <UiButton size="lg" variant="outline" class="border-white/60 text-white hover:bg-white/20 px-8 h-14 text-base backdrop-blur-md">
               {{ languageStore.t('cta.button2') }}
             </UiButton>
