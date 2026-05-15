@@ -68,7 +68,7 @@
           <!-- Image -->
           <div class="relative">
             <img
-              src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop"
+              src="/office.jpg"
               alt="Our office"
               class="rounded-3xl shadow-xl w-full h-full object-cover"
             />

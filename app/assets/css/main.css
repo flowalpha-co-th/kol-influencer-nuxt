@@ -5,49 +5,54 @@
 @tailwind utilities;
 
 @layer base {
+  /* Ripples brand palette
+   * navy   #1a2e38  = 204 37% 16%   ← primary (UI dominant)
+   * yellow #FEE601  = 54 99% 50%   ← accent (CTA pop)
+   * slate  #516171  = 208 16% 38%  ← muted/borders only
+   */
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 204 37% 16%;          /* navy body text */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 204 37% 16%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221 83% 53%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --popover-foreground: 204 37% 16%;
+    --primary: 204 37% 16%;             /* navy — dominant UI color, pairs cleanly w/ yellow */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 208 16% 95%;            /* very soft slate tint */
+    --secondary-foreground: 204 37% 16%;
+    --muted: 208 16% 95%;
+    --muted-foreground: 208 16% 38%;     /* slate used only for muted/secondary text */
+    --accent: 54 99% 50%;                /* yellow — CTA highlights & badges */
+    --accent-foreground: 204 37% 16%;    /* navy text on yellow */
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 10 100% 56%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 208 16% 88%;
+    --input: 208 16% 88%;
+    --ring: 54 99% 50%;                  /* yellow focus ring */
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 221 83% 53%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 10 100% 56%;
+    --background: 204 37% 12%;
+    --foreground: 0 0% 98%;
+    --card: 204 37% 16%;
+    --card-foreground: 0 0% 98%;
+    --popover: 204 37% 16%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 54 99% 50%;               /* yellow primary in dark mode */
+    --primary-foreground: 204 37% 16%;
+    --secondary: 208 16% 28%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 208 16% 22%;
+    --muted-foreground: 208 16% 65%;
+    --accent: 54 99% 50%;
+    --accent-foreground: 204 37% 16%;
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 208 16% 25%;
+    --input: 208 16% 25%;
+    --ring: 54 99% 50%;
   }
 }
 
@@ -61,37 +66,78 @@
   }
 }
 
-/* Home page scoped themes — overrides --primary/--accent for the wrapper scope only */
+/* Home page scoped themes — 3 Ripples-brand variations (slate + yellow + navy)
+ * Each theme varies gradient mood; base tokens stay consistent so text-primary
+ * remains readable across all themes.
+ */
+
+/* THEME 1: Premium Light Glass — สะอาด หรูหรา (misty white + slate text + yellow CTAs)
+ * Gemini brief: Frosted glass, misty white #F8F9FA, slate text #516171, yellow accents */
 .theme-corporate {
-  --theme-gradient-from: 221 83% 53%;
-  --theme-gradient-via: 231 48% 48%;
-  --theme-gradient-to: 263 70% 50%;
-  --theme-blob: #ff4b2f;
-  --theme-blob-opacity: 0.3;
+  --background: 210 17% 98%;           /* misty white #F8F9FA */
+  --foreground: 208 16% 38%;           /* slate body text */
+  --primary: 208 16% 38%;              /* slate primary */
+  --primary-foreground: 0 0% 100%;
+  --muted-foreground: 208 16% 50%;     /* lighter slate */
+  --border: 208 16% 88%;
+  background-color: hsl(210 17% 98%);
+
+  --theme-gradient-from: 54 99% 60%;   /* yellow */
+  --theme-gradient-via: 210 17% 98%;   /* misty white */
+  --theme-gradient-to: 208 16% 65%;    /* pale slate */
+  --theme-cream: 48 100% 92%;          /* soft warm cream — bridges yellow & slate */
+  --theme-blob: #FEE601;
+  --theme-blob-opacity: 0.18;          /* soft, frosted */
 }
 
+/* THEME 2: Modern Dark Mode — เท่ ล้ำสมัย (dark slate bg + yellow neon glow)
+ * Gemini brief: Dark glassmorphism, charcoal #516171 gradient bg, neon yellow glow */
 .theme-neon {
-  --primary: 327 100% 50%;
-  --primary-foreground: 0 0% 100%;
-  --accent: 189 100% 50%;
-  --accent-foreground: 0 0% 10%;
-  --ring: 327 100% 50%;
-  --theme-gradient-from: 327 100% 50%;
-  --theme-gradient-via: 271 91% 65%;
-  --theme-gradient-to: 189 100% 50%;
-  --theme-blob: #9333EA;
-  --theme-blob-opacity: 0.45;
+  --background: 208 16% 22%;           /* deep slate dark */
+  --foreground: 0 0% 95%;              /* off-white text */
+  --card: 208 16% 28%;
+  --card-foreground: 0 0% 95%;
+  --popover: 208 16% 28%;
+  --popover-foreground: 0 0% 95%;
+  --primary: 54 99% 50%;               /* yellow primary in dark mode */
+  --primary-foreground: 204 37% 16%;
+  --secondary: 208 16% 30%;
+  --secondary-foreground: 0 0% 95%;
+  --muted: 208 16% 26%;
+  --muted-foreground: 0 0% 75%;
+  --accent: 54 99% 50%;
+  --accent-foreground: 204 37% 16%;
+  --border: 208 16% 35%;
+  --input: 208 16% 35%;
+  --ring: 54 99% 50%;
+  background-color: hsl(208 16% 22%);
+  color: hsl(0 0% 95%);
+
+  --theme-gradient-from: 204 37% 20%;  /* deep navy */
+  --theme-gradient-via: 208 16% 30%;   /* slate mid */
+  --theme-gradient-to: 54 99% 50%;     /* yellow glow */
+  --theme-cream: 54 60% 35%;           /* muted gold — bridges in dark scope */
+  --theme-blob: #FEE601;
+  --theme-blob-opacity: 0.35;
 }
 
+/* THEME 3: Dynamic Energy — พลังงานระลอกคลื่น (light bg + bold yellow orbs + slate ripples)
+ * Gemini brief: Ripples motion, blurry yellow orbs, slate ripples, bold yellow buttons */
 .theme-premium {
-  --primary: 270 58% 45%;
-  --primary-foreground: 0 0% 100%;
-  --accent: 41 100% 50%;
-  --accent-foreground: 0 0% 10%;
-  --ring: 270 58% 45%;
-  --theme-gradient-from: 270 58% 45%;
-  --theme-gradient-via: 270 58% 55%;
-  --theme-gradient-to: 41 100% 50%;
-  --theme-blob: #FFB800;
-  --theme-blob-opacity: 0.35;
+  --theme-gradient-from: 54 99% 50%;   /* yellow */
+  --theme-gradient-via: 208 16% 65%;   /* slate ripple mid */
+  --theme-gradient-to: 54 99% 60%;     /* return to yellow */
+  --theme-cream: 45 100% 88%;          /* warm cream — energetic glow */
+  --theme-blob: #FEE601;
+  --theme-blob-opacity: 0.5;           /* prominent orbs */
+}
+
+/* Fallback for outside theme scope (pages without theme wrapper) */
+:root {
+  --theme-cream: 48 100% 92%;
+  --theme-gradient-from: 54 99% 60%;
+  --theme-gradient-via: 210 17% 98%;
+  --theme-gradient-to: 208 16% 65%;
+  --theme-blob: #FEE601;
+  --theme-blob-opacity: 0.18;
 }

@@ -45,7 +45,7 @@
               <UiButton variant="ghost" size="sm">{{ languageStore.t('nav.login') }}</UiButton>
             </NuxtLink>
             <NuxtLink to="/register">
-              <UiButton size="sm" class="bg-primary hover:bg-primary/90">{{ languageStore.t('nav.joinInfluencer') }}</UiButton>
+              <UiButton size="sm" class="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold">{{ languageStore.t('nav.joinInfluencer') }}</UiButton>
             </NuxtLink>
           </template>
         </div>
@@ -93,7 +93,7 @@
                       <UiButton variant="outline" class="w-full border-[#5A5A5A] text-[#5A5A5A] hover:bg-[#E8E8E8]">{{ languageStore.t('nav.login') }}</UiButton>
                     </NuxtLink>
                     <NuxtLink to="/register" @click="isOpen = false">
-                      <UiButton class="w-full bg-primary hover:bg-primary/90">{{ languageStore.t('nav.joinInfluencer') }}</UiButton>
+                      <UiButton class="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold">{{ languageStore.t('nav.joinInfluencer') }}</UiButton>
                     </NuxtLink>
                   </div>
                 </template>

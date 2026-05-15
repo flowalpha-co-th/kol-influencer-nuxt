@@ -8,6 +8,7 @@ module.exports = {
     './plugins/**/*.{js,ts}',
     './app.vue',
     './error.vue',
+    './app/**/*.{js,vue,ts}',
   ],
   theme: {
     extend: {
@@ -70,6 +71,10 @@ module.exports = {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+      },
+      fontFamily: {
+        sans: ['Kanit', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        heading: ['Kanit', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       keyframes: {
         'accordion-down': {

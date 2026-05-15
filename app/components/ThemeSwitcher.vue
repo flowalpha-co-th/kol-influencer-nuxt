@@ -85,21 +85,21 @@ interface Option {
 const options: Option[] = [
   {
     value: 'corporate',
-    label: 'Corporate',
-    hint: 'มืออาชีพ เรียบร้อย',
-    swatch: 'linear-gradient(135deg, #1E53B8 0%, #6366F1 100%)',
+    label: 'Premium Light Glass',
+    hint: 'สะอาด หรูหรา · มืออาชีพ',
+    swatch: 'linear-gradient(135deg, #F8F9FA 0%, #FFE680 50%, #516171 100%)',
   },
   {
     value: 'neon',
-    label: 'Neon Spotlight',
-    hint: 'อลังการ KOL Gen-Z',
-    swatch: 'linear-gradient(135deg, #FF0099 0%, #9333EA 50%, #00E5FF 100%)',
+    label: 'Modern Dark Mode',
+    hint: 'เท่ ล้ำสมัย · neon glow',
+    swatch: 'linear-gradient(135deg, #1a2e38 0%, #516171 50%, #FEE601 100%)',
   },
   {
     value: 'premium',
-    label: 'Purple Premium',
-    hint: 'หรู กึ่งกลาง',
-    swatch: 'linear-gradient(135deg, #6B2FB8 0%, #FFB800 100%)',
+    label: 'Dynamic Energy',
+    hint: 'พลังงานระลอกคลื่น · vibrant',
+    swatch: 'linear-gradient(135deg, #FEE601 0%, #516171 50%, #FEE601 100%)',
   },
 ]
 

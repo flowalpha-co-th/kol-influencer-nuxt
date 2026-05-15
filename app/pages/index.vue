@@ -2,7 +2,19 @@
   <div class="min-h-screen">
     <!-- Hero Section -->
     <section ref="heroRef" class="relative min-h-screen flex items-center pt-20 overflow-hidden">
-      <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-white to-primary/10" />
+      <!-- Mesh radial background — yellow + cream + slate bridged on white -->
+      <div
+        class="absolute inset-0"
+        :style="{
+          background: `
+            radial-gradient(at 15% 20%, hsl(var(--theme-gradient-from) / 0.22) 0%, transparent 55%),
+            radial-gradient(at 85% 25%, hsl(var(--theme-cream) / 0.7) 0%, transparent 50%),
+            radial-gradient(at 50% 90%, hsl(var(--theme-gradient-to) / 0.12) 0%, transparent 60%),
+            radial-gradient(at 78% 78%, hsl(var(--theme-gradient-from) / 0.15) 0%, transparent 55%),
+            hsl(var(--background))
+          `,
+        }"
+      />
 
       <!-- Decorative background: soft gradient orbs + dot grid -->
       <div
@@ -19,15 +31,17 @@
         </div>
       </div>
 
-      <!-- Wavy line decoration (bottom) -->
-      <svg class="absolute bottom-10 right-1/4 w-60 h-12 pointer-events-none opacity-30 hidden md:block" viewBox="0 0 240 48" fill="none">
-        <path d="M 0 24 Q 30 8 60 24 T 120 24 T 180 24 T 240 24" stroke="currentColor" stroke-width="3" stroke-linecap="round" :style="{ color: 'hsl(var(--theme-gradient-via))' }" />
+      <!-- Ripple wave layers (bottom) -->
+      <svg class="absolute bottom-10 right-1/4 w-72 h-16 pointer-events-none opacity-40 hidden md:block" viewBox="0 0 288 64" fill="none" :style="{ color: 'hsl(var(--theme-gradient-via))' }">
+        <path d="M 0 12 Q 36 0 72 12 T 144 12 T 216 12 T 288 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.35" />
+        <path d="M 0 32 Q 36 20 72 32 T 144 32 T 216 32 T 288 32" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity="0.7" />
+        <path d="M 0 52 Q 36 40 72 52 T 144 52 T 216 52 T 288 52" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
       </svg>
 
-      <!-- Floating sparkles -->
-      <Sparkles class="absolute top-32 left-10 w-8 h-8 text-yellow-400 opacity-80 floating-sparkle" />
-      <Sparkles class="absolute top-1/2 right-1/3 w-6 h-6 text-primary opacity-70 floating-sparkle-2" />
-      <Sparkles class="absolute bottom-32 right-20 w-10 h-10 opacity-60 floating-sparkle-3" :style="{ color: 'hsl(var(--theme-gradient-via))' }" />
+      <!-- Floating ripples -->
+      <RippleDeco class="absolute top-32 left-10 w-12 h-12 text-yellow-400 opacity-80 floating-sparkle" />
+      <RippleDeco class="absolute top-1/2 right-1/3 w-9 h-9 text-primary opacity-70 floating-sparkle-2" />
+      <RippleDeco class="absolute bottom-32 right-20 w-14 h-14 opacity-60 floating-sparkle-3" :style="{ color: 'hsl(var(--theme-gradient-via))' }" />
 
       <div class="relative max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div class="grid lg:grid-cols-2 gap-12 items-center">
@@ -56,7 +70,7 @@
             </p>
             <div class="hero-buttons flex flex-wrap gap-4">
               <NuxtLink to="/register">
-                <UiButton size="lg" class="bg-primary hover:bg-primary/90 text-white px-8 h-14 text-base shadow-lg shadow-primary/30 hover:scale-105 transition">
+                <UiButton size="lg" class="bg-accent hover:bg-accent/90 text-accent-foreground px-8 h-14 text-base shadow-lg shadow-accent/40 hover:scale-105 transition">
                   {{ languageStore.t('hero.getStarted') }}
                   <ArrowRight class="ml-2 h-5 w-5" />
                 </UiButton>
@@ -89,7 +103,7 @@
           <div class="hero-image relative">
             <!-- Main image -->
             <div class="relative rounded-[2rem] overflow-hidden shadow-2xl">
-              <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=900&h=1000&fit=crop" alt="Creator" class="w-full h-[520px] object-cover" />
+              <img src="/hero-creators.jpg" alt="Creator" class="w-full h-[520px] object-cover" />
               <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
             </div>
 
@@ -219,12 +233,12 @@
 
             <!-- Main image (back) -->
             <div class="absolute top-0 right-0 w-[70%] h-[70%] rounded-[2rem] overflow-hidden shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500">
-              <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&h=700&fit=crop" alt="Creator at work" class="w-full h-full object-cover" />
+              <img src="/about-team.jpg" alt="Brand meeting" class="w-full h-full object-cover" />
             </div>
 
             <!-- Secondary image (front) -->
             <div class="absolute bottom-0 left-0 w-[60%] h-[60%] rounded-[2rem] overflow-hidden shadow-2xl -rotate-3 hover:rotate-0 transition-transform duration-500 z-10">
-              <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=500&h=600&fit=crop" alt="Brand meeting" class="w-full h-full object-cover" />
+              <img src="/about-creator.jpg" alt="Creator at work" class="w-full h-full object-cover" />
             </div>
 
             <!-- Floating badge -->
@@ -285,9 +299,9 @@
 
     <!-- How It Works Section -->
     <section id="how-it-works" ref="howItWorksRef" class="relative py-28 bg-gradient-to-b from-gray-50 via-white to-gray-50 overflow-hidden">
-      <!-- Decorative sparkles -->
-      <Sparkles class="absolute top-20 left-10 w-6 h-6 text-yellow-400 opacity-60" />
-      <Sparkles class="absolute bottom-32 right-16 w-8 h-8 opacity-50" :style="{ color: 'hsl(var(--theme-gradient-via))' }" />
+      <!-- Decorative ripples -->
+      <RippleDeco class="absolute top-20 left-10 w-9 h-9 text-yellow-400 opacity-60 floating-sparkle-2" />
+      <RippleDeco class="absolute bottom-32 right-16 w-12 h-12 opacity-50 floating-sparkle-3" :style="{ color: 'hsl(var(--theme-gradient-via))' }" />
 
       <div class="relative max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center max-w-2xl mx-auto mb-20">
@@ -495,10 +509,10 @@
       <!-- Noise texture overlay -->
       <div class="absolute inset-0 opacity-20 mix-blend-overlay" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');" />
 
-      <!-- Giant floating sparkle -->
-      <Sparkles class="absolute top-16 left-10 w-16 h-16 text-white/30 floating-sparkle" />
-      <Sparkles class="absolute bottom-20 right-16 w-20 h-20 text-white/20 floating-sparkle-2" />
-      <Sparkles class="absolute top-1/2 right-1/4 w-10 h-10 text-yellow-300/60" />
+      <!-- Giant floating ripples -->
+      <RippleDeco class="absolute top-16 left-10 w-24 h-24 text-white/30 floating-sparkle" />
+      <RippleDeco class="absolute bottom-20 right-16 w-28 h-28 text-white/20 floating-sparkle-2" />
+      <RippleDeco class="absolute top-1/2 right-1/4 w-14 h-14 text-yellow-300/60 floating-sparkle-3" />
       <div class="absolute -top-10 -right-10 w-64 h-64 rounded-full bg-white/10 blur-3xl" />
       <div class="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-white/10 blur-3xl" />
 
