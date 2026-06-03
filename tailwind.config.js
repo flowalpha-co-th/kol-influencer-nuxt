@@ -73,8 +73,8 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
-        sans: ['Kanit', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        heading: ['Kanit', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['Prompt', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        heading: ['Prompt', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       keyframes: {
         'accordion-down': {
