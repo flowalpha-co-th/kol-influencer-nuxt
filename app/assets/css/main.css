@@ -1,143 +1,53 @@
-@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Ripples v4 — single blue theme
+ * primary   #2D5BFF  brand blue, CTAs, links
+ * ink       #0F2747  headings, primary text
+ * muted     #5B6B82  secondary text
+ * surface   #F4F7FB  page background, inset fills
+ * Tokens below back the few CSS-var utilities (border / ring / focus / destructive).
+ */
 @layer base {
-  /* Ripples brand palette
-   * navy   #1a2e38  = 204 37% 16%   ← primary (UI dominant)
-   * yellow #FEE601  = 54 99% 50%   ← accent (CTA pop)
-   * slate  #516171  = 208 16% 38%  ← muted/borders only
-   */
   :root {
     --background: 0 0% 100%;
-    --foreground: 204 37% 16%;          /* navy body text */
-    --card: 0 0% 100%;
-    --card-foreground: 204 37% 16%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 204 37% 16%;
-    --primary: 204 37% 16%;             /* navy — dominant UI color, pairs cleanly w/ yellow */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 208 16% 95%;            /* very soft slate tint */
-    --secondary-foreground: 204 37% 16%;
-    --muted: 208 16% 95%;
-    --muted-foreground: 208 16% 38%;     /* slate used only for muted/secondary text */
-    --accent: 54 99% 50%;                /* yellow — CTA highlights & badges */
-    --accent-foreground: 204 37% 16%;    /* navy text on yellow */
-    --destructive: 0 84.2% 60.2%;
+    --foreground: 213 65% 17%;        /* ink #0F2747 */
+    --border: 213 65% 17%;            /* used at low opacity, e.g. border-[#0F2747]/10 */
+    --input: 213 30% 90%;
+    --ring: 226 100% 59%;             /* primary #2D5BFF focus ring */
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 208 16% 88%;
-    --input: 208 16% 88%;
-    --ring: 54 99% 50%;                  /* yellow focus ring */
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 204 37% 12%;
-    --foreground: 0 0% 98%;
-    --card: 204 37% 16%;
-    --card-foreground: 0 0% 98%;
-    --popover: 204 37% 16%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 54 99% 50%;               /* yellow primary in dark mode */
-    --primary-foreground: 204 37% 16%;
-    --secondary: 208 16% 28%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 208 16% 22%;
-    --muted-foreground: 208 16% 65%;
-    --accent: 54 99% 50%;
-    --accent-foreground: 204 37% 16%;
-    --destructive: 0 62.8% 50%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 208 16% 25%;
-    --input: 208 16% 25%;
-    --ring: 54 99% 50%;
+    --radius: 0.75rem;
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-surface text-ink antialiased;
     font-family: 'Prompt', sans-serif;
   }
 }
 
-/* Home page scoped themes — 3 Ripples-brand variations (slate + yellow + navy)
- * Each theme varies gradient mood; base tokens stay consistent so text-primary
- * remains readable across all themes.
- */
-
-/* THEME 1: Premium Light Glass — สะอาด หรูหรา (misty white + slate text + yellow CTAs)
- * Gemini brief: Frosted glass, misty white #F8F9FA, slate text #516171, yellow accents */
-.theme-corporate {
-  --background: 210 17% 98%;           /* misty white #F8F9FA */
-  --foreground: 208 16% 38%;           /* slate body text */
-  --primary: 208 16% 38%;              /* slate primary */
-  --primary-foreground: 0 0% 100%;
-  --muted-foreground: 208 16% 50%;     /* lighter slate */
-  --border: 208 16% 88%;
-  background-color: hsl(210 17% 98%);
-
-  --theme-gradient-from: 54 99% 60%;   /* yellow */
-  --theme-gradient-via: 210 17% 98%;   /* misty white */
-  --theme-gradient-to: 208 16% 65%;    /* pale slate */
-  --theme-cream: 48 100% 92%;          /* soft warm cream — bridges yellow & slate */
-  --theme-blob: #FEE601;
-  --theme-blob-opacity: 0.18;          /* soft, frosted */
+/* Trusted-brands marquee (home) */
+@layer components {
+  .rip-marquee {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  }
+  .rip-track {
+    display: flex;
+    gap: 0.75rem;
+    width: max-content;
+    padding: 0 0.375rem;
+  }
 }
 
-/* THEME 2: Modern Dark Mode — เท่ ล้ำสมัย (dark slate bg + yellow neon glow)
- * Gemini brief: Dark glassmorphism, charcoal #516171 gradient bg, neon yellow glow */
-.theme-neon {
-  --background: 208 16% 22%;           /* deep slate dark */
-  --foreground: 0 0% 95%;              /* off-white text */
-  --card: 208 16% 28%;
-  --card-foreground: 0 0% 95%;
-  --popover: 208 16% 28%;
-  --popover-foreground: 0 0% 95%;
-  --primary: 54 99% 50%;               /* yellow primary in dark mode */
-  --primary-foreground: 204 37% 16%;
-  --secondary: 208 16% 30%;
-  --secondary-foreground: 0 0% 95%;
-  --muted: 208 16% 26%;
-  --muted-foreground: 0 0% 75%;
-  --accent: 54 99% 50%;
-  --accent-foreground: 204 37% 16%;
-  --border: 208 16% 35%;
-  --input: 208 16% 35%;
-  --ring: 54 99% 50%;
-  background-color: hsl(208 16% 22%);
-  color: hsl(0 0% 95%);
-
-  --theme-gradient-from: 204 37% 20%;  /* deep navy */
-  --theme-gradient-via: 208 16% 30%;   /* slate mid */
-  --theme-gradient-to: 54 99% 50%;     /* yellow glow */
-  --theme-cream: 54 60% 35%;           /* muted gold — bridges in dark scope */
-  --theme-blob: #FEE601;
-  --theme-blob-opacity: 0.35;
-}
-
-/* THEME 3: Dynamic Energy — พลังงานระลอกคลื่น (light bg + bold yellow orbs + slate ripples)
- * Gemini brief: Ripples motion, blurry yellow orbs, slate ripples, bold yellow buttons */
-.theme-premium {
-  --theme-gradient-from: 54 99% 50%;   /* yellow */
-  --theme-gradient-via: 208 16% 65%;   /* slate ripple mid */
-  --theme-gradient-to: 54 99% 60%;     /* return to yellow */
-  --theme-cream: 45 100% 88%;          /* warm cream — energetic glow */
-  --theme-blob: #FEE601;
-  --theme-blob-opacity: 0.5;           /* prominent orbs */
-}
-
-/* Fallback for outside theme scope (pages without theme wrapper) */
-:root {
-  --theme-cream: 48 100% 92%;
-  --theme-gradient-from: 54 99% 60%;
-  --theme-gradient-via: 210 17% 98%;
-  --theme-gradient-to: 208 16% 65%;
-  --theme-blob: #FEE601;
-  --theme-blob-opacity: 0.18;
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee-left,
+  .animate-marquee-right {
+    animation: none;
+  }
 }

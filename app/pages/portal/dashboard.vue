@@ -1,253 +1,146 @@
-<template>
-  <div class="min-h-screen bg-gray-50 pt-24 pb-12">
-    <div class="max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
-      <!-- Welcome -->
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">
-          {{ languageStore.t('dashboard.welcome') }}, {{ user?.firstName }}!
-        </h1>
-        <p class="text-gray-600 mt-1">Here's what's happening with your account today.</p>
-      </div>
-
-      <!-- Stats Grid -->
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <UiCard class="stat-card border-0 shadow-md">
-          <UiCardContent class="p-6">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-gray-500 mb-1">{{ languageStore.t('dashboard.walletBalance') }}</p>
-                <p class="text-2xl font-bold text-gray-900">฿{{ walletBalance.toLocaleString() }}</p>
-              </div>
-              <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                <Wallet class="h-6 w-6 text-primary" />
-              </div>
-            </div>
-            <NuxtLink to="/portal/wallet">
-              <UiButton variant="ghost" size="sm" class="mt-4 text-primary">
-                View Details <ArrowRight class="ml-1 h-4 w-4" />
-              </UiButton>
-            </NuxtLink>
-          </UiCardContent>
-        </UiCard>
-
-        <UiCard class="stat-card border-0 shadow-md">
-          <UiCardContent class="p-6">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-gray-500 mb-1">{{ languageStore.t('dashboard.activeCampaigns') }}</p>
-                <p class="text-2xl font-bold text-gray-900">{{ activeCampaigns }}</p>
-              </div>
-              <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                <Briefcase class="h-6 w-6 text-blue-600" />
-              </div>
-            </div>
-            <NuxtLink to="/portal/campaigns">
-              <UiButton variant="ghost" size="sm" class="mt-4 text-primary">
-                View Campaigns <ArrowRight class="ml-1 h-4 w-4" />
-              </UiButton>
-            </NuxtLink>
-          </UiCardContent>
-        </UiCard>
-
-        <UiCard class="stat-card border-0 shadow-md">
-          <UiCardContent class="p-6">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-gray-500 mb-1">{{ languageStore.t('dashboard.pendingTasks') }}</p>
-                <p class="text-2xl font-bold text-gray-900">{{ pendingTasks }}</p>
-              </div>
-              <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
-                <Clock class="h-6 w-6 text-yellow-600" />
-              </div>
-            </div>
-            <NuxtLink to="/portal/tasks">
-              <UiButton variant="ghost" size="sm" class="mt-4 text-primary">
-                View Tasks <ArrowRight class="ml-1 h-4 w-4" />
-              </UiButton>
-            </NuxtLink>
-          </UiCardContent>
-        </UiCard>
-
-        <UiCard class="stat-card border-0 shadow-md">
-          <UiCardContent class="p-6">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm text-gray-500 mb-1">{{ languageStore.t('dashboard.revisionTasks') }}</p>
-                <p class="text-2xl font-bold text-gray-900">{{ revisionTasks }}</p>
-              </div>
-              <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
-                <AlertCircle class="h-6 w-6 text-red-600" />
-              </div>
-            </div>
-            <NuxtLink to="/portal/tasks">
-              <UiButton variant="ghost" size="sm" class="mt-4 text-primary">
-                View Tasks <ArrowRight class="ml-1 h-4 w-4" />
-              </UiButton>
-            </NuxtLink>
-          </UiCardContent>
-        </UiCard>
-      </div>
-
-      <!-- Main Content Grid -->
-      <div class="grid lg:grid-cols-3 gap-8">
-        <!-- Recent Transactions -->
-        <UiCard class="lg:col-span-2 border-0 shadow-md">
-          <UiCardHeader class="flex flex-row items-center justify-between">
-            <UiCardTitle class="text-lg">{{ languageStore.t('dashboard.recentTransactions') }}</UiCardTitle>
-            <NuxtLink to="/portal/wallet">
-              <UiButton variant="ghost" size="sm" class="text-primary">
-                View All <ArrowRight class="ml-1 h-4 w-4" />
-              </UiButton>
-            </NuxtLink>
-          </UiCardHeader>
-          <UiCardContent>
-            <div class="space-y-4">
-              <div
-                v-for="transaction in recentTransactions"
-                :key="transaction.id"
-                class="flex items-center justify-between p-4 bg-gray-50 rounded-xl"
-              >
-                <div class="flex items-center gap-4">
-                  <div :class="['w-10 h-10 rounded-lg flex items-center justify-center', transaction.type === 'income' ? 'bg-green-100' : 'bg-red-100']">
-                    <TrendingUp v-if="transaction.type === 'income'" class="h-5 w-5 text-green-600" />
-                    <Wallet v-else class="h-5 w-5 text-red-600" />
-                  </div>
-                  <div>
-                    <p class="font-medium text-gray-900">{{ transaction.description }}</p>
-                    <p class="text-sm text-gray-500">{{ new Date(transaction.createdAt).toLocaleDateString() }}</p>
-                  </div>
-                </div>
-                <div class="text-right">
-                  <p :class="['font-semibold', transaction.type === 'income' ? 'text-green-600' : 'text-red-600']">
-                    {{ transaction.type === 'income' ? '+' : '-' }}฿{{ transaction.amount.toLocaleString() }}
-                  </p>
-                  <UiBadge :variant="transaction.status === 'completed' ? 'default' : 'secondary'" class="text-xs">
-                    {{ transaction.status }}
-                  </UiBadge>
-                </div>
-              </div>
-            </div>
-          </UiCardContent>
-        </UiCard>
-
-        <!-- Notifications -->
-        <UiCard class="border-0 shadow-md">
-          <UiCardHeader class="flex flex-row items-center justify-between">
-            <UiCardTitle class="text-lg">{{ languageStore.t('dashboard.notifications') }}</UiCardTitle>
-            <UiBadge class="bg-primary">{{ unreadCount }} new</UiBadge>
-          </UiCardHeader>
-          <UiCardContent>
-            <div class="space-y-4">
-              <NuxtLink
-                v-for="notification in notifications"
-                :key="notification.id"
-                :to="notification.link || '#'"
-                class="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center shrink-0">
-                  <Briefcase v-if="notification.type === 'campaign_invite'" class="h-5 w-5 text-blue-500" />
-                  <CheckCircle v-else-if="notification.type === 'task_approved'" class="h-5 w-5 text-green-500" />
-                  <DollarSign v-else-if="notification.type === 'payment_received'" class="h-5 w-5 text-primary" />
-                  <Bell v-else class="h-5 w-5 text-gray-500" />
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="font-medium text-gray-900 text-sm">{{ notification.title }}</p>
-                  <p class="text-gray-600 text-sm line-clamp-2">{{ notification.message }}</p>
-                  <p class="text-xs text-gray-400 mt-1">{{ new Date(notification.createdAt).toLocaleDateString() }}</p>
-                </div>
-                <div v-if="!notification.isRead" class="w-2 h-2 bg-primary rounded-full shrink-0 mt-2" />
-              </NuxtLink>
-            </div>
-          </UiCardContent>
-        </UiCard>
-      </div>
-
-      <!-- Quick Actions -->
-      <div class="mt-8">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <NuxtLink to="/portal/campaigns">
-            <UiCard class="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer">
-              <UiCardContent class="p-6 flex items-center gap-4">
-                <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                  <Briefcase class="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <p class="font-semibold text-gray-900">Find Campaigns</p>
-                  <p class="text-sm text-gray-500">Browse opportunities</p>
-                </div>
-              </UiCardContent>
-            </UiCard>
-          </NuxtLink>
-
-          <NuxtLink to="/portal/profile">
-            <UiCard class="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer">
-              <UiCardContent class="p-6 flex items-center gap-4">
-                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <CheckSquare class="h-6 w-6 text-blue-600" />
-                </div>
-                <div>
-                  <p class="font-semibold text-gray-900">Update Profile</p>
-                  <p class="text-sm text-gray-500">Edit your info</p>
-                </div>
-              </UiCardContent>
-            </UiCard>
-          </NuxtLink>
-
-          <NuxtLink to="/contact">
-            <UiCard class="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer">
-              <UiCardContent class="p-6 flex items-center gap-4">
-                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                  <Bell class="h-6 w-6 text-purple-600" />
-                </div>
-                <div>
-                  <p class="font-semibold text-gray-900">Support</p>
-                  <p class="text-sm text-gray-500">Get help</p>
-                </div>
-              </UiCardContent>
-            </UiCard>
-          </NuxtLink>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import {
-  Wallet,
-  TrendingUp,
-  Briefcase,
-  CheckSquare,
-  AlertCircle,
-  Bell,
-  ArrowRight,
-  DollarSign,
-  Clock,
-  CheckCircle,
-} from 'lucide-vue-next'
-import gsap from 'gsap'
-import { mockTasks, mockTransactions, mockNotifications } from '~/data/mockData'
+import { tintOf } from '~/data/notifications'
+
+const { tr } = useLocale()
 
 definePageMeta({ layout: 'portal', middleware: 'auth' })
+useHead(() => ({ title: tr('แดชบอร์ด — Ripples', 'Dashboard — Ripples') }))
 
-const authStore = useAuthStore()
-const languageStore = useLanguageStore()
-const { user } = storeToRefs(authStore)
+const notifications = useNotificationsStore()
 
-const walletBalance = 125000
-const activeCampaigns = 3
-const pendingTasks = mockTasks.filter(t => t.status === 'in_progress').length
-const revisionTasks = mockTasks.filter(t => t.status === 'revision').length
+type Stat = { icon: string; label: string; labelEn: string; value: string; to: string }
+const stats: Stat[] = [
+  { icon: 'wallet', label: 'ยอดเงินในกระเป๋า', labelEn: 'Wallet balance', value: '฿125,000', to: '/portal/wallet' },
+  { icon: 'briefcase', label: 'แคมเปญที่กำลังทำ', labelEn: 'Active campaigns', value: '3', to: '/portal/campaigns' },
+  { icon: 'clock', label: 'งานที่ต้องส่ง', labelEn: 'Tasks to submit', value: '1', to: '/portal/tasks' },
+  { icon: 'alert-circle', label: 'งานที่ต้องแก้ไข', labelEn: 'Tasks to revise', value: '1', to: '/portal/tasks' },
+]
 
-const recentTransactions = mockTransactions.slice(0, 5)
-const notifications = mockNotifications.slice(0, 5)
-const unreadCount = computed(() => notifications.filter(n => !n.isRead).length)
+type Txn = { title: string; titleEn: string; date: string; amount: number; status: 'completed' | 'pending' }
+const txns: Txn[] = [
+  { title: 'รายได้จากแคมเปญ Gadget Review', titleEn: 'Earnings from Gadget Review', date: '24 มี.ค. 2026', amount: 20000, status: 'completed' },
+  { title: 'รายได้จากแคมเปญ Summer Fashion', titleEn: 'Earnings from Summer Fashion', date: '10 มี.ค. 2026', amount: 15000, status: 'completed' },
+  { title: 'รายได้จากแคมเปญ Skincare (รออนุมัติ)', titleEn: 'Earnings from Skincare (awaiting approval)', date: '18 มี.ค. 2026', amount: 8000, status: 'pending' },
+  { title: 'รายได้จากแคมเปญ Fitness (รอแก้ไข)', titleEn: 'Earnings from Fitness (pending revision)', date: '25 มี.ค. 2026', amount: 12000, status: 'pending' },
+]
 
-onMounted(() => {
-  const ctx = gsap.context(() => {
-    gsap.from('.stat-card', { opacity: 0, y: 30, duration: 0.6, stagger: 0.1, ease: 'power3.out' })
-  })
-  onUnmounted(() => ctx.revert())
-})
+const notifList = computed(() => notifications.items.slice(0, 4))
+
+type Action = { icon: string; title: string; titleEn: string; desc: string; descEn: string; to: string }
+const actions: Action[] = [
+  { icon: 'briefcase', title: 'หาแคมเปญ', titleEn: 'Find campaigns', desc: 'ค้นหางานที่ใช่', descEn: 'Discover the right jobs', to: '/portal/campaigns' },
+  { icon: 'user', title: 'อัปเดตโปรไฟล์', titleEn: 'Update profile', desc: 'แก้ไขข้อมูลของคุณ', descEn: 'Edit your information', to: '/portal/profile' },
+  { icon: 'wallet', title: 'ดูรายได้', titleEn: 'View earnings', desc: 'กระเป๋าเงินและประวัติ', descEn: 'Wallet and history', to: '/portal/wallet' },
+]
+
+const fmt = (n: number) => n.toLocaleString()
 </script>
+
+<template>
+  <main class="mx-auto max-w-6xl px-6 py-10 lg:px-12 lg:py-14">
+    <section class="mb-8">
+      <h1 class="font-heading text-3xl font-extrabold tracking-tight text-ink lg:text-4xl">{{ tr('ยินดีต้อนรับกลับ, สมใจ!', 'Welcome back, Somjai!') }}</h1>
+      <p class="mt-1 text-sm text-muted">{{ tr('สรุปกิจกรรมในบัญชีของคุณวันนี้', "Here's a summary of your account activity today") }}</p>
+    </section>
+
+    <!-- stat cards -->
+    <section class="mb-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <NuxtLink
+        v-for="s in stats"
+        :key="s.label"
+        :to="s.to"
+        class="group rounded-xl border border-[#0F2747]/10 bg-white p-6 shadow-sm transition-shadow hover:shadow-[0_24px_50px_-30px_rgb(45_91_255_/_35%)]"
+      >
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs text-muted">{{ tr(s.label, s.labelEn) }}</p>
+            <p class="mt-1 font-heading text-2xl font-extrabold text-ink">{{ s.value }}</p>
+          </div>
+          <div class="flex h-12 w-12 items-center justify-center rounded-xl border border-primary/20 bg-primary/10">
+            <Icon :name="s.icon" class="h-6 w-6 text-primary" />
+          </div>
+        </div>
+        <span class="mt-3 inline-flex items-center gap-1 text-xs font-bold text-primary">{{ tr('ดูรายละเอียด', 'View details') }} <Icon name="arrow-right" class="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" /></span>
+      </NuxtLink>
+    </section>
+
+    <!-- main grid -->
+    <section class="grid gap-6 lg:grid-cols-3">
+      <!-- transactions -->
+      <div class="rounded-xl border border-[#0F2747]/10 bg-white p-6 shadow-sm lg:col-span-2">
+        <div class="mb-5 flex items-center justify-between">
+          <h2 class="font-heading text-lg font-bold text-ink">{{ tr('ประวัติการรับเงินล่าสุด', 'Recent payouts') }}</h2>
+          <NuxtLink to="/portal/wallet" class="text-xs font-bold text-primary">{{ tr('ดูทั้งหมด', 'View all') }} →</NuxtLink>
+        </div>
+        <div class="space-y-3">
+          <div
+            v-for="t in txns"
+            :key="t.title"
+            class="flex items-center justify-between rounded-xl border border-[#0F2747]/10 bg-surface p-4"
+          >
+            <div class="flex items-center gap-3">
+              <div :class="['flex h-10 w-10 items-center justify-center rounded-lg', t.status === 'completed' ? 'bg-primary/10 text-primary' : 'bg-amber-50 text-amber-500']">
+                <Icon :name="t.status === 'completed' ? 'trending-up' : 'clock'" class="h-5 w-5" />
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-ink">{{ tr(t.title, t.titleEn) }}</p>
+                <p class="text-xs text-muted">{{ t.date }}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p :class="['font-bold', t.status === 'completed' ? 'text-primary' : 'text-amber-600']">+฿{{ fmt(t.amount) }}</p>
+              <span :class="['rounded-full px-2 py-0.5 text-[10px] font-bold', t.status === 'completed' ? 'bg-primary/10 text-primary' : 'bg-amber-100 text-amber-700']">{{ t.status === 'completed' ? tr('รับเงินแล้ว', 'Paid') : tr('รอรับเงิน', 'Pending') }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- notifications -->
+      <div class="rounded-xl border border-[#0F2747]/10 bg-white p-6 shadow-sm">
+        <div class="mb-5 flex items-center justify-between">
+          <h2 class="font-heading text-lg font-bold text-ink">{{ tr('การแจ้งเตือน', 'Notifications') }}</h2>
+          <span v-if="notifications.unreadCount > 0" class="rounded-md bg-primary px-2.5 py-0.5 text-[10px] font-bold text-white">{{ notifications.unreadCount }} {{ tr('ใหม่', 'new') }}</span>
+        </div>
+        <div class="space-y-1">
+          <NuxtLink
+            v-for="n in notifList"
+            :key="n.id"
+            :to="`/portal/${n.link}`"
+            class="flex items-start gap-3 rounded-lg p-3 transition hover:bg-surface"
+          >
+            <div :class="['flex h-9 w-9 shrink-0 items-center justify-center rounded-lg', tintOf(n.cat).bg, tintOf(n.cat).fg]">
+              <Icon :name="n.icon" class="h-4 w-4" />
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-semibold text-ink">{{ tr(n.title, n.titleEn) }}</p>
+              <p class="line-clamp-2 text-xs text-muted">{{ tr(n.msg, n.msgEn) }}</p>
+              <p class="mt-0.5 text-[11px] text-[#5B6B82]/60">{{ tr(n.ago, n.agoEn) }}</p>
+            </div>
+            <span v-if="!n.read" :class="['mt-1.5 h-2 w-2 shrink-0 rounded-full', tintOf(n.cat).dot]" />
+          </NuxtLink>
+        </div>
+        <NuxtLink to="/portal/notifications" class="mt-3 block rounded-lg py-2 text-center text-sm font-bold text-primary transition hover:bg-primary/5">{{ tr('ดูทั้งหมด', 'View all') }}</NuxtLink>
+      </div>
+    </section>
+
+    <!-- quick actions -->
+    <section class="mt-8">
+      <h2 class="mb-4 font-heading text-lg font-bold text-ink">{{ tr('ทางลัด', 'Shortcuts') }}</h2>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <NuxtLink
+          v-for="a in actions"
+          :key="a.title"
+          :to="a.to"
+          class="flex items-center gap-4 rounded-xl border border-[#0F2747]/10 bg-white p-5 shadow-sm transition-shadow hover:shadow-[0_24px_50px_-30px_rgb(45_91_255_/_35%)]"
+        >
+          <div class="flex h-12 w-12 items-center justify-center rounded-xl border border-primary/20 bg-primary/10">
+            <Icon :name="a.icon" class="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <p class="font-bold text-ink">{{ tr(a.title, a.titleEn) }}</p>
+            <p class="text-xs text-muted">{{ tr(a.desc, a.descEn) }}</p>
+          </div>
+        </NuxtLink>
+      </div>
+    </section>
+  </main>
+</template>

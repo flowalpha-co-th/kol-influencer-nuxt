@@ -1,759 +1,248 @@
-<template>
-  <div class="min-h-screen">
-    <!-- Hero Section -->
-    <section ref="heroRef" class="relative min-h-screen flex items-center pt-20 overflow-hidden">
-      <!-- Mesh radial background — yellow + cream + slate bridged on white -->
-      <div
-        class="absolute inset-0"
-        :style="{
-          background: `
-            radial-gradient(at 15% 20%, hsl(var(--theme-gradient-from) / 0.22) 0%, transparent 55%),
-            radial-gradient(at 85% 25%, hsl(var(--theme-cream) / 0.7) 0%, transparent 50%),
-            radial-gradient(at 50% 90%, hsl(var(--theme-gradient-to) / 0.12) 0%, transparent 60%),
-            radial-gradient(at 78% 78%, hsl(var(--theme-gradient-from) / 0.15) 0%, transparent 55%),
-            hsl(var(--background))
-          `,
-        }"
-      />
-
-      <!-- Decorative background: soft gradient orbs + dot grid -->
-      <div
-        class="absolute top-20 right-[-100px] w-[500px] h-[500px] rounded-full blur-3xl pointer-events-none"
-        :style="{ background: 'radial-gradient(circle, hsl(var(--theme-gradient-via) / 0.5) 0%, hsl(var(--theme-gradient-via) / 0.1) 45%, transparent 70%)', opacity: 'calc(var(--theme-blob-opacity, 0.3) * 1.8)' }"
-      />
-      <div class="absolute bottom-10 left-10 w-64 h-64 rounded-full blur-3xl pointer-events-none opacity-40" :style="{ background: 'hsl(var(--theme-gradient-from) / 0.4)' }" />
-      <div class="absolute top-40 left-1/3 w-40 h-40 rounded-full blur-2xl pointer-events-none opacity-30" :style="{ background: 'hsl(var(--theme-gradient-to) / 0.35)' }" />
-
-      <!-- Dot grid pattern (top right) -->
-      <div class="absolute top-32 right-10 pointer-events-none opacity-30 hidden md:block">
-        <div class="grid grid-cols-8 gap-3">
-          <div v-for="i in 48" :key="i" class="w-1.5 h-1.5 rounded-full" :style="{ background: 'hsl(var(--theme-gradient-via))' }"></div>
-        </div>
-      </div>
-
-      <!-- Ripple wave layers (bottom) -->
-      <svg class="absolute bottom-10 right-1/4 w-72 h-16 pointer-events-none opacity-40 hidden md:block" viewBox="0 0 288 64" fill="none" :style="{ color: 'hsl(var(--theme-gradient-via))' }">
-        <path d="M 0 12 Q 36 0 72 12 T 144 12 T 216 12 T 288 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.35" />
-        <path d="M 0 32 Q 36 20 72 32 T 144 32 T 216 32 T 288 32" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity="0.7" />
-        <path d="M 0 52 Q 36 40 72 52 T 144 52 T 216 52 T 288 52" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-      </svg>
-
-      <!-- Floating ripples -->
-      <RippleDeco class="absolute top-32 left-10 w-12 h-12 text-yellow-400 opacity-80 floating-sparkle" />
-      <RippleDeco class="absolute top-1/2 right-1/3 w-9 h-9 text-primary opacity-70 floating-sparkle-2" />
-      <RippleDeco class="absolute bottom-32 right-20 w-14 h-14 opacity-60 floating-sparkle-3" :style="{ color: 'hsl(var(--theme-gradient-via))' }" />
-
-      <div class="relative max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div class="grid lg:grid-cols-2 gap-12 items-center">
-          <div class="space-y-8">
-            <div class="hero-subtitle">
-              <span class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full bg-white shadow-md border border-primary/10">
-                <Sparkles class="w-4 h-4 text-primary" />
-                <span class="bg-gradient-to-r from-primary to-[hsl(var(--theme-gradient-via))] bg-clip-text text-transparent font-semibold">
-                  {{ languageStore.t('hero.subtitle') }}
-                </span>
-              </span>
-            </div>
-            <h1 class="hero-title text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 leading-[1.05] tracking-tight">
-              {{ languageStore.t('hero.titleBefore') }}
-              <span class="relative inline-block">
-                <span class="relative bg-gradient-to-r from-primary via-[hsl(var(--theme-gradient-via))] to-[hsl(var(--theme-gradient-to))] bg-clip-text text-transparent">
-                  {{ languageStore.t('hero.titleHighlight') }}
-                </span>
-                <svg class="absolute -bottom-2 left-0 w-full h-3" viewBox="0 0 300 12" preserveAspectRatio="none">
-                  <path d="M 0 8 Q 75 0 150 6 T 300 4" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round" :style="{ color: 'hsl(var(--theme-gradient-via))' }" />
-                </svg>
-              </span>
-            </h1>
-            <p class="hero-desc text-lg sm:text-xl text-gray-600 max-w-xl leading-relaxed">
-              {{ languageStore.t('hero.description') }}
-            </p>
-            <div class="hero-buttons flex flex-wrap gap-4">
-              <NuxtLink to="/register">
-                <UiButton size="lg" class="bg-accent hover:bg-accent/90 text-accent-foreground px-8 h-14 text-base shadow-lg shadow-accent/40 hover:scale-105 transition">
-                  {{ languageStore.t('hero.getStarted') }}
-                  <ArrowRight class="ml-2 h-5 w-5" />
-                </UiButton>
-              </NuxtLink>
-              <NuxtLink to="#how-it-works">
-                <UiButton size="lg" variant="outline" class="border-gray-300 text-gray-700 hover:bg-gray-50 px-8 h-14 text-base">
-                  <PlayCircle class="mr-2 h-5 w-5" />
-                  {{ languageStore.t('hero.exploreCampaigns') }}
-                </UiButton>
-              </NuxtLink>
-            </div>
-            <!-- Trust strip -->
-            <div class="hero-trust flex items-center gap-4 pt-4">
-              <div class="flex -space-x-3">
-                <img v-for="avatar in trustAvatars" :key="avatar" :src="avatar" alt="" class="w-10 h-10 rounded-full border-2 border-white object-cover shadow" />
-                <div class="w-10 h-10 rounded-full border-2 border-white bg-gradient-to-br from-primary to-[hsl(var(--theme-gradient-via))] flex items-center justify-center text-white text-xs font-bold shadow">
-                  10K+
-                </div>
-              </div>
-              <div>
-                <div class="flex items-center gap-0.5">
-                  <Star v-for="i in 5" :key="i" class="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  <span class="text-sm font-semibold text-gray-900 ml-1">4.9/5</span>
-                </div>
-                <p class="text-xs text-gray-600">{{ languageStore.t('hero.trustBadge') }}</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="hero-image relative">
-            <!-- Main image -->
-            <div class="relative rounded-[2rem] overflow-hidden shadow-2xl">
-              <img src="/hero-creators.jpg" alt="Creator" class="w-full h-[520px] object-cover" />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
-            </div>
-
-            <!-- Floating stat card (top right) -->
-            <div class="hero-float-1 absolute -top-6 -right-6 bg-white rounded-2xl shadow-2xl p-5 w-56 border border-gray-100">
-              <div class="flex items-center gap-3 mb-2">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-[hsl(var(--theme-gradient-via))] flex items-center justify-center">
-                  <TrendingUp class="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <p class="text-xs text-gray-500">Avg. Engagement</p>
-                  <p class="text-2xl font-bold text-gray-900">+247%</p>
-                </div>
-              </div>
-              <div class="flex items-center gap-1">
-                <div v-for="i in 5" :key="i" class="h-1.5 flex-1 rounded-full bg-primary/20">
-                  <div class="h-full rounded-full bg-primary transition-all" :style="{ width: i <= 4 ? '100%' : '60%' }" />
-                </div>
-              </div>
-            </div>
-
-            <!-- Floating stat card (bottom left) -->
-            <div class="hero-float-2 absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-2xl p-5 w-64 border border-gray-100">
-              <div class="flex items-center gap-3">
-                <div class="relative shrink-0">
-                  <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center">
-                    <Check class="w-6 h-6 text-white" />
-                  </div>
-                  <div class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-yellow-400 flex items-center justify-center text-[10px]">
-                    <Sparkles class="w-3 h-3 text-white" />
-                  </div>
-                </div>
-                <div>
-                  <p class="font-semibold text-gray-900 text-sm">Campaign Live!</p>
-                  <p class="text-xs text-gray-500">Invoice sent • 2 min ago</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Floating pill (mid right) -->
-            <div class="hero-float-3 absolute top-1/2 -right-8 bg-gradient-to-br from-primary to-[hsl(var(--theme-gradient-via))] rounded-2xl shadow-xl px-4 py-3 text-white">
-              <div class="flex items-center gap-2">
-                <Users class="w-5 h-5" />
-                <div>
-                  <p class="text-[10px] opacity-80">Live now</p>
-                  <p class="font-bold text-sm">2,431 creators</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Stats Section -->
-    <section ref="statsRef" class="relative py-24 bg-white overflow-hidden">
-      <!-- Background decoration -->
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] rounded-full blur-3xl opacity-30" :style="{ background: 'linear-gradient(90deg, hsl(var(--theme-gradient-from) / 0.3), hsl(var(--theme-gradient-to) / 0.3))' }" />
-
-      <div class="relative max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-          <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-primary/10 to-[hsl(var(--theme-gradient-via)/0.1)] border border-primary/20">
-            <TrendingUp class="w-4 h-4 text-primary" />
-            <span class="text-sm font-semibold text-primary">ตัวเลขที่ทำให้แบรนด์ไว้ใจ</span>
-          </span>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div v-for="(stat, i) in statsWithCounter" :key="stat.label" class="stat-item group relative overflow-hidden rounded-3xl p-8 bg-white border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-            <!-- Number watermark -->
-            <span class="absolute -top-2 -right-2 text-[8rem] font-black opacity-[0.05] leading-none select-none">0{{ i + 1 }}</span>
-            <!-- Gradient accent circle -->
-            <div class="absolute -bottom-12 -right-12 w-40 h-40 rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-opacity duration-500" :style="{ background: 'hsl(var(--theme-gradient-via))' }" />
-
-            <div class="relative">
-              <div class="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-[hsl(var(--theme-gradient-via))] items-center justify-center mb-6 shadow-lg shadow-primary/20 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-                <component :is="stat.icon" class="h-7 w-7 text-white" />
-              </div>
-              <p class="text-5xl sm:text-6xl font-black bg-gradient-to-br from-gray-900 to-gray-700 bg-clip-text text-transparent mb-2 tabular-nums">{{ stat.displayValue }}</p>
-              <p class="text-base font-semibold text-gray-600">{{ stat.label }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- About Section -->
-    <section ref="aboutRef" class="relative py-28 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
-      <!-- Decorative pattern -->
-      <div class="absolute top-10 right-10 opacity-20">
-        <div class="grid grid-cols-6 gap-3">
-          <div v-for="i in 36" :key="i" class="w-2 h-2 rounded-full bg-primary"></div>
-        </div>
-      </div>
-
-      <div class="relative max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-2 gap-20 items-center">
-          <div class="about-content space-y-6">
-            <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20">
-              <Sparkles class="w-4 h-4 text-primary" />
-              <span class="text-sm font-semibold text-primary">เกี่ยวกับ Ripples</span>
-            </span>
-            <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 leading-tight">{{ languageStore.t('about.title') }}</h2>
-            <p class="text-gray-600 text-lg leading-relaxed">{{ languageStore.t('about.description') }}</p>
-            <div class="space-y-5 pt-4">
-              <div v-for="(item, idx) in aboutPoints" :key="item" class="flex items-start gap-4 group">
-                <div class="shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-[hsl(var(--theme-gradient-via))] flex items-center justify-center text-white font-bold shadow-lg shadow-primary/20 group-hover:scale-110 transition">
-                  0{{ idx + 1 }}
-                </div>
-                <div class="pt-2">
-                  <p class="text-gray-800 font-medium leading-relaxed">{{ item }}</p>
-                </div>
-              </div>
-            </div>
-            <NuxtLink to="/about">
-              <UiButton variant="outline" class="border-gray-300 text-gray-700 hover:bg-gray-50 mt-8 h-12 px-6">
-                {{ languageStore.t('about.learnMore') }} <ArrowRight class="ml-2 h-4 w-4" />
-              </UiButton>
-            </NuxtLink>
-          </div>
-
-          <!-- Overlapping image stack -->
-          <div class="about-image relative h-[560px]">
-            <!-- Background blob -->
-            <div class="absolute inset-0 flex items-center justify-center">
-              <div class="w-[90%] h-[90%] rounded-full blur-3xl opacity-30" :style="{ background: 'linear-gradient(135deg, hsl(var(--theme-gradient-from)), hsl(var(--theme-gradient-via)))' }" />
-            </div>
-
-            <!-- Main image (back) -->
-            <div class="absolute top-0 right-0 w-[70%] h-[70%] rounded-[2rem] overflow-hidden shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500">
-              <img src="/about-team.jpg" alt="Brand meeting" class="w-full h-full object-cover" />
-            </div>
-
-            <!-- Secondary image (front) -->
-            <div class="absolute bottom-0 left-0 w-[60%] h-[60%] rounded-[2rem] overflow-hidden shadow-2xl -rotate-3 hover:rotate-0 transition-transform duration-500 z-10">
-              <img src="/about-creator.jpg" alt="Creator at work" class="w-full h-full object-cover" />
-            </div>
-
-            <!-- Floating badge -->
-            <div class="absolute top-1/2 left-8 -translate-y-1/2 bg-white rounded-2xl shadow-2xl p-4 z-20 animate-bounce-slow">
-              <div class="flex items-center gap-2">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-orange-400 flex items-center justify-center">
-                  <Sparkles class="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <p class="text-xs text-gray-500">Verified</p>
-                  <p class="text-sm font-bold text-gray-900">100% KYC</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Services Section -->
-    <section ref="servicesRef" class="relative py-28 bg-white overflow-hidden">
-      <div class="relative max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center max-w-2xl mx-auto mb-16">
-          <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4">
-            <Briefcase class="w-4 h-4 text-primary" />
-            <span class="text-sm font-semibold text-primary">{{ languageStore.t('nav.services') }}</span>
-          </span>
-          <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-4 leading-tight">
-            {{ languageStore.t('services.title') }}
-          </h2>
-          <p class="text-gray-600 text-lg">เครื่องมือครบทุกขั้นตอน ตั้งแต่หา Creator ไปจนจ่ายเงิน</p>
-        </div>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div v-for="(service, index) in services" :key="index" class="service-card group relative overflow-hidden rounded-3xl p-8 bg-gradient-to-br from-gray-50 to-white border border-gray-100 hover:border-primary/30 hover:shadow-2xl hover:-translate-y-3 transition-all duration-500">
-            <!-- Number watermark -->
-            <span class="absolute -top-4 -right-2 text-[9rem] font-black leading-none select-none bg-gradient-to-br from-gray-900 to-gray-300 bg-clip-text text-transparent opacity-[0.04] group-hover:opacity-[0.08] transition-opacity">
-              0{{ index + 1 }}
-            </span>
-
-            <!-- Gradient glow on hover -->
-            <div class="absolute -bottom-20 -right-20 w-60 h-60 rounded-full blur-3xl opacity-0 group-hover:opacity-30 transition-opacity duration-700" :style="{ background: 'hsl(var(--theme-gradient-via))' }" />
-
-            <div class="relative">
-              <div class="inline-flex w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-[hsl(var(--theme-gradient-via))] items-center justify-center mb-6 shadow-xl shadow-primary/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-                <component :is="service.icon" class="h-8 w-8 text-white" />
-              </div>
-              <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors">{{ service.title }}</h3>
-              <p class="text-gray-600 leading-relaxed mb-4">{{ service.description }}</p>
-              <div class="flex items-center gap-2 text-primary font-semibold text-sm opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
-                <span>เรียนรู้เพิ่มเติม</span>
-                <ArrowRight class="w-4 h-4" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- How It Works Section -->
-    <section id="how-it-works" ref="howItWorksRef" class="relative py-28 bg-gradient-to-b from-gray-50 via-white to-gray-50 overflow-hidden">
-      <!-- Decorative ripples -->
-      <RippleDeco class="absolute top-20 left-10 w-9 h-9 text-yellow-400 opacity-60 floating-sparkle-2" />
-      <RippleDeco class="absolute bottom-32 right-16 w-12 h-12 opacity-50 floating-sparkle-3" :style="{ color: 'hsl(var(--theme-gradient-via))' }" />
-
-      <div class="relative max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center max-w-2xl mx-auto mb-20">
-          <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4">
-            <PlayCircle class="w-4 h-4 text-primary" />
-            <span class="text-sm font-semibold text-primary">{{ languageStore.t('services.howItWorks.badge') }}</span>
-          </span>
-          <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-4 leading-tight">
-            {{ languageStore.t('services.howItWorks.title') }}
-          </h2>
-          <p class="text-gray-600 text-lg">จากไอเดียถึงผลลัพธ์ — 4 ขั้นตอนง่ายๆ จบในไม่กี่นาที</p>
-        </div>
-
-        <div class="relative">
-          <!-- Connector line (desktop) -->
-          <div class="hidden lg:block absolute top-28 left-0 right-0 h-0.5">
-            <svg class="w-full h-12" viewBox="0 0 1200 48" preserveAspectRatio="none">
-              <path d="M 50 24 Q 300 -10 600 24 T 1150 24" stroke="url(#hiw-gradient)" stroke-width="2" stroke-dasharray="6 6" fill="none" />
-              <defs>
-                <linearGradient id="hiw-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" :stop-color="'hsl(var(--theme-gradient-from))'" />
-                  <stop offset="50%" :stop-color="'hsl(var(--theme-gradient-via))'" />
-                  <stop offset="100%" :stop-color="'hsl(var(--theme-gradient-to))'" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-
-          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
-            <div v-for="(step, idx) in howItWorksSteps" :key="idx" class="hiw-step relative group">
-              <!-- Step circle -->
-              <div class="relative w-24 h-24 mx-auto mb-6">
-                <div class="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-[hsl(var(--theme-gradient-via))] blur-xl opacity-40 group-hover:opacity-70 transition-opacity" />
-                <div class="relative w-24 h-24 rounded-full bg-white border-4 border-white shadow-2xl flex items-center justify-center">
-                  <component :is="step.icon" class="w-10 h-10 text-primary" />
-                </div>
-                <!-- Step number badge -->
-                <div class="absolute -top-1 -right-1 w-9 h-9 rounded-full bg-gradient-to-br from-primary to-[hsl(var(--theme-gradient-via))] flex items-center justify-center text-white font-bold text-sm shadow-lg">
-                  {{ idx + 1 }}
-                </div>
-              </div>
-              <div class="text-center">
-                <h3 class="text-xl font-bold text-gray-900 mb-2">{{ step.title }}</h3>
-                <p class="text-gray-600 leading-relaxed">{{ step.description }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Featured Campaigns -->
-    <section ref="campaignsRef" class="relative py-28 bg-gray-50 overflow-hidden">
-      <div class="relative max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
-          <div>
-            <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4">
-              <Flame class="w-4 h-4 text-primary" />
-              <span class="text-sm font-semibold text-primary">{{ languageStore.t('expertise.badge') }}</span>
-            </span>
-            <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 leading-tight">
-              {{ languageStore.t('expertise.title') }}
-            </h2>
-            <p class="text-gray-600 text-lg mt-3">Campaign ที่กำลัง live พร้อมรับ Creator</p>
-          </div>
-          <NuxtLink to="/portal/campaigns">
-            <UiButton variant="outline" class="border-gray-300 text-gray-700 hover:bg-white h-12 px-6">
-              {{ languageStore.t('expertise.viewAll') }} <ArrowRight class="ml-2 h-4 w-4" />
-            </UiButton>
-          </NuxtLink>
-        </div>
-
-        <!-- Asymmetric grid: 1 big + 2 small -->
-        <div class="grid lg:grid-cols-3 gap-6">
-          <!-- Featured (big) -->
-          <NuxtLink v-if="featuredCampaigns[0]" to="/portal/campaigns" class="campaign-card group relative lg:col-span-2 lg:row-span-2 overflow-hidden rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 min-h-[520px]">
-            <img :src="featuredCampaigns[0].image" :alt="featuredCampaigns[0].title" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
-
-            <!-- Live badge -->
-            <div class="absolute top-6 left-6 flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500 text-white text-xs font-bold shadow-lg">
-              <span class="relative flex h-2 w-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-              </span>
-              LIVE
-            </div>
-            <div class="absolute top-6 right-6 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-semibold">
-              {{ featuredCampaigns[0].category }}
-            </div>
-
-            <div class="absolute bottom-0 left-0 right-0 p-8 text-white">
-              <div class="flex items-center gap-3 mb-4">
-                <img :src="featuredCampaigns[0].brandLogo" :alt="featuredCampaigns[0].brandName" class="w-8 h-8 rounded-full object-cover border-2 border-white" />
-                <span class="text-sm font-medium text-white/90">{{ featuredCampaigns[0].brandName }}</span>
-              </div>
-              <h3 class="text-3xl sm:text-4xl font-bold mb-3 leading-tight group-hover:translate-x-2 transition-transform">{{ featuredCampaigns[0].title }}</h3>
-              <p class="text-white/80 mb-6 line-clamp-2 max-w-lg">{{ featuredCampaigns[0].description }}</p>
-              <div class="flex items-center justify-between pt-4 border-t border-white/20">
-                <div>
-                  <p class="text-xs text-white/70 mb-1">Budget</p>
-                  <p class="text-2xl font-black">฿{{ featuredCampaigns[0].budget.min.toLocaleString() }} - {{ featuredCampaigns[0].budget.max.toLocaleString() }}</p>
-                </div>
-                <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center group-hover:rotate-45 transition-transform">
-                  <ArrowRight class="w-5 h-5 text-gray-900" />
-                </div>
-              </div>
-            </div>
-          </NuxtLink>
-
-          <!-- Small cards -->
-          <NuxtLink v-for="campaign in featuredCampaigns.slice(1, 3)" :key="campaign.id" to="/portal/campaigns" class="campaign-card group relative overflow-hidden rounded-3xl shadow-md hover:shadow-2xl transition-all duration-500 bg-white">
-            <div class="relative h-48 overflow-hidden">
-              <img :src="campaign.image" :alt="campaign.title" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-              <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-sm text-gray-900 text-[10px] font-bold">
-                {{ campaign.category }}
-              </div>
-            </div>
-            <div class="p-5">
-              <div class="flex items-center gap-2 mb-2">
-                <img :src="campaign.brandLogo" :alt="campaign.brandName" class="w-5 h-5 rounded-full object-cover" />
-                <span class="text-xs text-gray-500">{{ campaign.brandName }}</span>
-              </div>
-              <h3 class="font-bold text-gray-900 mb-2 line-clamp-1 group-hover:text-primary transition-colors">{{ campaign.title }}</h3>
-              <div class="flex items-center justify-between pt-3 border-t">
-                <p class="text-sm font-bold text-primary">฿{{ (campaign.budget.min / 1000).toFixed(0) }}K - {{ (campaign.budget.max / 1000).toFixed(0) }}K</p>
-                <ArrowRight class="w-4 h-4 text-gray-400 group-hover:text-primary group-hover:translate-x-1 transition-all" />
-              </div>
-            </div>
-          </NuxtLink>
-        </div>
-      </div>
-    </section>
-
-    <!-- Testimonials -->
-    <section class="relative py-28 bg-white overflow-hidden">
-      <!-- Background gradient blob -->
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[500px] rounded-full blur-3xl opacity-20" :style="{ background: 'linear-gradient(90deg, hsl(var(--theme-gradient-from)), hsl(var(--theme-gradient-via)), hsl(var(--theme-gradient-to)))' }" />
-
-      <div class="relative max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center max-w-2xl mx-auto mb-16">
-          <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4">
-            <Star class="w-4 h-4 text-primary fill-primary" />
-            <span class="text-sm font-semibold text-primary">{{ languageStore.t('testimonials.badge') }}</span>
-          </span>
-          <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 leading-tight">
-            {{ languageStore.t('testimonials.title') }}
-          </h2>
-        </div>
-
-        <!-- Big hero quote -->
-        <div class="relative max-w-4xl mx-auto mb-12">
-          <div class="relative bg-white rounded-[2rem] p-10 sm:p-14 shadow-2xl border border-gray-100">
-            <!-- Quote mark -->
-            <div class="absolute -top-6 left-10 w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-[hsl(var(--theme-gradient-via))] flex items-center justify-center shadow-xl">
-              <Quote class="w-7 h-7 text-white" />
-            </div>
-
-            <div class="flex gap-1 mb-6 justify-center">
-              <Star v-for="i in 5" :key="i" class="w-6 h-6 fill-yellow-400 text-yellow-400" />
-            </div>
-
-            <p class="text-2xl sm:text-3xl text-gray-800 font-medium leading-relaxed text-center mb-8 italic">
-              "{{ testimonials[0]?.quote }}"
-            </p>
-
-            <div class="flex items-center gap-4 justify-center">
-              <img :src="testimonials[0]?.avatar" :alt="testimonials[0]?.name" class="w-14 h-14 rounded-full object-cover ring-4 ring-primary/10" />
-              <div>
-                <p class="font-bold text-gray-900">{{ testimonials[0]?.name }}</p>
-                <p class="text-sm text-gray-500">{{ testimonials[0]?.role }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Smaller quotes row -->
-        <div class="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-          <div v-for="testimonial in testimonials.slice(1, 3)" :key="testimonial.name" class="relative bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all">
-            <div class="flex gap-1 mb-3">
-              <Star v-for="i in 5" :key="i" class="w-4 h-4 fill-yellow-400 text-yellow-400" />
-            </div>
-            <p class="text-gray-700 leading-relaxed mb-4 line-clamp-3">"{{ testimonial.quote }}"</p>
-            <div class="flex items-center gap-3 pt-4 border-t border-gray-100">
-              <img :src="testimonial.avatar" :alt="testimonial.name" class="w-10 h-10 rounded-full object-cover" />
-              <div>
-                <p class="font-semibold text-gray-900 text-sm">{{ testimonial.name }}</p>
-                <p class="text-xs text-gray-500">{{ testimonial.role }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section ref="ctaRef" class="relative py-28 overflow-hidden">
-      <!-- Mesh gradient background -->
-      <div
-        class="absolute inset-0"
-        :style="{
-          backgroundImage: `radial-gradient(at 20% 20%, hsl(var(--theme-gradient-from)) 0%, transparent 50%), radial-gradient(at 80% 20%, hsl(var(--theme-gradient-via)) 0%, transparent 50%), radial-gradient(at 60% 80%, hsl(var(--theme-gradient-to)) 0%, transparent 60%), linear-gradient(135deg, hsl(var(--theme-gradient-from)), hsl(var(--theme-gradient-via)) 50%, hsl(var(--theme-gradient-to)))`,
-        }"
-      />
-      <!-- Noise texture overlay -->
-      <div class="absolute inset-0 opacity-20 mix-blend-overlay" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');" />
-
-      <!-- Giant floating ripples -->
-      <RippleDeco class="absolute top-16 left-10 w-24 h-24 text-white/30 floating-sparkle" />
-      <RippleDeco class="absolute bottom-20 right-16 w-28 h-28 text-white/20 floating-sparkle-2" />
-      <RippleDeco class="absolute top-1/2 right-1/4 w-14 h-14 text-yellow-300/60 floating-sparkle-3" />
-      <div class="absolute -top-10 -right-10 w-64 h-64 rounded-full bg-white/10 blur-3xl" />
-      <div class="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-white/10 blur-3xl" />
-
-      <div class="cta-content relative max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 mb-6">
-          <Sparkles class="w-4 h-4 text-white" />
-          <span class="text-sm font-semibold text-white">พร้อมให้แบรนด์ปัง</span>
-        </span>
-        <h2 class="text-5xl sm:text-6xl lg:text-7xl font-black text-white mb-6 leading-[1.05] tracking-tight drop-shadow-lg">
-          {{ languageStore.t('cta.title') }}
-        </h2>
-        <p class="text-white/90 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">{{ languageStore.t('cta.description') }}</p>
-        <div class="flex flex-wrap justify-center gap-4">
-          <NuxtLink to="/register">
-            <UiButton size="lg" class="bg-white text-primary hover:bg-gray-100 px-8 h-14 text-base font-bold shadow-2xl hover:scale-105 transition">
-              {{ languageStore.t('cta.button1') }}
-              <ArrowRight class="ml-2 h-5 w-5" />
-            </UiButton>
-          </NuxtLink>
-          <NuxtLink to="/portal/campaigns">
-            <UiButton size="lg" variant="outline" class="border-white/60 text-white hover:bg-white/20 px-8 h-14 text-base backdrop-blur-md">
-              {{ languageStore.t('cta.button2') }}
-            </UiButton>
-          </NuxtLink>
-        </div>
-
-        <!-- Trust logos row -->
-        <div class="mt-14 pt-10 border-t border-white/20">
-          <p class="text-white/70 text-xs uppercase tracking-widest mb-4 font-semibold">ไม่ต้องบัตรเครดิต · เริ่มฟรี · ยกเลิกได้ตลอด</p>
-          <div class="flex items-center justify-center gap-8 flex-wrap text-white/80 text-sm">
-            <div class="flex items-center gap-2">
-              <Shield class="w-5 h-5" />
-              <span>Transparent Billing</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <Check class="w-5 h-5" />
-              <span>Verified Creators</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <TrendingUp class="w-5 h-5" />
-              <span>Real-time Analytics</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <HeadphonesIcon class="w-5 h-5" />
-              <span>24/7 Support</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Blog Section (hidden - not ready for client) -->
-    <section v-if="false" class="py-20 bg-gray-50">
-      <div class="max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
-          <div>
-            <UiBadge variant="secondary" class="bg-primary/10 text-primary border-0 mb-4">{{ languageStore.t('mediaInsights.badge') }}</UiBadge>
-            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">{{ languageStore.t('mediaInsights.title') }}</h2>
-          </div>
-          <NuxtLink to="/blog">
-            <UiButton variant="outline" class="border-[#5A5A5A] text-[#5A5A5A] hover:bg-[#E8E8E8]">{{ languageStore.t('mediaInsights.viewMore') }} <ArrowRight class="ml-2 h-4 w-4" /></UiButton>
-          </NuxtLink>
-        </div>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <UiCard v-for="post in featuredPosts" :key="post.id" class="group border-0 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
-            <div class="relative h-48 overflow-hidden">
-              <img :src="post.image" :alt="post.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-            </div>
-            <UiCardContent class="p-6">
-              <div class="flex items-center gap-3 mb-3">
-                <UiBadge variant="secondary" class="text-xs">{{ post.category }}</UiBadge>
-                <span class="text-xs text-gray-500">{{ post.readTime }} min read</span>
-              </div>
-              <h3 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary transition-colors">{{ post.title }}</h3>
-              <p class="text-gray-600 text-sm line-clamp-2">{{ post.excerpt }}</p>
-            </UiCardContent>
-          </UiCard>
-        </div>
-      </div>
-    </section>
-
-  </div>
-</template>
-
 <script setup lang="ts">
-import {
-  ArrowRight, Users, Briefcase, TrendingUp, Star, Search, BarChart3, Shield, FileText, HeadphonesIcon,
-  Sparkles, PlayCircle, Check, Flame, Quote, MessageSquare, FileCheck, Wallet, UserCheck,
-} from 'lucide-vue-next'
-import { mockCampaigns } from '~/data/mockData'
+definePageMeta({ layout: 'default' })
+const { tr } = useLocale()
+useHead(() => ({ title: tr('Ripples — เปลี่ยนคอนเทนต์ให้เป็นรายได้จริง', 'Ripples — Turn content into real income') }))
 
-const languageStore = useLanguageStore()
-
-const heroRef = ref<HTMLElement>()
-const statsRef = ref<HTMLElement>()
-const aboutRef = ref<HTMLElement>()
-const servicesRef = ref<HTMLElement>()
-const howItWorksRef = ref<HTMLElement>()
-const campaignsRef = ref<HTMLElement>()
-const ctaRef = ref<HTMLElement>()
-
-const featuredCampaigns = mockCampaigns.slice(0, 3)
-
-const trustAvatars = [
-  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop&crop=face',
-]
-
-interface StatConfig {
-  icon: typeof Users
-  target: number
-  suffix: string
-  label: string
-}
-
-const statConfigs: StatConfig[] = [
-  { icon: Users, target: 10000, suffix: '+', label: 'Verified Creators' },
-  { icon: Briefcase, target: 500, suffix: '+', label: 'Trusted Brands' },
-  { icon: TrendingUp, target: 98, suffix: '%', label: 'Success Rate' },
-]
-
-const counterValues = ref<number[]>(statConfigs.map(() => 0))
-const statsWithCounter = computed(() =>
-  statConfigs.map((s, i) => ({
-    icon: s.icon,
-    label: s.label,
-    displayValue: `${Math.round(counterValues.value[i]).toLocaleString()}${s.suffix}`,
-  })),
-)
-
-const aboutPoints = computed(() => [
-  languageStore.t('about.points.point1'),
-  languageStore.t('about.points.point2'),
-  languageStore.t('about.points.point3'),
-])
-
-const services = computed(() => [
-  { icon: Search, title: languageStore.t('services.service1'), description: languageStore.t('services.service1Desc') },
-  { icon: FileText, title: languageStore.t('services.service2'), description: languageStore.t('services.service2Desc') },
-  { icon: FileCheck, title: languageStore.t('services.service3'), description: languageStore.t('services.service3Desc') },
-  { icon: BarChart3, title: languageStore.t('services.service4'), description: languageStore.t('services.service4Desc') },
-  { icon: HeadphonesIcon, title: languageStore.t('services.service5'), description: languageStore.t('services.service5Desc') },
-  { icon: Shield, title: languageStore.t('services.service6'), description: languageStore.t('services.service6Desc') },
-])
-
-const howItWorksSteps = computed(() => [
-  { icon: UserCheck, title: languageStore.t('services.howItWorks.step1Title'), description: languageStore.t('services.howItWorks.step1Description') },
-  { icon: MessageSquare, title: languageStore.t('services.howItWorks.step2Title'), description: languageStore.t('services.howItWorks.step2Description') },
-  { icon: PlayCircle, title: languageStore.t('services.howItWorks.step3Title'), description: languageStore.t('services.howItWorks.step3Description') },
-  { icon: Wallet, title: languageStore.t('services.howItWorks.step4Title'), description: languageStore.t('services.howItWorks.step4Description') },
-])
-
-const testimonials = computed(() => [
-  { quote: languageStore.t('testimonials.testimonial1'), name: languageStore.t('testimonials.testimonial1Name'), role: languageStore.t('testimonials.testimonial1Role'), avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face' },
-  { quote: languageStore.t('testimonials.testimonial2'), name: languageStore.t('testimonials.testimonial2Name'), role: languageStore.t('testimonials.testimonial2Role'), avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face' },
-  { quote: languageStore.t('testimonials.testimonial3'), name: languageStore.t('testimonials.testimonial3Name'), role: languageStore.t('testimonials.testimonial3Role'), avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face' },
-])
-
-function animateCounters() {
-  const duration = 1600
-  const start = performance.now()
-  const startValues = statConfigs.map(() => 0)
-  const step = (now: number) => {
-    const t = Math.min((now - start) / duration, 1)
-    const eased = 1 - Math.pow(1 - t, 3)
-    counterValues.value = statConfigs.map((s, i) => startValues[i] + (s.target - startValues[i]) * eased)
-    if (t < 1) requestAnimationFrame(step)
+const authStore = useAuthStore()
+function goCampaigns() {
+  if (authStore.isAuthenticated) {
+    return navigateTo('/portal/campaigns')
   }
-  requestAnimationFrame(step)
+  return navigateTo({ path: '/login', query: { redirect: '/portal/campaigns' } })
 }
 
-onMounted(async () => {
-  const { default: gsap } = await import('gsap')
-  const { ScrollTrigger } = await import('gsap/ScrollTrigger')
-  gsap.registerPlugin(ScrollTrigger)
+const stats: [string, string, string][] = [
+  ['10K+', 'ครีเอเตอร์ที่ใช้งาน', 'Active creators'],
+  ['500+', 'แบรนด์ที่ตรวจสอบแล้ว', 'Verified brands'],
+  ['7 วัน', 'จ่ายเงินเฉลี่ย', 'Avg. payout time'],
+  ['฿500M+', 'จ่ายแล้วทั้งหมด', 'Total paid out'],
+]
 
-  const ctx = gsap.context(() => {
-    gsap.from('.hero-subtitle', { opacity: 0, y: 20, duration: 0.6, delay: 0.2, ease: 'power3.out' })
-    gsap.from('.hero-title', { opacity: 0, y: 30, duration: 0.8, delay: 0.4, ease: 'power3.out' })
-    gsap.from('.hero-desc', { opacity: 0, y: 20, duration: 0.6, delay: 0.6, ease: 'power3.out' })
-    gsap.from('.hero-buttons', { opacity: 0, y: 20, duration: 0.6, delay: 0.8, ease: 'power3.out' })
-    gsap.from('.hero-trust', { opacity: 0, y: 20, duration: 0.6, delay: 1, ease: 'power3.out' })
-    gsap.from('.hero-image', { opacity: 0, scale: 0.9, duration: 1, delay: 0.3, ease: 'power3.out' })
-    gsap.from('.hero-float-1', { opacity: 0, y: -20, x: 20, duration: 0.8, delay: 1.2, ease: 'back.out(1.7)' })
-    gsap.from('.hero-float-2', { opacity: 0, y: 20, x: -20, duration: 0.8, delay: 1.4, ease: 'back.out(1.7)' })
-    gsap.from('.hero-float-3', { opacity: 0, x: 30, duration: 0.8, delay: 1.6, ease: 'back.out(1.7)' })
+const whys: [string, string, string, string, string][] = [
+  ['badge-check', 'แบรนด์ตรวจสอบแล้วเท่านั้น', 'Verified brands only', 'ทุกแบรนด์ผ่านการตรวจสอบ 100% ไม่มีงานหลอก รับงานได้อย่างมั่นใจ', 'Every brand is 100% verified — no fake jobs, accept work with confidence.'],
+  ['file-text', 'เอกสารภาษีอัตโนมัติ', 'Automatic tax documents', 'เอกสารภาษีครบ จบในแอป — 50 ทวิ, ใบกำกับภาษี ออกให้อัตโนมัติ', 'All your tax documents in one app — withholding certificates and tax invoices issued automatically.'],
+  ['trending-up', 'ติดตามผลเรียลไทม์', 'Real-time tracking', 'ดูรายได้และผลงานได้ทันทีทุกแคมเปญ โปร่งใส ตรวจสอบได้ตลอดเวลา', 'See your earnings and performance instantly on every campaign — transparent and verifiable anytime.'],
+]
 
-    ScrollTrigger.create({
-      trigger: statsRef.value,
-      start: 'top 80%',
-      once: true,
-      onEnter: animateCounters,
-    })
+const steps: [string, string][] = [
+  ['สมัครสมาชิก & ยืนยันตัวตน', 'Sign up & verify your identity'],
+  ['เลือกแคมเปญที่ชอบแล้วกดสมัคร', 'Pick a campaign you love and apply'],
+  ['สร้างคอนเทนต์ตามบรีฟ', 'Create content following the brief'],
+  ['รับเงินโอนเข้าบัญชีโดยตรง', 'Get paid directly to your account'],
+]
 
-    gsap.fromTo('.stat-item',
-      { opacity: 0, y: 40 },
-      { scrollTrigger: { trigger: statsRef.value, start: 'top 85%', once: true }, opacity: 1, y: 0, duration: 0.7, stagger: 0.12, ease: 'back.out(1.4)' },
-    )
-    gsap.from('.about-content', { scrollTrigger: { trigger: aboutRef.value, start: 'top 70%' }, opacity: 0, x: -50, duration: 0.8, ease: 'power3.out' })
-    gsap.from('.about-image', { scrollTrigger: { trigger: aboutRef.value, start: 'top 70%' }, opacity: 0, x: 50, duration: 0.8, delay: 0.2, ease: 'power3.out' })
-    gsap.fromTo('.service-card',
-      { opacity: 0, y: 40 },
-      { scrollTrigger: { trigger: servicesRef.value, start: 'top 85%', once: true }, opacity: 1, y: 0, duration: 0.7, stagger: 0.1, ease: 'back.out(1.2)', clearProps: 'all' },
-    )
-    gsap.fromTo('.hiw-step',
-      { opacity: 0, y: 40, scale: 0.8 },
-      { scrollTrigger: { trigger: howItWorksRef.value, start: 'top 80%', once: true }, opacity: 1, y: 0, scale: 1, duration: 0.7, stagger: 0.15, ease: 'back.out(1.5)' },
-    )
-    gsap.fromTo('.campaign-card',
-      { opacity: 0, y: 50 },
-      { scrollTrigger: { trigger: campaignsRef.value, start: 'top 85%', once: true }, opacity: 1, y: 0, duration: 0.7, stagger: 0.1, ease: 'power3.out', clearProps: 'all' },
-    )
-    gsap.from('.cta-content', { scrollTrigger: { trigger: ctaRef.value, start: 'top 75%' }, opacity: 0, y: 40, duration: 0.9, ease: 'power3.out' })
-  })
-  onUnmounted(() => ctx.revert())
-})
+// trusted brands marquee — inline SVG marks
+type Brand = { n: string; c: string; i: string; t: string }
+const brandsA: Brand[] = [
+  { n: 'Luxe Beauty', c: '#B76E79', i: 'spark', t: 'Beauty' }, { n: 'TechZone', c: '#2D5BFF', i: 'hex', t: 'Zone' },
+  { n: 'Taste Kitchen', c: '#E1772B', i: 'disc', t: 'Kitchen' }, { n: 'GlowLab', c: '#D89B00', i: 'ring', t: 'Lab' },
+  { n: 'FitPro', c: '#1F8A5B', i: 'bolt', t: 'Pro' }, { n: 'Maison Aroma', c: '#6E4E9E', i: 'drop', t: 'Aroma' },
+  { n: 'UrbanThread', c: '#0F2747', i: 'square', t: 'Thread' }, { n: 'PureLeaf', c: '#3FA34D', i: 'leaf', t: 'Leaf' },
+  { n: 'NovaPlay', c: '#7C3AED', i: 'tri', t: 'Play' }, { n: 'CafeNord', c: '#8A5A2B', i: 'disc', t: 'Nord' },
+  { n: 'PixelByte', c: '#2D5BFF', i: 'square', t: 'Byte' },
+]
+const brandsB: Brand[] = [
+  { n: 'Verdant', c: '#1F8A5B', i: 'leaf', t: 'dant' }, { n: 'Aurio', c: '#C99700', i: 'diamond', t: 'rio' },
+  { n: 'SnackLab', c: '#E1772B', i: 'disc', t: 'Lab' }, { n: 'MoveOn', c: '#0EA5A5', i: 'bolt', t: 'On' },
+  { n: 'Lumiere', c: '#B76E79', i: 'ring', t: 'iere' }, { n: 'ByteCart', c: '#2D5BFF', i: 'hex', t: 'Cart' },
+  { n: 'Zenith', c: '#0F2747', i: 'diamond', t: 'nith' }, { n: 'Hydra', c: '#0EA5A5', i: 'drop', t: 'dra' },
+  { n: 'Solace', c: '#6E4E9E', i: 'spark', t: 'lace' }, { n: 'NimbusTV', c: '#2D5BFF', i: 'disc', t: 'TV' },
+  { n: 'Bloome', c: '#E0578B', i: 'spark', t: 'oome' },
+]
+
+const brandPaths: Record<string, string> = {
+  spark: 'M12 1.5c.6 5 3.5 7.9 9 9-5.5 1.1-8.4 4-9 9-.6-5-3.5-7.9-9-9 5.5-1.1 8.4-4 9-9z',
+  hex: 'M12 2l8.66 5v10L12 22 3.34 17V7L12 2z',
+  disc: 'M12 3a9 9 0 100 18 9 9 0 000-18z',
+  ring: 'M12 4a8 8 0 100 16 8 8 0 000-16z',
+  bolt: 'M13 2L4 14h6l-1 8 9-12h-6l1-8z',
+  drop: 'M12 2C12 2 5 10 5 15a7 7 0 0014 0c0-5-7-13-7-13z',
+  diamond: 'M12 2l7 10-7 10-7-10 7-10z',
+  square: 'M8.5 4h7A4.5 4.5 0 0120 8.5v7a4.5 4.5 0 01-4.5 4.5h-7A4.5 4.5 0 014 15.5v-7A4.5 4.5 0 018.5 4z',
+  tri: 'M12 3l9 16H3z',
+  leaf: 'M20 4C9 4 4 9 4 16v4h4c7 0 12-5 12-16z',
+}
+const strokeMarks = new Set(['hex', 'ring'])
+
+function splitName(b: Brand) {
+  if (b.t && b.n.endsWith(b.t)) return { head: b.n.slice(0, b.n.length - b.t.length), tail: b.t }
+  return { head: b.n, tail: '' }
+}
 </script>
 
-<style scoped>
-@keyframes bounce-slow {
-  0%, 100% { transform: translateY(-50%) translateY(0px); }
-  50% { transform: translateY(-50%) translateY(-10px); }
-}
-.animate-bounce-slow {
-  animation: bounce-slow 3s ease-in-out infinite;
-}
+<template>
+  <div>
+    <!-- editorial intro -->
+    <section class="mb-5 lg:mb-6">
+      <span class="inline-flex items-center gap-2 rounded-md border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-primary">
+        <Icon name="sparkles" class="h-3.5 w-3.5" /> {{ tr('ครีเอเตอร์ มาร์เก็ตเพลส', 'Creator marketplace') }}
+      </span>
+      <div class="mt-6 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <h1 class="font-heading text-3xl font-extrabold leading-[1.25] tracking-tight text-ink sm:text-4xl lg:text-5xl">
+          {{ tr('เปลี่ยนคอนเทนต์ให้เป็น', 'Turn your content into') }} <span class="text-primary">{{ tr('รายได้จริง', 'real income') }}</span>
+        </h1>
+        <NuxtLink to="/register" class="inline-flex w-fit shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-primary px-6 py-3.5 text-sm font-bold text-white shadow-[0_12px_30px_-10px_rgb(45_91_255_/_70%)] transition-all hover:bg-primaryDark active:translate-y-0.5">
+          {{ tr('เริ่มเป็น Creator ฟรี', 'Become a Creator — free') }} <Icon name="arrow-right" class="h-4 w-4" />
+        </NuxtLink>
+      </div>
+      <p class="mt-3 max-w-xl text-sm leading-relaxed text-muted lg:text-base">
+        {{ tr('จับคู่กับแบรนด์ที่ผ่านการตรวจสอบ จ่ายตรงเวลา เอกสารภาษีจัดให้ครบ — ในที่เดียว', 'Match with verified brands, get paid on time, and have all your tax documents handled — all in one place.') }}
+      </p>
+    </section>
 
-@keyframes float-sparkle {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  33% { transform: translateY(-12px) rotate(15deg); }
-  66% { transform: translateY(6px) rotate(-10deg); }
-}
-.floating-sparkle {
-  animation: float-sparkle 4s ease-in-out infinite;
-}
-.floating-sparkle-2 {
-  animation: float-sparkle 5s ease-in-out infinite 0.5s;
-}
-.floating-sparkle-3 {
-  animation: float-sparkle 6s ease-in-out infinite 1s;
-}
-</style>
+    <!-- campaigns teaser -->
+    <section>
+      <div class="grid gap-5 lg:grid-cols-3">
+        <article role="button" tabindex="0" class="group relative cursor-pointer overflow-hidden rounded-xl border border-[#0F2747]/10 lg:col-span-2 lg:row-span-2" @click="goCampaigns" @keydown.enter="goCampaigns">
+          <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1000&q=80" alt="Summer Collection 2026" class="h-full min-h-[320px] w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          <div class="absolute inset-0 bg-gradient-to-t from-[#0F2747] via-[#0F2747]/40 to-transparent" />
+          <div class="absolute left-6 right-6 top-6 flex items-center justify-between">
+            <span class="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white"><span class="h-1.5 w-1.5 animate-pulse rounded-full bg-white" /> {{ tr('เปิดรับ', 'Open') }}</span>
+            <span class="rounded-md bg-white/20 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white backdrop-blur">{{ tr('แฟชั่น', 'Fashion') }}</span>
+          </div>
+          <div class="absolute inset-x-0 bottom-0 p-6 text-white lg:p-8">
+            <p class="text-xs font-medium text-white/70">Fashion Brand Co.</p>
+            <h3 class="mt-1 font-heading text-2xl font-extrabold lg:text-3xl">Summer Collection 2026</h3>
+            <p class="mt-2 max-w-md text-xs text-white/70 lg:text-sm">{{ tr('ร่วมโปรโมทคอลเลกชั่นแฟชั่นใหม่ล่าสุดสำหรับซัมเมอร์นี้ มองหา Influencer ที่สไตล์การแต่งตัวโดดเด่นบน Instagram', 'Help promote the latest summer fashion collection. Looking for influencers with standout style on Instagram.') }}</p>
+            <div class="mt-4 flex items-center justify-between">
+              <div><span class="block text-[10px] uppercase tracking-widest text-white/50">{{ tr('งบประมาณ', 'Budget') }}</span><span class="font-bold">฿15,000 – 30,000</span></div>
+              <span class="flex h-11 w-11 items-center justify-center rounded-lg bg-white text-primary transition-transform group-hover:translate-x-1"><Icon name="arrow-right" class="h-5 w-5" /></span>
+            </div>
+          </div>
+        </article>
+
+        <article role="button" tabindex="0" class="group relative min-h-[200px] cursor-pointer overflow-hidden rounded-xl border border-[#0F2747]/10 shadow-sm" @click="goCampaigns" @keydown.enter="goCampaigns">
+          <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&q=80" alt="Tech Review Q2" class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          <div class="absolute inset-0 bg-gradient-to-t from-[#0F2747] via-[#0F2747]/40 to-transparent" />
+          <div class="relative flex h-full flex-col justify-end p-5">
+            <span class="w-fit rounded-md bg-white/85 px-2 py-0.5 text-[9px] font-bold uppercase text-primary backdrop-blur">{{ tr('เทคโนโลยี', 'Technology') }}</span>
+            <h3 class="mt-2 font-heading text-lg font-bold text-white">Tech Review Q2</h3>
+            <p class="text-xs text-white/75">TechZone</p>
+            <span class="mt-1 text-sm font-bold text-white">฿8K – 16K</span>
+          </div>
+        </article>
+
+        <article role="button" tabindex="0" class="group relative min-h-[200px] cursor-pointer overflow-hidden rounded-xl border border-[#0F2747]/10 shadow-sm" @click="goCampaigns" @keydown.enter="goCampaigns">
+          <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=80" alt="Food Festival Promo" class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          <div class="absolute inset-0 bg-gradient-to-t from-[#0F2747] via-[#0F2747]/40 to-transparent" />
+          <div class="relative flex h-full flex-col justify-end p-5">
+            <span class="w-fit rounded-md bg-white/85 px-2 py-0.5 text-[9px] font-bold uppercase text-primary backdrop-blur">{{ tr('อาหาร', 'Food') }}</span>
+            <h3 class="mt-2 font-heading text-lg font-bold text-white">Food Festival Promo</h3>
+            <p class="text-xs text-white/75">Taste Kitchen</p>
+            <span class="mt-1 text-sm font-bold text-white">฿10K – 20K</span>
+          </div>
+        </article>
+      </div>
+
+      <div class="mt-5 grid gap-5 sm:grid-cols-2">
+        <article role="button" tabindex="0" class="group cursor-pointer overflow-hidden rounded-xl border border-[#0F2747]/10 bg-white shadow-sm transition-shadow hover:shadow-[0_24px_50px_-30px_rgb(45_91_255_/_40%)]" @click="goCampaigns" @keydown.enter="goCampaigns">
+          <div class="relative h-40 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=600&q=80" alt="Skincare Glow Set" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+            <span class="absolute left-4 top-4 rounded-md bg-white/85 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-primary backdrop-blur">{{ tr('ความงาม', 'Beauty') }}</span>
+          </div>
+          <div class="p-5">
+            <p class="text-xs text-muted">GlowLab Beauty</p>
+            <h3 class="mt-0.5 font-heading text-lg font-bold text-ink">Skincare Glow Set</h3>
+            <p class="mt-1.5 line-clamp-2 text-xs leading-relaxed text-[#5B6B82]/80">{{ tr('รีวิวเซ็ตสกินแคร์ตัวใหม่ เน้นผิวกระจ่างใส สำหรับสาย beauty บน TikTok & Instagram', 'Review the new skincare set focused on radiant skin — for beauty creators on TikTok & Instagram.') }}</p>
+            <div class="mt-4 flex items-center justify-between">
+              <div><span class="block text-[10px] uppercase tracking-widest text-[#5B6B82]/40">{{ tr('งบประมาณ', 'Budget') }}</span><span class="font-bold text-primary">฿12,000 – 25,000</span></div>
+              <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary transition-transform group-hover:translate-x-1"><Icon name="arrow-right" class="h-4 w-4" /></span>
+            </div>
+          </div>
+        </article>
+        <article role="button" tabindex="0" class="group cursor-pointer overflow-hidden rounded-xl border border-[#0F2747]/10 bg-white shadow-sm transition-shadow hover:shadow-[0_24px_50px_-30px_rgb(45_91_255_/_40%)]" @click="goCampaigns" @keydown.enter="goCampaigns">
+          <div class="relative h-40 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&q=80" alt="30-Day Fitness Challenge" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+            <span class="absolute left-4 top-4 rounded-md bg-white/85 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-primary backdrop-blur">{{ tr('ฟิตเนส', 'Fitness') }}</span>
+          </div>
+          <div class="p-5">
+            <p class="text-xs text-muted">FitPro Studio</p>
+            <h3 class="mt-0.5 font-heading text-lg font-bold text-ink">30-Day Fitness Challenge</h3>
+            <p class="mt-1.5 line-clamp-2 text-xs leading-relaxed text-[#5B6B82]/80">{{ tr('ชวนสายเฮลท์ตี้ร่วมชาเลนจ์ออกกำลังกาย 30 วัน พร้อมรีวิวอุปกรณ์ฟิตเนสรุ่นใหม่', 'Inviting health-conscious creators to join a 30-day workout challenge and review the latest fitness gear.') }}</p>
+            <div class="mt-4 flex items-center justify-between">
+              <div><span class="block text-[10px] uppercase tracking-widest text-[#5B6B82]/40">{{ tr('งบประมาณ', 'Budget') }}</span><span class="font-bold text-primary">฿9,000 – 18,000</span></div>
+              <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary transition-transform group-hover:translate-x-1"><Icon name="arrow-right" class="h-4 w-4" /></span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- trusted brands -->
+    <section class="mt-16 lg:mt-24">
+      <p class="mb-6 text-sm font-bold uppercase tracking-[0.25em] text-[#5B6B82]/70">{{ tr('แบรนด์ชั้นนำที่ไว้วางใจ Ripples', 'Leading brands that trust Ripples') }}</p>
+      <div class="rip-marquee relative overflow-hidden py-1">
+        <div class="flex overflow-hidden">
+          <div class="rip-track animate-marquee-left">
+            <template v-for="pass in 2" :key="pass">
+              <div v-for="b in brandsA" :key="`a${pass}-${b.n}`" class="flex shrink-0 items-center gap-2.5 rounded-xl border border-[#0F2747]/[0.06] bg-white px-5 py-3 opacity-80 grayscale transition hover:opacity-100 hover:grayscale-0">
+                <svg viewBox="0 0 24 24" class="h-7 w-7 shrink-0">
+                  <path :d="brandPaths[b.i]" :fill="strokeMarks.has(b.i) ? 'none' : b.c" :stroke="strokeMarks.has(b.i) ? b.c : 'none'" :stroke-width="strokeMarks.has(b.i) ? 2.4 : 0" stroke-linejoin="round" />
+                </svg>
+                <span class="whitespace-nowrap font-heading text-[15px] font-bold tracking-tight text-[#16235C]">{{ splitName(b).head }}<span :style="{ color: b.c }">{{ splitName(b).tail }}</span></span>
+              </div>
+            </template>
+          </div>
+        </div>
+        <div class="mt-3 flex overflow-hidden">
+          <div class="rip-track animate-marquee-right">
+            <template v-for="pass in 2" :key="pass">
+              <div v-for="b in brandsB" :key="`b${pass}-${b.n}`" class="flex shrink-0 items-center gap-2.5 rounded-xl border border-[#0F2747]/[0.06] bg-white px-5 py-3 opacity-80 grayscale transition hover:opacity-100 hover:grayscale-0">
+                <svg viewBox="0 0 24 24" class="h-7 w-7 shrink-0">
+                  <path :d="brandPaths[b.i]" :fill="strokeMarks.has(b.i) ? 'none' : b.c" :stroke="strokeMarks.has(b.i) ? b.c : 'none'" :stroke-width="strokeMarks.has(b.i) ? 2.4 : 0" stroke-linejoin="round" />
+                </svg>
+                <span class="whitespace-nowrap font-heading text-[15px] font-bold tracking-tight text-[#16235C]">{{ splitName(b).head }}<span :style="{ color: b.c }">{{ splitName(b).tail }}</span></span>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- stats -->
+    <section class="mt-8 lg:mt-10">
+      <div class="grid grid-cols-2 divide-x divide-y divide-[#0F2747]/10 overflow-hidden rounded-xl border border-[#0F2747]/10 bg-white shadow-[0_30px_60px_-40px_rgb(45_91_255_/_35%)] sm:grid-cols-4 sm:divide-y-0">
+        <div v-for="s in stats" :key="s[1]" class="p-8 text-center lg:p-10">
+          <div class="font-heading text-3xl font-extrabold text-primary lg:text-5xl">{{ s[0] }}</div>
+          <div class="mt-1 text-[10px] font-bold uppercase tracking-widest text-[#5B6B82]/60 lg:text-xs">{{ tr(s[1], s[2]) }}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- why -->
+    <section class="mt-16 lg:mt-28">
+      <h2 class="font-heading text-3xl font-extrabold tracking-tight text-ink lg:text-5xl">{{ tr('ทำไมต้อง', 'Why') }} <span class="text-primary">Ripples</span></h2>
+      <p class="mt-2 max-w-lg text-sm text-muted lg:text-base">{{ tr('เครื่องมือครบสำหรับ Creator ตั้งแต่หา campaign จนถึงรับเงิน — จบในที่เดียว', 'Every tool a creator needs, from finding campaigns to getting paid — all in one place.') }}</p>
+      <div class="mt-8 grid gap-5 sm:grid-cols-3">
+        <div v-for="w in whys" :key="w[1]" class="rounded-xl border border-[#0F2747]/10 bg-white p-7 shadow-sm">
+          <div class="flex h-12 w-12 items-center justify-center rounded-lg border border-primary/20 bg-primary/10"><Icon :name="w[0]" class="h-6 w-6 text-primary" /></div>
+          <h3 class="mt-5 font-heading text-lg font-bold text-ink">{{ tr(w[1], w[2]) }}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted">{{ tr(w[3], w[4]) }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- how -->
+    <section class="mt-16 lg:mt-28">
+      <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-ink to-primaryDark p-8 text-white lg:p-14">
+        <div class="pointer-events-none absolute inset-0 opacity-[0.06]" style="background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 40px 40px" />
+        <h2 class="relative font-heading text-2xl font-extrabold tracking-tight lg:text-4xl">{{ tr('เริ่มต้น 4 ขั้นตอนง่าย ๆ', 'Get started in 4 easy steps') }}</h2>
+        <div class="relative mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+          <div v-for="(s, i) in steps" :key="s[0]" class="flex gap-4 lg:flex-col">
+            <div :class="['flex h-10 w-10 shrink-0 items-center justify-center rounded-lg font-heading text-lg font-extrabold', i === 0 ? 'bg-primaryLight text-ink' : 'border border-white/15 bg-white/10 text-white']">{{ i + 1 }}</div>
+            <p class="text-sm font-medium leading-relaxed lg:text-base">{{ tr(s[0], s[1]) }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- cta -->
+    <section class="mt-16 text-center lg:mt-28">
+      <h2 class="font-heading text-3xl font-extrabold leading-[1.5] tracking-tight text-ink lg:text-6xl">{{ tr('พร้อมเปลี่ยนคอนเทนต์', 'Ready to turn content') }}<br />{{ tr('เป็น', 'into ') }}<span class="text-primary">{{ tr('รายได้', 'income') }}</span>?</h2>
+      <p class="mt-4 text-sm text-muted lg:text-base">{{ tr('สมัครฟรี ไม่มีค่าธรรมเนียมแรกเข้า ยกเลิกได้ทุกเมื่อ', 'Sign up free, no entry fees, cancel anytime.') }}</p>
+      <NuxtLink to="/register" class="mt-8 inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-4 text-lg font-bold text-white shadow-[0_12px_30px_-10px_rgb(45_91_255_/_70%)] transition-all hover:bg-primaryDark active:translate-y-0.5">
+        {{ tr('เริ่มเป็น Creator ฟรี', 'Become a Creator — free') }} <Icon name="arrow-right" class="h-5 w-5" />
+      </NuxtLink>
+    </section>
+  </div>
+</template>

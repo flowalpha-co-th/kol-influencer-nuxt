@@ -10,6 +10,9 @@ import { Toaster } from 'vue-sonner'
 
 const authStore = useAuthStore()
 const languageStore = useLanguageStore()
+const { lang } = useLocale()
+
+useHead({ htmlAttrs: { lang } })
 
 onMounted(() => {
   authStore.init()

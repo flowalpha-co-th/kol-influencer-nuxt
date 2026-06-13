@@ -1,137 +1,73 @@
+<script setup lang="ts">
+definePageMeta({ layout: 'auth' })
+const { tr } = useLocale()
+useHead(() => ({ title: tr('ตั้งรหัสผ่านใหม่ — Ripples', 'Reset Password — Ripples') }))
+
+const authStore = useAuthStore()
+const route = useRoute()
+
+const password = ref('')
+const confirm = ref('')
+const showPw = ref(false)
+const showConfirm = ref(false)
+const done = ref(false)
+const loading = ref(false)
+const error = ref('')
+
+async function onSubmit() {
+  error.value = ''
+  if (password.value.length < 8) {
+    error.value = tr('รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร', 'Password must be at least 8 characters')
+    return
+  }
+  if (password.value !== confirm.value) {
+    error.value = tr('รหัสผ่านไม่ตรงกัน', 'Passwords do not match')
+    return
+  }
+  loading.value = true
+  try {
+    await authStore.resetPassword(String(route.query.token || ''), password.value)
+    done.value = true
+  } finally {
+    loading.value = false
+  }
+}
+</script>
+
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-white to-primary/10 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="w-full max-w-md">
-      <!-- Logo -->
-      <div class="text-center mb-8">
-        <NuxtLink to="/" class="inline-flex items-center">
-          <img src="/logo.svg" alt="Ripples" class="h-14 w-auto" />
-        </NuxtLink>
+  <div class="relative w-full max-w-md">
+    <div class="rounded-2xl border border-[#0F2747]/10 bg-white p-8 shadow-[0_30px_70px_-35px_rgb(45_91_255_/_45%)]">
+      <NuxtLink to="/" class="mb-6 block"><img src="/ripples-logo.png" alt="Ripples" class="mx-auto h-20" /></NuxtLink>
+      <h1 class="text-center font-heading text-2xl font-extrabold text-ink">{{ tr('ตั้งรหัสผ่านใหม่', 'Reset Password') }}</h1>
+      <p class="mt-1 text-center text-sm text-muted">{{ tr('กรอกรหัสผ่านใหม่ของคุณ', 'Enter your new password') }}</p>
+
+      <form class="mt-7 space-y-4" novalidate @submit.prevent="onSubmit">
+        <div>
+          <label class="mb-1.5 block text-sm font-semibold text-ink">{{ tr('รหัสผ่านใหม่', 'New password') }}</label>
+          <div class="relative">
+            <input v-model="password" :type="showPw ? 'text' : 'password'" placeholder="••••••••" class="w-full rounded-lg border border-[#0F2747]/15 bg-surface px-4 py-3 pr-11 text-sm outline-none transition focus:border-primary/50" />
+            <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-[#5B6B82]/60 transition hover:text-ink" @click="showPw = !showPw"><Icon :name="showPw ? 'eye-off' : 'eye'" class="h-4 w-4" /></button>
+          </div>
+        </div>
+        <div>
+          <label class="mb-1.5 block text-sm font-semibold text-ink">{{ tr('ยืนยันรหัสผ่านใหม่', 'Confirm new password') }}</label>
+          <div class="relative">
+            <input v-model="confirm" :type="showConfirm ? 'text' : 'password'" placeholder="••••••••" class="w-full rounded-lg border border-[#0F2747]/15 bg-surface px-4 py-3 pr-11 text-sm outline-none transition focus:border-primary/50" />
+            <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-[#5B6B82]/60 transition hover:text-ink" @click="showConfirm = !showConfirm"><Icon :name="showConfirm ? 'eye-off' : 'eye'" class="h-4 w-4" /></button>
+          </div>
+        </div>
+        <p v-if="error" class="flex items-center gap-1 text-xs font-medium text-red-500"><Icon name="alert-circle" class="h-3.5 w-3.5 shrink-0" /> {{ error }}</p>
+        <button type="submit" :disabled="loading" class="w-full rounded-lg bg-primary px-4 py-3.5 text-sm font-bold text-white shadow-[0_12px_30px_-10px_rgb(45_91_255_/_70%)] transition hover:bg-primaryDark active:translate-y-0.5 disabled:opacity-60">
+          {{ loading ? tr('กำลังบันทึก...', 'Saving...') : tr('รีเซ็ตรหัสผ่าน', 'Reset Password') }}
+        </button>
+      </form>
+
+      <div v-if="done" class="mt-5 flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
+        <Icon name="check-circle" class="mt-0.5 h-6 w-6 shrink-0 text-primary" />
+        <div><p class="font-bold text-ink">{{ tr('เปลี่ยนรหัสผ่านสำเร็จ', 'Password changed successfully') }}</p><p class="text-sm text-muted">{{ tr('ตอนนี้คุณสามารถเข้าสู่ระบบด้วยรหัสผ่านใหม่ได้แล้ว ·', 'You can now sign in with your new password ·') }} <NuxtLink to="/login" class="font-semibold text-primary hover:underline">{{ tr('เข้าสู่ระบบ', 'Sign In') }}</NuxtLink></p></div>
       </div>
 
-      <!-- Success State -->
-      <UiCard v-if="isSuccess" class="border-0 shadow-xl">
-        <UiCardContent class="p-8 text-center">
-          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle class="h-8 w-8 text-green-600" />
-          </div>
-          <h2 class="text-2xl font-bold text-gray-900 mb-3">{{ languageStore.t('auth.passwordChanged') }}</h2>
-          <p class="text-gray-600 mb-6">{{ languageStore.language === 'th' ? 'รหัสผ่านของคุณถูกอัปเดตแล้ว กรุณาเข้าสู่ระบบด้วยรหัสผ่านใหม่' : 'Your password has been updated. Please log in with your new password.' }}</p>
-          <NuxtLink to="/login">
-            <UiButton class="w-full bg-primary hover:bg-primary/90">
-              {{ languageStore.t('nav.login') }}
-            </UiButton>
-          </NuxtLink>
-        </UiCardContent>
-      </UiCard>
-
-      <!-- Form State -->
-      <UiCard v-else class="border-0 shadow-xl">
-        <UiCardHeader class="space-y-1">
-          <UiCardTitle class="text-2xl font-bold text-center">{{ languageStore.t('auth.resetPasswordTitle') }}</UiCardTitle>
-          <UiCardDescription class="text-center">{{ languageStore.t('auth.resetPasswordSubtitle') }}</UiCardDescription>
-        </UiCardHeader>
-
-        <UiCardContent class="space-y-6">
-          <form class="space-y-4" @submit.prevent="handleSubmit">
-            <div class="space-y-2">
-              <UiLabel for="newPassword">{{ languageStore.t('auth.newPassword') }}</UiLabel>
-              <div class="relative">
-                <Lock class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <UiInput
-                  id="newPassword"
-                  v-model="newPassword"
-                  :type="showNew ? 'text' : 'password'"
-                  :placeholder="languageStore.language === 'th' ? 'กรอกรหัสผ่านใหม่' : 'Enter new password'"
-                  required
-                  minlength="8"
-                  :disabled="isLoading"
-                  class="pl-10 pr-10"
-                />
-                <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" @click="showNew = !showNew">
-                  <EyeOff v-if="showNew" class="h-4 w-4" />
-                  <Eye v-else class="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-
-            <div class="space-y-2">
-              <UiLabel for="confirmPassword">{{ languageStore.t('auth.confirmPassword') }}</UiLabel>
-              <div class="relative">
-                <Lock class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <UiInput
-                  id="confirmPassword"
-                  v-model="confirmPassword"
-                  :type="showConfirm ? 'text' : 'password'"
-                  :placeholder="languageStore.language === 'th' ? 'ยืนยันรหัสผ่านใหม่' : 'Confirm new password'"
-                  required
-                  :disabled="isLoading"
-                  class="pl-10 pr-10"
-                />
-                <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" @click="showConfirm = !showConfirm">
-                  <EyeOff v-if="showConfirm" class="h-4 w-4" />
-                  <Eye v-else class="h-4 w-4" />
-                </button>
-              </div>
-              <!-- Password match indicator -->
-              <p v-if="confirmPassword && newPassword !== confirmPassword" class="text-xs text-red-500 flex items-center gap-1">
-                <XCircle class="h-3.5 w-3.5" />
-                {{ languageStore.language === 'th' ? 'รหัสผ่านไม่ตรงกัน' : 'Passwords do not match' }}
-              </p>
-              <p v-else-if="confirmPassword && newPassword === confirmPassword" class="text-xs text-green-600 flex items-center gap-1">
-                <CheckCircle class="h-3.5 w-3.5" />
-                {{ languageStore.language === 'th' ? 'รหัสผ่านตรงกัน' : 'Passwords match' }}
-              </p>
-            </div>
-
-            <UiButton
-              type="submit"
-              class="w-full bg-primary hover:bg-primary/90"
-              :disabled="isLoading || newPassword !== confirmPassword || newPassword.length < 8"
-            >
-              <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-              {{ isLoading
-                ? (languageStore.language === 'th' ? 'กำลังบันทึก...' : 'Saving...')
-                : languageStore.t('auth.resetPassword') }}
-            </UiButton>
-          </form>
-
-          <NuxtLink to="/login">
-            <UiButton variant="ghost" class="w-full">
-              <ArrowLeft class="mr-2 h-4 w-4" />
-              {{ languageStore.language === 'th' ? 'กลับหน้า Login' : 'Back to Login' }}
-            </UiButton>
-          </NuxtLink>
-        </UiCardContent>
-      </UiCard>
-
-      <p class="text-center mt-6">
-        <NuxtLink to="/" class="text-sm text-gray-500 hover:text-gray-700">← {{ languageStore.language === 'th' ? 'กลับหน้าหลัก' : 'Back to home' }}</NuxtLink>
-      </p>
+      <p class="mt-6 text-center text-sm text-muted"><NuxtLink to="/login" class="font-semibold text-primary hover:underline">{{ tr('← กลับไปเข้าสู่ระบบ', '← Back to sign in') }}</NuxtLink></p>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { Lock, Eye, EyeOff, Loader2, ArrowLeft, CheckCircle, XCircle } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
-
-definePageMeta({ layout: 'auth' })
-
-const languageStore = useLanguageStore()
-
-const newPassword = ref('')
-const confirmPassword = ref('')
-const showNew = ref(false)
-const showConfirm = ref(false)
-const isLoading = ref(false)
-const isSuccess = ref(false)
-
-async function handleSubmit() {
-  if (newPassword.value !== confirmPassword.value) return
-  isLoading.value = true
-  await new Promise(r => setTimeout(r, 1000)) // mock API delay
-  isLoading.value = false
-  isSuccess.value = true
-  toast.success(languageStore.t('auth.passwordChanged'))
-}
-</script>

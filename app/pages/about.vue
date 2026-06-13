@@ -1,162 +1,122 @@
+<script setup lang="ts">
+definePageMeta({ layout: 'default' })
+const { tr } = useLocale()
+useHead(() => ({ title: tr('เกี่ยวกับเรา — Ripples', 'About us — Ripples') }))
+
+const stats: [string, string, string][] = [
+  ['10,000+', 'ครีเอเตอร์ที่ตรวจสอบแล้ว', 'Verified creators'],
+  ['500+', 'แบรนด์ที่ไว้วางใจ', 'Brands that trust us'],
+  ['98%', 'อัตราความสำเร็จ', 'Success rate'],
+  ['24/7', 'ทีมซัพพอร์ต', 'Support team'],
+]
+
+const values: [string, string, string, string, string][] = [
+  ['target', 'ความโปร่งใส', 'Transparency', 'ทุกตัวเลขบน Ripples ตรวจสอบได้ ทั้งราคา engagement และผลงาน', 'Every number on Ripples is verifiable — pricing, engagement, and results.'],
+  ['shield-check', 'ความเชื่อถือได้', 'Reliability', 'สัญญาดิจิทัล เอกสารภาษีครบ ติดตามสถานะทุก milestone — แบรนด์และ creator ไว้ใจกันได้', 'Digital contracts, complete tax documents, and milestone tracking — so brands and creators can trust each other.'],
+  ['zap', 'นวัตกรรม', 'Innovation', 'เครื่องมือวัดผลและ dashboard ที่ทันสมัย ช่วยคุณตัดสินใจบน data จริง', 'Modern measurement tools and dashboards that help you decide based on real data.'],
+  ['heart', 'ชุมชน', 'Community', 'เราเชื่อว่า creator กับแบรนด์โตไปด้วยกันได้ Ripples คือสะพานเชื่อม', 'We believe creators and brands can grow together — Ripples is the bridge.'],
+]
+
+const team: [string, string, number][] = [
+  ['Alex K.', 'Founder & CEO', 68],
+  ['Sara T.', 'Head of Product', 47],
+  ['Chris L.', 'Head of Creator Relations', 13],
+  ['Emma P.', 'Head of Brand Success', 32],
+]
+
+const features: [string, string][] = [
+  ['Creator ทุกคนผ่านการตรวจสอบตัวตน (KYC) และ engagement จริง', 'Every creator is identity-verified (KYC) with real engagement.'],
+  ['สัญญาดิจิทัล + เอกสารภาษีครบถ้วน โปร่งใสทั้งสองฝ่าย', 'Digital contracts plus complete tax documents — transparent for both sides.'],
+  ['Dashboard วัดผลเรียลไทม์ทุกแคมเปญ', 'A real-time performance dashboard for every campaign.'],
+  ['Account manager ดูแลทุก campaign ตั้งแต่ต้นจนจบ', 'An account manager handles every campaign from start to finish.'],
+  ['ราคาโปร่งใส ไม่มีค่าใช้จ่ายซ่อน', 'Transparent pricing with no hidden fees.'],
+  ['Support 24/7 ตอบเร็วทั้งไทยและอังกฤษ', '24/7 support with fast replies in both Thai and English.'],
+]
+</script>
+
 <template>
-  <div class="min-h-screen pt-20">
-    <!-- Hero -->
-    <section class="py-20 bg-gradient-to-br from-primary/5 via-white to-primary/10">
-      <div class="max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="about-hero-content text-center max-w-3xl mx-auto">
-          <UiBadge variant="secondary" class="bg-primary/10 text-primary border-0 mb-6">{{ languageStore.t('about.badge') }}</UiBadge>
-          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-            {{ languageStore.t('about.title') }}
-          </h1>
-          <p class="text-xl text-gray-600 leading-relaxed">
-            {{ languageStore.t('about.description') }}
-          </p>
+  <div>
+    <!-- intro -->
+    <section class="mb-12">
+      <span class="inline-flex items-center gap-2 rounded-md border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-primary">
+        <Icon name="sparkles" class="h-3.5 w-3.5" /> {{ tr('เกี่ยวกับเรา', 'About us') }}
+      </span>
+      <h1 class="mt-5 max-w-3xl font-heading text-4xl font-extrabold leading-[1.5] tracking-tight text-ink lg:text-6xl">
+        {{ tr('พื้นที่ที่แบรนด์เจอ', 'Where brands meet') }} <span class="text-primary">{{ tr('Creator ตัวจริง', 'real creators') }}</span>
+      </h1>
+      <p class="mt-5 max-w-2xl text-sm leading-relaxed text-muted lg:text-lg">
+        {{ tr('Marketplace ยุคใหม่ — KOL ผ่านการตรวจสอบ engagement จริง วัดผลได้ทุกแคมเปญ ดูแลตั้งแต่เลือก creator บรีฟงาน ตรวจเนื้อหา จนถึงออกเอกสารครบถ้วน', 'A modern marketplace — verified KOLs with real engagement, measurable results on every campaign, handled from picking creators and briefing to content review and full documentation.') }}
+      </p>
+    </section>
+
+    <!-- stats -->
+    <section class="mb-16">
+      <div class="grid grid-cols-2 divide-x divide-y divide-[#0F2747]/10 overflow-hidden rounded-xl border border-[#0F2747]/10 bg-white shadow-[0_30px_60px_-40px_rgb(45_91_255_/_35%)] sm:grid-cols-4 sm:divide-y-0">
+        <div v-for="s in stats" :key="s[1]" class="p-8 text-center lg:p-10">
+          <div class="font-heading text-3xl font-extrabold text-primary lg:text-5xl">{{ s[0] }}</div>
+          <div class="mt-1 text-[10px] font-bold uppercase tracking-widest text-[#5B6B82]/60 lg:text-xs">{{ tr(s[1], s[2]) }}</div>
         </div>
       </div>
     </section>
 
-    <!-- Stats -->
-    <section class="py-16 bg-white">
-      <div class="max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
-          <div v-for="stat in stats" :key="stat.label" class="text-center">
-            <p class="text-4xl sm:text-5xl font-bold text-primary mb-2">{{ stat.value }}</p>
-            <p class="text-gray-600">{{ stat.label }}</p>
-          </div>
+    <!-- story -->
+    <section class="mb-20 grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      <div>
+        <h2 class="font-heading text-3xl font-extrabold tracking-tight text-ink lg:text-4xl">{{ tr('ทำไมเราสร้าง Ripples', 'Why we built Ripples') }}</h2>
+        <div class="mt-5 space-y-4 text-sm leading-relaxed text-muted lg:text-base">
+          <p>{{ tr('วงการ KOL ในไทยโตเร็วมาก แต่แบรนด์ยังหา creator ที่ใช่ยาก ปัญหา fake followers, engagement ปลอม, สื่อสารกันวุ่นวาย — Ripples เกิดขึ้นเพื่อแก้โจทย์เหล่านี้ในที่เดียว', "Thailand's KOL scene is growing fast, but brands still struggle to find the right creators. Fake followers, fake engagement, and messy communication — Ripples was built to solve all of these in one place.") }}</p>
+          <p>{{ tr('เราคัดกรอง creator ทุกคนผ่าน KYC และวิเคราะห์ engagement จริง ตัวเลขในโปรไฟล์โปร่งใส ตรวจสอบได้ ไม่มี bot ไม่มี fake', 'We screen every creator through KYC and analyze real engagement. Profile numbers are transparent and verifiable — no bots, no fakes.') }}</p>
+          <p>{{ tr('ตั้งแต่เลือก creator, บรีฟงาน, ตรวจเนื้อหา, go live, วัดผล จนจ่ายเงิน — จบในที่เดียว เรียลไทม์ ปลอดภัยทั้งสองฝ่าย', 'From picking creators, briefing, and content review to going live, measuring results, and payment — all in one place, in real time, safe for both sides.') }}</p>
+        </div>
+      </div>
+      <div class="relative">
+        <img src="/about-team.jpg" :alt="tr('ทีม Ripples', 'The Ripples team')" class="w-full rounded-xl border border-[#0F2747]/10 object-cover shadow-[0_30px_60px_-30px_rgb(45_91_255_/_45%)]" />
+        <div class="absolute -bottom-5 -left-5 -z-10 h-32 w-32 rounded-2xl bg-primary/10" />
+        <div class="absolute -right-5 -top-5 -z-10 h-24 w-24 rounded-full bg-primary/20" />
+      </div>
+    </section>
+
+    <!-- values -->
+    <section class="mb-20">
+      <div class="mb-8 max-w-xl">
+        <span class="text-sm font-bold uppercase tracking-[0.25em] text-[#5B6B82]/70">{{ tr('ค่านิยมของเรา', 'Our values') }}</span>
+        <h2 class="mt-2 font-heading text-3xl font-extrabold tracking-tight text-ink lg:text-4xl">{{ tr('สิ่งที่เรายึดถือ', 'What we stand for') }}</h2>
+      </div>
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div v-for="v in values" :key="v[1]" class="rounded-xl border border-[#0F2747]/10 bg-white p-7 shadow-sm transition-shadow hover:shadow-[0_24px_50px_-30px_rgb(45_91_255_/_35%)]">
+          <div class="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/20 bg-primary/10"><Icon :name="v[0]" class="h-7 w-7 text-primary" /></div>
+          <h3 class="mt-5 font-heading text-xl font-bold text-ink">{{ tr(v[1], v[2]) }}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted">{{ tr(v[3], v[4]) }}</p>
         </div>
       </div>
     </section>
 
-    <!-- Story -->
-    <section class="py-20 bg-gray-50">
-      <div class="max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-2 gap-16 items-center">
-          <div>
-            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">{{ languageStore.t('about.story.title') }}</h2>
-            <div class="space-y-4 text-gray-600 leading-relaxed">
-              <p>{{ languageStore.t('about.story.paragraph1') }}</p>
-              <p>{{ languageStore.t('about.story.paragraph2') }}</p>
-              <p>{{ languageStore.t('about.story.paragraph3') }}</p>
-            </div>
-          </div>
-          <div class="relative">
-            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop" alt="Our team" class="rounded-3xl shadow-xl" />
-            <div class="absolute -bottom-6 -left-6 w-32 h-32 bg-primary/10 rounded-2xl -z-10" />
-            <div class="absolute -top-6 -right-6 w-24 h-24 bg-primary/20 rounded-full -z-10" />
-          </div>
+    <!-- team -->
+    <section class="mb-20">
+      <div class="mb-8 max-w-xl">
+        <span class="text-sm font-bold uppercase tracking-[0.25em] text-[#5B6B82]/70">{{ tr('ทีมของเรา', 'Our team') }}</span>
+        <h2 class="mt-2 font-heading text-3xl font-extrabold tracking-tight text-ink lg:text-4xl">{{ tr('ทีมเบื้องหลัง Ripples', 'The team behind Ripples') }}</h2>
+      </div>
+      <div class="grid grid-cols-2 gap-5 lg:grid-cols-4">
+        <div v-for="m in team" :key="m[0]" class="overflow-hidden rounded-xl border border-[#0F2747]/10 bg-white shadow-sm">
+          <div class="aspect-square overflow-hidden"><img :src="`https://i.pravatar.cc/600?img=${m[2]}`" :alt="m[0]" class="h-full w-full object-cover transition-transform duration-500 hover:scale-105" /></div>
+          <div class="p-5 text-center"><h3 class="font-heading text-base font-bold text-ink">{{ m[0] }}</h3><p class="mt-0.5 text-xs text-muted">{{ m[1] }}</p></div>
         </div>
       </div>
     </section>
 
-    <!-- Values -->
-    <section class="values-section py-20 bg-white">
-      <div class="max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center max-w-2xl mx-auto mb-16">
-          <UiBadge variant="secondary" class="bg-primary/10 text-primary border-0 mb-4">{{ languageStore.t('about.whyUs.badge') }}</UiBadge>
-          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">{{ languageStore.t('about.whyUs.title') }}</h2>
-        </div>
-        <div class="grid md:grid-cols-2 gap-8">
-          <UiCard v-for="value in values" :key="value.title" class="value-card border-0 shadow-md hover:shadow-lg transition-shadow">
-            <UiCardContent class="p-8">
-              <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
-                <component :is="value.icon" class="h-7 w-7 text-primary" />
-              </div>
-              <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ value.title }}</h3>
-              <p class="text-gray-600">{{ value.description }}</p>
-            </UiCardContent>
-          </UiCard>
-        </div>
+    <!-- why us -->
+    <section>
+      <div class="mb-8 max-w-xl">
+        <span class="text-sm font-bold uppercase tracking-[0.25em] text-[#5B6B82]/70">{{ tr('ทำไมต้องเลือกเรา', 'Why choose us') }}</span>
+        <h2 class="mt-2 font-heading text-3xl font-extrabold tracking-tight text-ink lg:text-4xl">{{ tr('ทำไมแบรนด์เลือก Ripples', 'Why brands choose Ripples') }}</h2>
       </div>
-    </section>
-
-    <!-- Team -->
-    <section class="team-section py-20 bg-gray-50">
-      <div class="max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center max-w-2xl mx-auto mb-16">
-          <UiBadge variant="secondary" class="bg-primary/10 text-primary border-0 mb-4">{{ languageStore.t('about.team.badge') }}</UiBadge>
-          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">{{ languageStore.t('about.team.title') }}</h2>
-        </div>
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          <UiCard v-for="member in team" :key="member.name" class="team-card border-0 shadow-md overflow-hidden">
-            <div class="aspect-square overflow-hidden">
-              <img :src="member.image" :alt="member.name" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
-            </div>
-            <UiCardContent class="p-6 text-center">
-              <h3 class="text-lg font-semibold text-gray-900">{{ member.name }}</h3>
-              <p class="text-gray-500">{{ member.role }}</p>
-            </UiCardContent>
-          </UiCard>
-        </div>
-      </div>
-    </section>
-
-    <!-- Why Us -->
-    <section class="py-20 bg-white">
-      <div class="max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center max-w-2xl mx-auto mb-16">
-          <UiBadge variant="secondary" class="bg-primary/10 text-primary border-0 mb-4">{{ languageStore.t('about.whyUs.badge') }}</UiBadge>
-          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">{{ languageStore.t('about.whyUs.title') }}</h2>
-        </div>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div v-for="feature in features" :key="feature" class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
-            <CheckCircle class="h-5 w-5 text-primary shrink-0" />
-            <span class="text-gray-700">{{ feature }}</span>
-          </div>
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div v-for="f in features" :key="f[0]" class="flex items-start gap-3 rounded-xl border border-[#0F2747]/10 bg-white p-4 shadow-sm">
+          <Icon name="check-circle" class="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+          <span class="text-sm leading-relaxed text-ink">{{ tr(f[0], f[1]) }}</span>
         </div>
       </div>
     </section>
   </div>
 </template>
-
-<script setup lang="ts">
-import { computed } from 'vue'
-import { Target, Zap, Heart, Globe, CheckCircle } from 'lucide-vue-next'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useLanguageStore } from '~/stores/language'
-
-gsap.registerPlugin(ScrollTrigger)
-
-definePageMeta({ layout: 'default' })
-
-const languageStore = useLanguageStore()
-
-const stats = computed(() => [
-  { value: languageStore.t('about.stats.stat1Value'), label: languageStore.t('about.stats.stat1Label') },
-  { value: languageStore.t('about.stats.stat2Value'), label: languageStore.t('about.stats.stat2Label') },
-  { value: languageStore.t('about.stats.stat3Value'), label: languageStore.t('about.stats.stat3Label') },
-  { value: languageStore.t('about.stats.stat4Value'), label: languageStore.t('about.stats.stat4Label') },
-])
-
-const values = computed(() => [
-  { icon: Target, title: languageStore.t('about.values.value1Title'), description: languageStore.t('about.values.value1Description') },
-  { icon: Zap, title: languageStore.t('about.values.value2Title'), description: languageStore.t('about.values.value2Description') },
-  { icon: Heart, title: languageStore.t('about.values.value3Title'), description: languageStore.t('about.values.value3Description') },
-  { icon: Globe, title: languageStore.t('about.values.value4Title'), description: languageStore.t('about.values.value4Description') },
-])
-
-const team = computed(() => [
-  { name: languageStore.t('about.team.member1Name'), role: languageStore.t('about.team.member1Role'), image: 'https://i.pravatar.cc/600?img=68' },
-  { name: languageStore.t('about.team.member2Name'), role: languageStore.t('about.team.member2Role'), image: 'https://i.pravatar.cc/600?img=47' },
-  { name: languageStore.t('about.team.member3Name'), role: languageStore.t('about.team.member3Role'), image: 'https://i.pravatar.cc/600?img=13' },
-  { name: languageStore.t('about.team.member4Name'), role: languageStore.t('about.team.member4Role'), image: 'https://i.pravatar.cc/600?img=32' },
-])
-
-const features = computed(() => [
-  languageStore.t('about.whyUs.feature1'),
-  languageStore.t('about.whyUs.feature2'),
-  languageStore.t('about.whyUs.feature3'),
-  languageStore.t('about.whyUs.feature4'),
-  languageStore.t('about.whyUs.feature5'),
-  languageStore.t('about.whyUs.feature6'),
-])
-
-onMounted(() => {
-  const ctx = gsap.context(() => {
-    gsap.from('.about-hero-content', { opacity: 0, y: 30, duration: 0.8, ease: 'power3.out' })
-    gsap.from('.value-card', { scrollTrigger: { trigger: '.values-section', start: 'top 70%' }, opacity: 0, y: 40, duration: 0.6, stagger: 0.1, ease: 'power3.out' })
-    gsap.from('.team-card', { scrollTrigger: { trigger: '.team-section', start: 'top 70%' }, opacity: 0, y: 40, duration: 0.6, stagger: 0.1, ease: 'power3.out' })
-  })
-  onUnmounted(() => ctx.revert())
-})
-</script>

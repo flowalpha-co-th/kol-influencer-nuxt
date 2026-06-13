@@ -1,112 +1,61 @@
-<template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-white to-primary/10 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="w-full max-w-md">
-      <!-- Logo -->
-      <div class="text-center mb-8">
-        <NuxtLink to="/" class="inline-flex items-center">
-          <img src="/logo.svg" alt="Ripples" class="h-14 w-auto" />
-        </NuxtLink>
-      </div>
-
-      <!-- Success State -->
-      <UiCard v-if="isSent" class="border-0 shadow-xl">
-        <UiCardContent class="p-8 text-center">
-          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle class="h-8 w-8 text-green-600" />
-          </div>
-          <h2 class="text-2xl font-bold text-gray-900 mb-4">Check Your Email</h2>
-          <p class="text-gray-600 mb-6">
-            We've sent a password reset link to <strong>{{ email }}</strong>.
-            Please check your inbox and follow the instructions.
-          </p>
-          <!-- Demo shortcut -->
-          <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-left">
-            <p class="text-xs font-semibold text-yellow-700 mb-2">🎯 Demo — จำลองการกดลิงก์จากอีเมล</p>
-            <NuxtLink to="/reset-password">
-              <UiButton size="sm" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white">
-                <ExternalLink class="mr-2 h-3.5 w-3.5" /> เปิดหน้า Reset Password
-              </UiButton>
-            </NuxtLink>
-          </div>
-          <NuxtLink to="/login">
-            <UiButton variant="outline" class="w-full border-[#5A5A5A] text-[#5A5A5A] hover:bg-[#E8E8E8]">
-              <ArrowLeft class="mr-2 h-4 w-4" />
-              Back to Login
-            </UiButton>
-          </NuxtLink>
-        </UiCardContent>
-      </UiCard>
-
-      <!-- Form State -->
-      <UiCard v-else class="border-0 shadow-xl">
-        <UiCardHeader class="space-y-1">
-          <UiCardTitle class="text-2xl font-bold text-center">{{ languageStore.t('auth.forgotPasswordTitle') }}</UiCardTitle>
-          <UiCardDescription class="text-center">{{ languageStore.t('auth.forgotPasswordSubtitle') }}</UiCardDescription>
-        </UiCardHeader>
-
-        <UiCardContent class="space-y-6">
-          <form class="space-y-4" @submit.prevent="handleSubmit">
-            <div class="space-y-2">
-              <UiLabel for="email">{{ languageStore.t('auth.email') }}</UiLabel>
-              <div class="relative">
-                <Mail class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <UiInput
-                  id="email"
-                  v-model="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  required
-                  :disabled="isLoading"
-                  class="pl-10"
-                />
-              </div>
-            </div>
-
-            <UiButton type="submit" class="w-full bg-primary hover:bg-primary/90" :disabled="isLoading">
-              <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-              {{ isLoading ? 'Sending...' : languageStore.t('auth.sendResetLink') }}
-            </UiButton>
-          </form>
-
-          <NuxtLink to="/login">
-            <UiButton variant="ghost" class="w-full">
-              <ArrowLeft class="mr-2 h-4 w-4" />
-              Back to Login
-            </UiButton>
-          </NuxtLink>
-        </UiCardContent>
-      </UiCard>
-
-      <p class="text-center mt-6">
-        <NuxtLink to="/" class="text-sm text-gray-500 hover:text-gray-700">← Back to home</NuxtLink>
-      </p>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { Mail, Loader2, ArrowLeft, CheckCircle, ExternalLink } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
-
 definePageMeta({ layout: 'auth' })
+const { tr } = useLocale()
+useHead(() => ({ title: tr('ลืมรหัสผ่าน — Ripples', 'Forgot Password — Ripples') }))
 
 const authStore = useAuthStore()
-const languageStore = useLanguageStore()
-
 const email = ref('')
-const isLoading = ref(false)
-const isSent = ref(false)
+const sent = ref(false)
+const loading = ref(false)
+const error = ref('')
 
-async function handleSubmit() {
-  isLoading.value = true
+const validEmail = computed(() => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value.trim()))
+
+async function onSubmit() {
+  error.value = ''
+  if (!validEmail.value) {
+    error.value = tr('รูปแบบอีเมลไม่ถูกต้อง', 'Invalid email format')
+    return
+  }
+  loading.value = true
   try {
     await authStore.forgotPassword(email.value)
-    toast.success(languageStore.t('auth.passwordResetSent'), { description: 'Check your email for reset instructions' })
-    isSent.value = true
-  } catch {
-    toast.error('Error', { description: 'Could not send reset link. Please try again.' })
+    sent.value = true
+    email.value = ''
   } finally {
-    isLoading.value = false
+    loading.value = false
   }
 }
 </script>
+
+<template>
+  <div class="relative w-full max-w-md">
+    <div class="rounded-2xl border border-[#0F2747]/10 bg-white p-8 shadow-[0_30px_70px_-35px_rgb(45_91_255_/_45%)]">
+      <NuxtLink to="/" class="mb-6 block"><img src="/ripples-logo.png" alt="Ripples" class="mx-auto h-20" /></NuxtLink>
+      <h1 class="text-center font-heading text-2xl font-extrabold text-ink">{{ tr('ลืมรหัสผ่าน', 'Forgot Password') }}</h1>
+      <p class="mt-1 text-center text-sm text-muted">{{ tr('กรอกอีเมลของคุณเพื่อรับลิงก์รีเซ็ตรหัสผ่าน', 'Enter your email to receive a password reset link') }}</p>
+
+      <form class="mt-7 space-y-4" novalidate @submit.prevent="onSubmit">
+        <div>
+          <label class="mb-1.5 block text-sm font-semibold text-ink">{{ tr('อีเมล', 'Email') }}</label>
+          <input v-model="email" type="email" placeholder="your@email.com" class="w-full rounded-lg border border-[#0F2747]/15 bg-surface px-4 py-3 text-sm outline-none transition focus:border-primary/50" />
+          <p v-if="error" class="mt-1.5 flex items-center gap-1 text-xs font-medium text-red-500"><Icon name="alert-circle" class="h-3.5 w-3.5 shrink-0" /> {{ error }}</p>
+        </div>
+        <button type="submit" :disabled="loading" class="w-full rounded-lg bg-primary px-4 py-3.5 text-sm font-bold text-white shadow-[0_12px_30px_-10px_rgb(45_91_255_/_70%)] transition hover:bg-primaryDark active:translate-y-0.5 disabled:opacity-60">
+          {{ loading ? tr('กำลังส่ง...', 'Sending...') : tr('ส่งลิงก์รีเซ็ต', 'Send reset link') }}
+        </button>
+      </form>
+
+      <div v-if="sent" class="mt-5 flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
+        <Icon name="check-circle" class="mt-0.5 h-6 w-6 shrink-0 text-primary" />
+        <div>
+          <p class="font-bold text-ink">{{ tr('ส่งลิงก์รีเซ็ตรหัสผ่านแล้ว', 'Password reset link sent') }}</p>
+          <p class="text-sm text-muted">{{ tr('กรุณาตรวจสอบกล่องอีเมลของคุณ', 'Please check your inbox') }}</p>
+          <NuxtLink to="/reset-password" class="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">{{ tr('(ตัวอย่าง) เปิดหน้าตั้งรหัสผ่านใหม่', '(Demo) Open the reset-password page') }} <Icon name="arrow-right" class="h-3.5 w-3.5" /></NuxtLink>
+        </div>
+      </div>
+
+      <p class="mt-6 text-center text-sm text-muted"><NuxtLink to="/login" class="font-semibold text-primary hover:underline">{{ tr('← กลับไปเข้าสู่ระบบ', '← Back to sign in') }}</NuxtLink></p>
+    </div>
+  </div>
+</template>

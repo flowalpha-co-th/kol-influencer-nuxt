@@ -1,122 +1,101 @@
+<script setup lang="ts">
+import { toast } from 'vue-sonner'
+
+definePageMeta({ layout: 'default' })
+const { tr } = useLocale()
+useHead(() => ({ title: tr('ติดต่อเรา — Ripples', 'Contact us — Ripples') }))
+
+type Info = { icon: string; label: string; labelEn: string; value: string; valueEn: string; note: string; noteEn: string }
+const info: Info[] = [
+  { icon: 'mail', label: 'อีเมล', labelEn: 'Email', value: 'hello@ripples.com', valueEn: 'hello@ripples.com', note: 'สำหรับข้อสงสัยทั่วไป', noteEn: 'For general enquiries' },
+  { icon: 'phone', label: 'โทรศัพท์', labelEn: 'Phone', value: '02-123-4567', valueEn: '02-123-4567', note: 'จันทร์–ศุกร์ 9.00–18.00 น.', noteEn: 'Mon–Fri, 9.00–18.00' },
+  { icon: 'map-pin', label: 'สำนักงาน', labelEn: 'Office', value: 'กรุงเทพฯ, ประเทศไทย', valueEn: 'Bangkok, Thailand', note: '88 ซอยสุขุมวิท 62 แยก 3 แขวงพระโขนงใต้ เขตพระโขนง 10260', noteEn: '88 Soi Sukhumvit 62 Yaek 3, Phra Khanong Tai, Phra Khanong, 10260' },
+  { icon: 'clock', label: 'เวลาทำการ', labelEn: 'Hours', value: 'จันทร์ – ศุกร์: 9.00 – 18.00 น.', valueEn: 'Mon – Fri: 9.00 – 18.00', note: 'เสาร์–อาทิตย์: ปิดทำการ', noteEn: 'Sat–Sun: Closed' },
+]
+
+const form = reactive({ name: '', email: '', subject: '', message: '' })
+const submitted = ref(false)
+
+function onSubmit() {
+  submitted.value = true
+  toast.success(tr('ส่งข้อความแล้ว!', 'Message sent!'), { description: tr('เราจะติดต่อกลับหาคุณโดยเร็วที่สุด', "We'll get back to you as soon as possible.") })
+  form.name = ''
+  form.email = ''
+  form.subject = ''
+  form.message = ''
+}
+</script>
+
 <template>
-  <div class="min-h-screen pt-20">
-    <!-- Hero -->
-    <section class="py-20 bg-gradient-to-br from-primary/5 via-white to-primary/10">
-      <div class="max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center max-w-2xl mx-auto">
-          <UiBadge variant="secondary" class="bg-primary/10 text-primary border-0 mb-6">{{ languageStore.t('contact.badge') }}</UiBadge>
-          <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">{{ languageStore.t('contact.title') }}</h1>
-          <p class="text-xl text-gray-600">{{ languageStore.t('contact.subtitle') }}</p>
-        </div>
-      </div>
+  <div>
+    <section class="mb-10">
+      <span class="inline-flex items-center gap-2 rounded-md border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-primary">
+        <Icon name="mail" class="h-3.5 w-3.5" /> {{ tr('ติดต่อเรา', 'Contact us') }}
+      </span>
+      <h1 class="mt-5 font-heading text-4xl font-extrabold leading-[1.5] tracking-tight text-ink lg:text-6xl">{{ tr('ติดต่อเรา', 'Contact us') }}</h1>
+      <p class="mt-4 max-w-2xl text-sm leading-relaxed text-muted lg:text-lg">{{ tr('มีคำถาม? เรายินดีรับฟัง ส่งข้อความหาเราและเราจะตอบกลับโดยเร็วที่สุด', "Have a question? We'd love to hear from you. Send us a message and we'll reply as soon as possible.") }}</p>
     </section>
 
-    <!-- Contact Info -->
-    <section class="py-16 bg-white">
-      <div class="max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <UiCard v-for="info in contactInfo" :key="info.titleKey" class="border-0 shadow-md">
-            <UiCardContent class="p-6 text-center">
-              <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <component :is="info.icon" class="h-6 w-6 text-primary" />
+    <section class="grid gap-8 lg:grid-cols-5">
+      <!-- info -->
+      <div class="space-y-4 lg:col-span-2">
+        <div v-for="x in info" :key="x.label" class="flex items-start gap-4 rounded-xl border border-[#0F2747]/10 bg-white p-5 shadow-sm">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10"><Icon :name="x.icon" class="h-6 w-6 text-primary" /></div>
+          <div>
+            <p class="text-[11px] font-bold uppercase tracking-widest text-[#5B6B82]/60">{{ tr(x.label, x.labelEn) }}</p>
+            <p class="mt-0.5 font-bold text-ink">{{ tr(x.value, x.valueEn) }}</p>
+            <p class="mt-0.5 text-xs leading-relaxed text-muted">{{ tr(x.note, x.noteEn) }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- form -->
+      <div class="lg:col-span-3">
+        <div class="rounded-xl border border-[#0F2747]/10 bg-white p-7 shadow-sm lg:p-8">
+          <h2 class="font-heading text-xl font-bold text-ink">{{ tr('ส่งข้อความถึงเรา', 'Send us a message') }}</h2>
+          <form class="mt-6 space-y-5" novalidate @submit.prevent="onSubmit">
+            <div class="grid gap-5 sm:grid-cols-2">
+              <div>
+                <label class="mb-1.5 block text-sm font-semibold text-ink">{{ tr('ชื่อ', 'Name') }}</label>
+                <input v-model="form.name" required type="text" :placeholder="tr('ชื่อของคุณ', 'Your name')" class="w-full rounded-lg border border-[#0F2747]/15 bg-surface px-4 py-3 text-sm outline-none transition focus:border-primary/50" />
               </div>
-              <h3 class="font-semibold text-gray-900 mb-1">{{ languageStore.t(info.titleKey) }}</h3>
-              <p class="text-primary font-medium">{{ info.content }}</p>
-              <p class="text-sm text-gray-500">{{ languageStore.t(info.descKey) }}</p>
-            </UiCardContent>
-          </UiCard>
-        </div>
-      </div>
-    </section>
-
-    <!-- Contact Form -->
-    <section class="py-20 bg-gray-50">
-      <div class="max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-2 gap-16">
-          <!-- Form -->
-          <UiCard class="border-0 shadow-xl">
-            <UiCardContent class="p-8">
-              <h2 class="text-2xl font-bold text-gray-900 mb-6">{{ languageStore.t('contact.form.title') }}</h2>
-              <form class="space-y-6" @submit.prevent="handleSubmit">
-                <div class="grid sm:grid-cols-2 gap-4">
-                  <div class="space-y-2">
-                    <UiLabel for="name">{{ languageStore.t('auth.firstName') }}</UiLabel>
-                    <UiInput id="name" v-model="formData.name" :placeholder="languageStore.t('contact.form.namePlaceholder')" required :disabled="isLoading" />
-                  </div>
-                  <div class="space-y-2">
-                    <UiLabel for="email">{{ languageStore.t('auth.email') }}</UiLabel>
-                    <UiInput id="email" v-model="formData.email" type="email" :placeholder="languageStore.t('contact.form.emailPlaceholder')" required :disabled="isLoading" />
-                  </div>
-                </div>
-                <div class="space-y-2">
-                  <UiLabel for="subject">{{ languageStore.t('common.subject') }}</UiLabel>
-                  <UiInput id="subject" v-model="formData.subject" :placeholder="languageStore.t('contact.form.subjectPlaceholder')" required :disabled="isLoading" />
-                </div>
-                <div class="space-y-2">
-                  <UiLabel for="message">{{ languageStore.t('common.message') }}</UiLabel>
-                  <UiTextarea id="message" v-model="formData.message" :placeholder="languageStore.t('contact.form.messagePlaceholder')" :rows="5" required :disabled="isLoading" />
-                </div>
-                <UiButton type="submit" class="w-full bg-primary hover:bg-primary/90" :disabled="isLoading">
-                  <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
-                  <Send v-else class="mr-2 h-4 w-4" />
-                  {{ isLoading ? languageStore.t('contact.form.sending') : languageStore.t('contact.form.send') }}
-                </UiButton>
-              </form>
-            </UiCardContent>
-          </UiCard>
-
-          <!-- Image -->
-          <div class="relative">
-            <img
-              src="/office.jpg"
-              alt="Our office"
-              class="rounded-3xl shadow-xl w-full h-full object-cover"
-            />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-3xl" />
-            <div class="absolute bottom-8 left-8 right-8 text-white">
-              <h3 class="text-2xl font-bold mb-2">{{ languageStore.t('contact.office.title') }}</h3>
-              <p class="text-white/80">{{ languageStore.t('contact.office.address') }}</p>
+              <div>
+                <label class="mb-1.5 block text-sm font-semibold text-ink">{{ tr('อีเมล', 'Email') }}</label>
+                <input v-model="form.email" required type="email" placeholder="your@email.com" class="w-full rounded-lg border border-[#0F2747]/15 bg-surface px-4 py-3 text-sm outline-none transition focus:border-primary/50" />
+              </div>
             </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-semibold text-ink">{{ tr('หัวข้อ', 'Subject') }}</label>
+              <input v-model="form.subject" required type="text" :placeholder="tr('เราจะช่วยคุณได้อย่างไร?', 'How can we help you?')" class="w-full rounded-lg border border-[#0F2747]/15 bg-surface px-4 py-3 text-sm outline-none transition focus:border-primary/50" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-semibold text-ink">{{ tr('ข้อความ', 'Message') }}</label>
+              <textarea v-model="form.message" required rows="5" :placeholder="tr('บอกรายละเอียดเพิ่มเติมเกี่ยวกับสิ่งที่ต้องการ...', 'Tell us more about what you need...')" class="w-full rounded-lg border border-[#0F2747]/15 bg-surface px-4 py-3 text-sm outline-none transition focus:border-primary/50" />
+            </div>
+            <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-primary px-7 py-3.5 text-sm font-bold text-white shadow-[0_12px_30px_-10px_rgb(45_91_255_/_70%)] transition hover:bg-primaryDark active:translate-y-0.5">
+              {{ tr('ส่งข้อความ', 'Send message') }} <Icon name="send" class="h-4 w-4" />
+            </button>
+          </form>
+          <div v-if="submitted" class="mt-6 flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
+            <Icon name="check-circle" class="h-6 w-6 shrink-0 text-primary" />
+            <div><p class="font-bold text-ink">{{ tr('ส่งข้อความแล้ว!', 'Message sent!') }}</p><p class="text-sm text-muted">{{ tr('เราจะติดต่อกลับหาคุณโดยเร็วที่สุด', "We'll get back to you as soon as possible.") }}</p></div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- FAQ CTA -->
-    <section class="py-20 bg-white">
-      <div class="max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">{{ languageStore.t('contact.faq.title') }}</h2>
-        <p class="text-gray-600 mb-8 max-w-xl mx-auto">{{ languageStore.t('contact.faq.description') }}</p>
-        <NuxtLink to="/faq">
-          <UiButton variant="outline">{{ languageStore.t('contact.faq.button') }}</UiButton>
-        </NuxtLink>
+    <!-- office -->
+    <section class="mt-8 overflow-hidden rounded-xl border border-[#0F2747]/10 bg-white shadow-sm">
+      <div class="grid lg:grid-cols-2">
+        <div class="p-8 lg:p-10">
+          <h2 class="font-heading text-xl font-bold text-ink">{{ tr('เยี่ยมชมสำนักงานเรา', 'Visit our office') }}</h2>
+          <p class="mt-3 text-sm leading-relaxed text-muted">{{ tr('88 ซอยสุขุมวิท 62 แยก 3 แขวงพระโขนงใต้ เขตพระโขนง กรุงเทพฯ 10260', '88 Soi Sukhumvit 62 Yaek 3, Phra Khanong Tai, Phra Khanong, Bangkok 10260') }}</p>
+          <p class="mt-4 text-xs text-[#5B6B82]/70">{{ tr('บริษัท ประกิต โฮลดิ้งส์ จำกัด (มหาชน)', 'Prakit Holdings Public Company Limited') }}</p>
+        </div>
+        <div class="relative min-h-[220px]">
+          <img src="/office.jpg" :alt="tr('สำนักงาน Ripples', 'Ripples office')" class="absolute inset-0 h-full w-full object-cover" />
+        </div>
       </div>
     </section>
   </div>
 </template>
-
-<script setup lang="ts">
-import { Mail, Phone, MapPin, Clock, Send, Loader2 } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
-
-definePageMeta({ layout: 'default' })
-
-const languageStore = useLanguageStore()
-const isLoading = ref(false)
-const formData = reactive({ name: '', email: '', subject: '', message: '' })
-
-const contactInfo = [
-  { icon: Mail, titleKey: 'contact.info.emailTitle', content: 'info@ripples.com', descKey: 'contact.info.emailDesc' },
-  { icon: Phone, titleKey: 'contact.info.phoneTitle', content: '02-715-3000', descKey: 'contact.info.phoneDesc' },
-  { icon: MapPin, titleKey: 'contact.info.officeTitle', content: 'Bangkok, Thailand', descKey: 'contact.info.officeDesc' },
-  { icon: Clock, titleKey: 'contact.info.hoursTitle', content: 'Mon - Fri: 9AM - 6PM', descKey: 'contact.info.hoursDesc' },
-]
-
-async function handleSubmit() {
-  isLoading.value = true
-  await new Promise(resolve => setTimeout(resolve, 1500))
-  toast.success(languageStore.t('contact.form.successTitle'), { description: languageStore.t('contact.form.successDesc') })
-  Object.assign(formData, { name: '', email: '', subject: '', message: '' })
-  isLoading.value = false
-}
-</script>

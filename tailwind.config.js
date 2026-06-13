@@ -13,64 +13,28 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Ripples v4 design tokens (single blue theme — source of truth)
+        primary: {
+          DEFAULT: '#2D5BFF', // brand blue, CTAs, active states, links
+          foreground: '#FFFFFF',
+          dark: '#1A3FB8', // hover on primary
+          light: '#4D8BFF', // gradient ends, accents
+        },
+        primaryDark: '#1A3FB8',
+        primaryLight: '#4D8BFF',
+        ink: '#0F2747', // headings, primary text
+        muted: '#5B6B82', // secondary text
+        surface: '#F4F7FB', // page background, inset fills
+        // CSS-var tokens kept for retained primitives / focus rings / borders
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
-        primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
-        },
-        secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
-        },
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
         },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
-        },
-        accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
-        },
-        popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
-        },
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
-        },
-        // PANTONE Color Palette
-        pantone: {
-          blue: {
-            dark: '#0052CC',
-            classic: '#1B47A3',
-            provence: '#6B9BD1',
-            baby: '#A7C7E7',
-          },
-          gray: {
-            charcoal: '#5A5A5A',
-            monument: '#969696',
-            nimbus: '#E8E8E8',
-          },
-          accent: {
-            stucco: '#A08070',
-            peach: '#F4B4A0',
-            cornhusk: '#E9D999',
-          },
-        },
-      },
-      borderRadius: {
-        xl: 'calc(var(--radius) + 4px)',
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
         sans: ['Prompt', 'ui-sans-serif', 'system-ui', 'sans-serif'],
@@ -85,10 +49,20 @@ module.exports = {
           from: { height: 'var(--reka-accordion-content-height)' },
           to: { height: '0' },
         },
+        'marquee-left': {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(-50%)' },
+        },
+        'marquee-right': {
+          from: { transform: 'translateX(-50%)' },
+          to: { transform: 'translateX(0)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'marquee-left': 'marquee-left 60s linear infinite',
+        'marquee-right': 'marquee-right 72s linear infinite',
       },
     },
   },
