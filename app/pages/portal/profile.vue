@@ -88,6 +88,7 @@ const consentLatestWhenNew: Record<string, string> = { terms: 'v2.2' }
 interface Demo { f: string, fEn: string, age: string, ageEn: string, geo: string, geoEn: string }
 interface Social {
   platform: PlatformName
+  source: Source
   handle: string
   url: string
   connected: boolean
@@ -102,12 +103,12 @@ interface Social {
   demo: Demo | null
 }
 const socials = reactive<Social[]>([
-  { platform: 'Instagram', handle: '@somsai_jd', url: 'instagram.com/somsai_jd', connected: true, followers: '25,500', er: '5.8%', grade: 'A', verified: true, synced: '2 ชม. ที่แล้ว', syncedEn: '2 hrs ago', reachNote: '', reachNoteEn: '', demo: { f: '78% หญิง', fEn: '78% female', age: '25–34 ปี', ageEn: '25–34', geo: 'กรุงเทพฯ 42%', geoEn: 'Bangkok 42%' } },
-  { platform: 'TikTok', handle: '@somsai_jd', url: 'tiktok.com/@somsai_jd', connected: true, followers: '45,200', er: '7.2%', grade: 'A', verified: true, synced: '2 ชม. ที่แล้ว', syncedEn: '2 hrs ago', reachNote: 'TikTok API ไม่มี reach — ER คิดจากยอดวิว', reachNoteEn: 'TikTok API has no reach — ER is calculated from views', demo: { f: '65% หญิง', fEn: '65% female', age: '18–24 ปี', ageEn: '18–24', geo: 'ทั่วประเทศ', geoEn: 'Nationwide' } },
-  { platform: 'Facebook', handle: 'Somsai JaiDee', url: 'facebook.com/somsai.jaidee', connected: true, followers: '12,300', er: '3.1%', grade: 'B', verified: false, synced: '1 วันที่แล้ว', syncedEn: '1 day ago', reachNote: '', reachNoteEn: '', demo: { f: '54% หญิง', fEn: '54% female', age: '35–44 ปี', ageEn: '35–44', geo: 'กรุงเทพฯ 38%', geoEn: 'Bangkok 38%' } },
-  { platform: 'YouTube', handle: '', url: '', connected: false, followers: '—', er: '—', grade: '—', verified: false, synced: '', syncedEn: '', reachNote: 'YouTube API ไม่มี reach — ER คิดจากยอดวิว', reachNoteEn: 'YouTube API has no reach — ER is calculated from views', demo: null },
-  { platform: 'Twitter', handle: '', url: '', connected: false, followers: '—', er: '—', grade: '—', verified: false, synced: '', syncedEn: '', reachNote: '', reachNoteEn: '', demo: null },
-  { platform: 'Lemon8', handle: '@somsai_jd', url: 'lemon8-app.com/@somsai_jd', connected: true, followers: '8,700', er: '6.4%', grade: 'B', verified: false, synced: '5 ชม. ที่แล้ว', syncedEn: '5 hrs ago', reachNote: '', reachNoteEn: '', demo: { f: '82% หญิง', fEn: '82% female', age: '18–24 ปี', ageEn: '18–24', geo: 'กรุงเทพฯ 48%', geoEn: 'Bangkok 48%' } },
+  { platform: 'Instagram', source: 'sync', handle: '@somsai_jd', url: 'instagram.com/somsai_jd', connected: true, followers: '25,500', er: '5.8%', grade: 'A', verified: true, synced: '2 ชม. ที่แล้ว', syncedEn: '2 hrs ago', reachNote: '', reachNoteEn: '', demo: { f: '78% หญิง', fEn: '78% female', age: '25–34 ปี', ageEn: '25–34', geo: 'กรุงเทพฯ 42%', geoEn: 'Bangkok 42%' } },
+  { platform: 'TikTok', source: 'sync', handle: '@somsai_jd', url: 'tiktok.com/@somsai_jd', connected: true, followers: '45,200', er: '7.2%', grade: 'A', verified: true, synced: '2 ชม. ที่แล้ว', syncedEn: '2 hrs ago', reachNote: 'TikTok API ไม่มี reach — ER คิดจากยอดวิว', reachNoteEn: 'TikTok API has no reach — ER is calculated from views', demo: { f: '65% หญิง', fEn: '65% female', age: '18–24 ปี', ageEn: '18–24', geo: 'ทั่วประเทศ', geoEn: 'Nationwide' } },
+  { platform: 'Facebook', source: 'sync', handle: 'Somsai JaiDee', url: 'facebook.com/somsai.jaidee', connected: true, followers: '12,300', er: '3.1%', grade: 'B', verified: false, synced: '1 วันที่แล้ว', syncedEn: '1 day ago', reachNote: '', reachNoteEn: '', demo: { f: '54% หญิง', fEn: '54% female', age: '35–44 ปี', ageEn: '35–44', geo: 'กรุงเทพฯ 38%', geoEn: 'Bangkok 38%' } },
+  { platform: 'YouTube', source: 'sync', handle: '', url: '', connected: false, followers: '—', er: '—', grade: '—', verified: false, synced: '', syncedEn: '', reachNote: 'YouTube API ไม่มี reach — ER คิดจากยอดวิว', reachNoteEn: 'YouTube API has no reach — ER is calculated from views', demo: null },
+  { platform: 'Twitter', source: 'admin', handle: '', url: '', connected: false, followers: '—', er: '—', grade: '—', verified: false, synced: '', syncedEn: '', reachNote: '', reachNoteEn: '', demo: null },
+  { platform: 'Lemon8', source: 'admin', handle: '@somsai_jd', url: 'lemon8-app.com/@somsai_jd', connected: true, followers: '8,700', er: '6.4%', grade: 'B', verified: false, synced: '5 ชม. ที่แล้ว', syncedEn: '5 hrs ago', reachNote: '', reachNoteEn: '', demo: { f: '82% หญิง', fEn: '82% female', age: '18–24 ปี', ageEn: '18–24', geo: 'กรุงเทพฯ 48%', geoEn: 'Bangkok 48%' } },
 ])
 
 /* ---------- Tab 3 data ---------- */
@@ -617,7 +618,7 @@ function formatRate(v: number) { return v.toLocaleString() }
                   <p class="mt-4 font-heading text-lg font-bold text-ink">{{ tr('ยังไม่ได้เชื่อมบัญชีโซเชียล', 'No social accounts connected yet') }}</p>
                   <p class="mx-auto mt-1 max-w-sm text-sm text-muted">{{ tr('เชื่อมอย่างน้อย 1 บัญชีเพื่อให้ระบบดึงสถิติและจับคู่แคมเปญที่เหมาะกับคุณ', 'Connect at least one account so we can sync your stats and match you with the right campaigns') }}</p>
                   <div class="mx-auto mt-6 grid max-w-md gap-3 sm:grid-cols-2">
-                    <button v-for="s in socials" :key="s.platform" type="button" class="flex items-center gap-3 rounded-xl border border-[#0F2747]/10 bg-white p-4 text-left transition hover:border-primary/40 hover:shadow-sm">
+                    <button v-for="s in socials.filter(x => x.source !== 'admin')" :key="s.platform" type="button" class="flex items-center gap-3 rounded-xl border border-[#0F2747]/10 bg-white p-4 text-left transition hover:border-primary/40 hover:shadow-sm">
                       <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-surface" v-html="platformSvg[s.platform]" />
                       <div><p class="font-bold text-ink">{{ s.platform }}</p><p class="text-xs text-primary">{{ tr('เชื่อม OAuth', 'Connect via OAuth') }}</p></div>
                     </button>
@@ -632,9 +633,9 @@ function formatRate(v: number) { return v.toLocaleString() }
                     <div v-if="!s.connected" class="flex items-center justify-between gap-3 rounded-xl bg-surface p-4">
                       <div class="flex items-center gap-4">
                         <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm" v-html="platformSvg[s.platform]" />
-                        <div><p class="font-bold text-ink">{{ s.platform }}</p><p class="text-sm text-[#5B6B82]/60">{{ tr('ยังไม่เชื่อมต่อ', 'Not connected') }}</p></div>
+                        <div><p class="font-bold text-ink">{{ s.platform }}</p><p class="text-sm text-[#5B6B82]/60">{{ s.source === 'admin' ? tr('รอทีมงานเพิ่มข้อมูล', 'Pending — added by our team') : tr('ยังไม่เชื่อมต่อ', 'Not connected') }}</p></div>
                       </div>
-                      <button type="button" class="shrink-0 rounded-lg bg-primary px-4 py-2 text-xs font-bold text-white transition hover:bg-primaryDark">{{ tr('เชื่อม OAuth', 'Connect via OAuth') }}</button>
+                      <button v-if="s.source !== 'admin'" type="button" class="shrink-0 rounded-lg bg-primary px-4 py-2 text-xs font-bold text-white transition hover:bg-primaryDark">{{ tr('เชื่อม OAuth', 'Connect via OAuth') }}</button>
                     </div>
                     <div v-else class="rounded-xl border border-[#0F2747]/10 p-4">
                       <div class="flex items-start justify-between gap-3">
@@ -646,7 +647,8 @@ function formatRate(v: number) { return v.toLocaleString() }
                             <a :href="'https://' + s.url" class="text-xs text-primary hover:underline" target="_blank" rel="noopener">{{ s.url }}</a>
                           </div>
                         </div>
-                        <button type="button" class="shrink-0 rounded-lg border border-[#0F2747]/10 bg-white px-4 py-2 text-xs font-bold text-ink transition hover:text-primary">{{ tr('ยกเลิกเชื่อมต่อ', 'Disconnect') }}</button>
+                        <button v-if="s.source !== 'admin'" type="button" class="shrink-0 rounded-lg border border-[#0F2747]/10 bg-white px-4 py-2 text-xs font-bold text-ink transition hover:text-primary">{{ tr('ยกเลิกเชื่อมต่อ', 'Disconnect') }}</button>
+                        <span v-else class="inline-flex shrink-0 items-center gap-1 rounded-lg bg-blue-50 px-3 py-2 text-[11px] font-bold text-blue-600"><Icon name="shield-check" class="h-3.5 w-3.5" /> {{ tr('ทีมงานดูแล', 'Managed by our team') }}</span>
                       </div>
                       <div class="mt-3 flex flex-wrap items-center gap-2">
                         <span class="text-sm font-bold text-primary">{{ s.followers }} {{ tr('ผู้ติดตาม', 'followers') }}</span>
@@ -660,14 +662,15 @@ function formatRate(v: number) { return v.toLocaleString() }
                         <span class="rounded bg-surface px-2 py-1">{{ tr('พื้นที่ ', 'Location ') }}{{ tr(s.demo.geo, s.demo.geoEn) }}</span>
                       </div>
                       <p v-if="s.reachNote" class="mt-2 text-[11px] text-amber-600">⚠ {{ tr(s.reachNote, s.reachNoteEn) }}</p>
-                      <p class="mt-2 text-[11px] text-[#5B6B82]/60">{{ tr('sync ล่าสุด ', 'Last synced ') }}{{ tr(s.synced, s.syncedEn) }}</p>
+                      <p v-if="s.source === 'admin'" class="mt-2 text-[11px] text-[#5B6B82]/60">{{ tr('ข้อมูลยืนยันโดยทีมงาน', 'Data verified by our team') }}</p>
+                      <p v-else class="mt-2 text-[11px] text-[#5B6B82]/60">{{ tr('sync ล่าสุด ', 'Last synced ') }}{{ tr(s.synced, s.syncedEn) }}</p>
                     </div>
                   </template>
                 </div>
               </template>
 
               <div class="mt-4" />
-              <p class="mt-1.5 text-xs leading-relaxed text-[#5B6B82]/80">{{ tr('ℹ️ ตัวเลขผู้ติดตาม / ER มาจากการ sync ผ่าน OAuth เท่านั้น — แก้ไขเองไม่ได้ · TikTok & YouTube API ไม่มี reach ระบบจึงคิด ER จากยอดวิว', 'ℹ️ Follower / ER figures come only from OAuth sync — they can\'t be edited manually · The TikTok & YouTube APIs have no reach, so ER is calculated from views') }}</p>
+              <p class="mt-1.5 text-xs leading-relaxed text-[#5B6B82]/80">{{ tr('ℹ️ ตัวเลขผู้ติดตาม / ER มาจากการ sync ผ่าน OAuth เท่านั้น — แก้ไขเองไม่ได้ · TikTok & YouTube API ไม่มี reach ระบบจึงคิด ER จากยอดวิว · แพลตฟอร์มที่ไม่มี API (X, Lemon8) ทีมงานเป็นผู้กรอกและยืนยันข้อมูลให้', 'ℹ️ Follower / ER figures come only from OAuth sync — they can\'t be edited manually · The TikTok & YouTube APIs have no reach, so ER is calculated from views · For platforms without an API (X, Lemon8), our team fills in and verifies the data') }}</p>
             </div>
           </div>
         </template>
