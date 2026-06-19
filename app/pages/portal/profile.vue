@@ -44,7 +44,7 @@ const user = reactive({
   firstName: 'สมใจ', lastName: 'ใจดี',
   displayName: 'Somsai JD',
   email: 'somsai@email.com', emailVerified: true,
-  phone: '081-234-5678', phoneVerified: false,
+  phone: '081-234-5678',
   lineId: '@somsai_jd',
   gender: 'หญิง', ageRange: '25–34 ปี',
   address: '88/12 ถนนพหลโยธิน แขวงจอมพล เขตจตุจักร กรุงเทพฯ 10900',
@@ -178,7 +178,7 @@ const basicFields = computed<FieldOpt[]>(() => [
   { label: 'นามสกุล', labelEn: 'Last name', value: user.lastName, note: 'นามสกุลตามบัตรประชาชน', noteEn: 'Surname as it appears on your ID card' },
   { label: 'ชื่อในวงการ', labelEn: 'Display name', value: user.displayName, span: 2, note: 'ชื่อที่ใช้แสดงในระบบและให้แบรนด์/แอดมินเห็น — แยกจากชื่อจริง', noteEn: 'The name shown in the system and seen by brands/admins — separate from your real name' },
   { label: 'อีเมล', labelEn: 'Email', value: user.email, type: 'email', verify: 'email', note: 'ใช้เข้าสู่ระบบและรับแจ้งเตือน', noteEn: 'Used to sign in and receive notifications' },
-  { label: 'เบอร์โทรศัพท์', labelEn: 'Phone number', value: user.phone, type: 'tel', verify: 'phone', note: 'ตัวเลข 10 หลัก · ยังไม่ยืนยัน — กด "ส่งรหัสยืนยัน"', noteEn: '10 digits · Not verified — tap "Send verification code"' },
+  { label: 'เบอร์โทรศัพท์', labelEn: 'Phone number', value: user.phone, type: 'tel', note: 'ตัวเลข 10 หลัก · ใช้ติดต่อกับทีมงานและแบรนด์', noteEn: '10 digits · Used to contact our team and brands' },
   { label: 'LINE ID', labelEn: 'LINE ID', value: user.lineId, note: 'ช่องทางติดต่อสำรองกับทีมงาน', noteEn: 'Backup contact channel with our team' },
   { label: 'เพศ', labelEn: 'Gender', value: user.gender, type: 'select', options: genders, optionsEn: gendersEn, note: 'ใช้จับคู่แคมเปญที่ระบุกลุ่มเป้าหมาย', noteEn: 'Used to match campaigns that target specific audiences' },
   { label: 'ช่วงอายุ', labelEn: 'Age range', value: user.ageRange, type: 'select', options: ageRanges, optionsEn: ageRangesEn, note: 'ดึงจากวันเกิดใน KYC อัตโนมัติเมื่อยืนยันแล้ว', noteEn: 'Filled automatically from your KYC date of birth once verified' },
@@ -193,7 +193,6 @@ const areaFields = computed<FieldOpt[]>(() => [
 /* security rows */
 const secRows = computed(() => [
   { icon: 'mail', label: 'อีเมล', labelEn: 'Email', val: user.email, ok: user.emailVerified },
-  { icon: 'smartphone', label: 'เบอร์โทรศัพท์', labelEn: 'Phone number', val: user.phone, ok: user.phoneVerified },
 ])
 
 const nichesOnCount = computed(() => niches.filter(n => n.on).length)
@@ -467,10 +466,6 @@ function formatRate(v: number) { return v.toLocaleString() }
                       {{ tr(f.label, f.labelEn) }}
                       <template v-if="f.verify === 'email'">
                         <span v-if="user.emailVerified" class="inline-flex items-center gap-1 rounded bg-green-50 px-1.5 py-0.5 text-[10px] font-bold text-green-600"><Icon name="badge-check" class="h-3 w-3" /> {{ tr('ยืนยันแล้ว', 'Verified') }}</span>
-                        <button v-else type="button" class="rounded bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700 transition hover:bg-amber-100" @click="verifyToast">{{ tr('ส่งรหัสยืนยัน', 'Send verification code') }}</button>
-                      </template>
-                      <template v-else-if="f.verify === 'phone'">
-                        <span v-if="user.phoneVerified" class="inline-flex items-center gap-1 rounded bg-green-50 px-1.5 py-0.5 text-[10px] font-bold text-green-600"><Icon name="badge-check" class="h-3 w-3" /> {{ tr('ยืนยันแล้ว', 'Verified') }}</span>
                         <button v-else type="button" class="rounded bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700 transition hover:bg-amber-100" @click="verifyToast">{{ tr('ส่งรหัสยืนยัน', 'Send verification code') }}</button>
                       </template>
                     </label>
