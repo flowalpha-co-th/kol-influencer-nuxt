@@ -557,7 +557,6 @@ function formatRate(v: number) { return v.toLocaleString() }
                   </div>
                   <div class="flex shrink-0 flex-col items-end gap-1.5">
                     <button type="button" class="rounded-lg border border-[#0F2747]/10 bg-white px-4 py-2 text-xs font-bold text-ink transition hover:text-primary" @click="openPwd">{{ tr('เปลี่ยนรหัสผ่าน', 'Change password') }}</button>
-                    <NuxtLink to="/portal/change-password" class="text-[11px] font-semibold text-primary hover:underline">{{ tr('เปิดเป็นหน้าเต็ม →', 'Open full page →') }}</NuxtLink>
                   </div>
                 </div>
               </div>
