@@ -3,7 +3,7 @@ definePageMeta({ layout: 'portal', middleware: 'auth' })
 const { tr } = useLocale()
 useHead(() => ({ title: tr('งานของฉัน — Ripples', 'My Tasks — Ripples') }))
 
-type Bucket = 'action' | 'review' | 'live' | 'done'
+type Bucket = 'action' | 'review' | 'live' | 'done' | 'rejected'
 type Phase = 'brief' | 'storyline' | 'draft' | 'live'
 type Action =
   | 'storyline'
@@ -49,6 +49,10 @@ function idx(k: string) {
 function bucketOf(k: string): Bucket {
   return STAGES[idx(k)]!.bucket
 }
+// effective bucket: a rejected task overrides its stage bucket with 'rejected'
+function effBucket(t: Task): Bucket {
+  return t.rejected ? 'rejected' : bucketOf(t.stage)
+}
 function progress(stage: string) {
   return Math.round(((idx(stage) + 1) / STAGES.length) * 100)
 }
@@ -74,6 +78,8 @@ type Task = {
   price: number
   stage: string
   fb: Feedback[]
+  rejected?: boolean
+  rej?: [string, string]
 }
 
 const tasks: Task[] = [
@@ -85,6 +91,8 @@ const tasks: Task[] = [
   { id: 6, c: 'Mineral Water รุ่นใหม่', brand: 'Pure Hydra', plat: 'Facebook', due: '10 เม.ย. 2026', price: 8000, stage: 'brief_sent', fb: [] },
   { id: 7, c: 'Coffee Drop Teaser', brand: 'CafeNord', plat: 'Twitter', due: '3 เม.ย. 2026', price: 6000, stage: 'draft_approved', fb: [] },
   { id: 8, c: 'Skincare Routine รีวิว', brand: 'Aura Cosmetics', plat: 'Lemon8', due: '18 เม.ย. 2026', price: 7000, stage: 'first_draft_feedback', fb: [{ u: 'Aura', t: 'รูปสวยมากค่ะ ขอเพิ่มข้อความบรรยายส่วนผสมในรูปที่ 3 ด้วยนะคะ', d: '17 เม.ย.' }] },
+  { id: 9, c: 'Energy Drink Launch', brand: 'Volt Beverage', plat: 'TikTok', due: '12 มี.ค. 2026', price: 11000, stage: 'brief_sent', fb: [], rejected: true, rej: ['ราคาที่เสนอสูงกว่างบของแคมเปญ จึงไม่ผ่านการพิจารณา', 'The quoted price was over the campaign budget, so it was not approved.'] },
+  { id: 10, c: 'Travel Vlog Bangkok', brand: 'Wander Co.', plat: 'YouTube', due: '8 มี.ค. 2026', price: 16000, stage: 'brief_sent', fb: [], rejected: true, rej: ['ไม่ได้รับเลือกสำหรับแคมเปญนี้ — แบรนด์เลือก KOL รายอื่น', 'Not selected for this campaign — the brand chose another creator.'] },
 ]
 
 const BUCKET: Record<Bucket, { label: string; labelEn: string; cls: string; dot: string }> = {
@@ -92,20 +100,22 @@ const BUCKET: Record<Bucket, { label: string; labelEn: string; cls: string; dot:
   review: { label: 'รอตรวจ', labelEn: 'In review', cls: 'bg-amber-100 text-amber-700', dot: 'bg-amber-500' },
   live: { label: 'เผยแพร่ / เก็บผล', labelEn: 'Publish / collect', cls: 'bg-violet-100 text-violet-700', dot: 'bg-violet-500' },
   done: { label: 'เสร็จสิ้น', labelEn: 'Completed', cls: 'bg-green-100 text-green-700', dot: 'bg-green-500' },
+  rejected: { label: 'ไม่ผ่าน', labelEn: 'Not passed', cls: 'bg-red-100 text-red-700', dot: 'bg-red-500' },
 }
 const tabs: [Bucket, string, string][] = [
   ['action', 'ต้องดำเนินการ', 'Action needed'],
   ['review', 'รอตรวจ', 'In review'],
   ['live', 'เผยแพร่ & รายงาน', 'Publish & report'],
   ['done', 'เสร็จสิ้น', 'Completed'],
+  ['rejected', 'ไม่ผ่าน', 'Not passed'],
 ]
 
 const active = ref<Bucket>('action')
 
 function countOf(bucket: Bucket) {
-  return tasks.filter((t) => bucketOf(t.stage) === bucket).length
+  return tasks.filter((t) => effBucket(t) === bucket).length
 }
-const visibleTasks = computed(() => tasks.filter((t) => bucketOf(t.stage) === active.value))
+const visibleTasks = computed(() => tasks.filter((t) => effBucket(t) === active.value))
 
 function fmtPrice(n: number) {
   return n.toLocaleString()
@@ -184,7 +194,7 @@ const briefDont: [string, string][] = [
 const openId = ref<number | null>(null)
 const current = computed(() => tasks.find((t) => t.id === openId.value) ?? null)
 const currentStage = computed(() => (current.value ? STAGES[idx(current.value.stage)]! : null))
-const currentBucket = computed(() => (currentStage.value ? BUCKET[currentStage.value.bucket] : null))
+const currentBucket = computed(() => (current.value ? BUCKET[effBucket(current.value)] : null))
 
 const chatMessages = ref<ChatMsg[]>([])
 const chatInput = ref('')
@@ -225,7 +235,7 @@ function sendChat() {
     </section>
 
     <!-- stats -->
-    <section class="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <section class="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
       <div v-for="tb in tabs" :key="`stat-${tb[0]}`" class="rounded-xl border border-[#0F2747]/10 bg-white p-4 shadow-sm">
         <div class="flex items-center gap-2">
           <span class="h-2 w-2 rounded-full" :class="BUCKET[tb[0]].dot" />
@@ -298,7 +308,10 @@ function sendChat() {
               <h3 class="font-heading text-base font-bold text-ink">{{ t.c }}</h3>
               <p class="text-sm text-muted">{{ t.brand }} · {{ t.plat }}</p>
               <div class="mt-2 flex flex-wrap items-center gap-4 text-xs text-muted">
-                <span class="flex items-center gap-1.5">
+                <span v-if="t.rejected" class="flex items-center gap-1.5 text-red-600">
+                  <Icon name="x-circle" class="h-4 w-4" /> {{ tr('ไม่ผ่านการพิจารณา', 'Not selected') }}
+                </span>
+                <span v-else class="flex items-center gap-1.5">
                   <Icon name="git-commit-vertical" class="h-4 w-4 text-primary" /> {{ tr(STAGES[idx(t.stage)]!.label, STAGES[idx(t.stage)]!.labelEn) }}
                 </span>
                 <span class="flex items-center gap-1.5">
@@ -308,12 +321,13 @@ function sendChat() {
             </div>
           </div>
           <div class="shrink-0 text-right">
-            <span class="rounded-full px-2.5 py-1 text-[11px] font-bold" :class="BUCKET[bucketOf(t.stage)].cls">{{ tr(BUCKET[bucketOf(t.stage)].label, BUCKET[bucketOf(t.stage)].labelEn) }}</span>
-            <p class="mt-2 font-heading text-lg font-extrabold text-primary">฿{{ fmtPrice(t.price) }}</p>
-            <p class="text-[10px] uppercase tracking-widest text-[#5B6B82]/50">Final price</p>
+            <span class="rounded-full px-2.5 py-1 text-[11px] font-bold" :class="BUCKET[effBucket(t)].cls">{{ tr(BUCKET[effBucket(t)].label, BUCKET[effBucket(t)].labelEn) }}</span>
+            <p class="mt-2 font-heading text-lg font-extrabold" :class="t.rejected ? 'text-muted line-through' : 'text-primary'">฿{{ fmtPrice(t.price) }}</p>
+            <p class="text-[10px] uppercase tracking-widest text-[#5B6B82]/50">{{ t.rejected ? tr('ราคาที่เสนอ', 'Quoted price') : 'Final price' }}</p>
           </div>
         </div>
-        <div class="mt-4">
+        <!-- progress bar — only for tasks that passed review and entered production -->
+        <div v-if="!t.rejected" class="mt-4">
           <div class="flex items-center justify-between text-[11px] text-muted">
             <span>{{ tr('ความคืบหน้า · ขั้นที่', 'Progress · stage') }} {{ idx(t.stage) + 1 }}/14</span>
             <span class="font-bold text-primary">{{ progress(t.stage) }}%</span>
@@ -321,6 +335,11 @@ function sendChat() {
           <div class="mt-1.5 h-1.5 overflow-hidden rounded-full bg-surface">
             <div class="h-full rounded-full bg-primary" :style="{ width: progress(t.stage) + '%' }" />
           </div>
+        </div>
+        <!-- rejection reason — replaces progress for not-selected tasks -->
+        <div v-else class="mt-4 flex items-start gap-2 rounded-lg border border-red-100 bg-red-50/60 px-3 py-2.5 text-xs text-red-700">
+          <Icon name="info" class="mt-0.5 h-4 w-4 shrink-0" />
+          <span>{{ t.rej ? tr(t.rej[0], t.rej[1]) : tr('ไม่ผ่านการพิจารณาของแอดมิน/แบรนด์', 'Not approved by the admin / brand.') }}</span>
         </div>
       </div>
     </section>
@@ -369,10 +388,10 @@ function sendChat() {
                   <p class="mt-0.5 font-bold text-white">{{ current.due }}</p>
                 </div>
                 <div class="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur">
-                  <p class="text-[10px] font-bold uppercase tracking-widest text-white/50">Final price · TIER 3</p>
+                  <p class="text-[10px] font-bold uppercase tracking-widest text-white/50">{{ current.rejected ? tr('ราคาที่เสนอ', 'Quoted price') : 'Final price · TIER 3' }}</p>
                   <p class="mt-0.5 font-bold text-white">฿{{ fmtPrice(current.price) }}</p>
                 </div>
-                <div class="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur">
+                <div v-if="!current.rejected" class="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur">
                   <p class="text-[10px] font-bold uppercase tracking-widest text-white/50">{{ tr('ความคืบหน้า', 'Progress') }}</p>
                   <p class="mt-0.5 font-bold text-white">{{ tr('ขั้น', 'Stage') }} {{ idx(current.stage) + 1 }}/14 · {{ progress(current.stage) }}%</p>
                 </div>
@@ -382,8 +401,36 @@ function sendChat() {
 
           <!-- body -->
           <div class="mx-auto max-w-5xl px-6 py-8 lg:px-10">
+            <!-- rejected: no production — show the review decision only -->
+            <div v-if="current.rejected" class="rounded-2xl border border-red-200 bg-red-50/50 p-6 shadow-sm lg:p-8">
+              <div class="flex items-start gap-3">
+                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-100 text-red-600">
+                  <Icon name="x-circle" class="h-6 w-6" />
+                </span>
+                <div>
+                  <h3 class="font-heading text-lg font-bold text-ink">{{ tr('ไม่ผ่านการพิจารณา', 'Not selected') }}</h3>
+                  <p class="mt-1 text-sm text-muted">{{ tr('แอดมิน/แบรนด์พิจารณาแล้วว่าจะไม่จ้างสำหรับแคมเปญนี้ จึงยังไม่เริ่มขั้นตอนการผลิต', 'The admin / brand reviewed the application and decided not to proceed, so production never started.') }}</p>
+                </div>
+              </div>
+              <div class="mt-5 rounded-xl border border-red-100 bg-white p-4">
+                <p class="text-[11px] font-bold uppercase tracking-widest text-red-500/70">{{ tr('เหตุผล', 'Reason') }}</p>
+                <p class="mt-1 text-sm leading-relaxed text-ink/80">{{ current.rej ? tr(current.rej[0], current.rej[1]) : tr('ไม่ผ่านการพิจารณาของแอดมิน/แบรนด์', 'Not approved by the admin / brand.') }}</p>
+              </div>
+              <div class="mt-4 flex flex-wrap gap-3">
+                <div class="rounded-xl bg-surface px-4 py-2.5">
+                  <p class="text-[10px] font-bold uppercase tracking-widest text-[#5B6B82]/60">{{ tr('ราคาที่เสนอ', 'Quoted price') }}</p>
+                  <p class="mt-0.5 font-bold text-ink">฿{{ fmtPrice(current.price) }}</p>
+                </div>
+                <div class="rounded-xl bg-surface px-4 py-2.5">
+                  <p class="text-[10px] font-bold uppercase tracking-widest text-[#5B6B82]/60">{{ tr('แพลตฟอร์ม', 'Platform') }}</p>
+                  <p class="mt-0.5 font-bold text-ink">{{ current.plat }}</p>
+                </div>
+              </div>
+              <p class="mt-5 text-xs text-muted">{{ tr('ไม่ต้องกังวล — ลองสมัครแคมเปญอื่นที่เหมาะกับคุณได้เลย', 'Don’t worry — feel free to apply to other campaigns that suit you.') }}</p>
+            </div>
+
             <!-- brief -->
-            <div class="rounded-2xl border border-[#0F2747]/10 bg-white p-6 shadow-sm lg:p-8">
+            <div v-if="!current.rejected" class="rounded-2xl border border-[#0F2747]/10 bg-white p-6 shadow-sm lg:p-8">
               <div class="flex flex-wrap items-center justify-between gap-3">
                 <h3 class="flex items-center gap-2 font-heading text-lg font-bold text-ink">
                   <Icon name="file-text" class="h-5 w-5 text-primary" /> {{ tr('บรีฟงานจากแบรนด์', 'Brief from the brand') }}
@@ -439,7 +486,7 @@ function sendChat() {
               </div>
             </div>
 
-            <div class="mt-6 grid gap-6 lg:grid-cols-5">
+            <div v-if="!current.rejected" class="mt-6 grid gap-6 lg:grid-cols-5">
               <!-- timeline -->
               <div class="rounded-2xl border border-[#0F2747]/10 bg-white p-6 shadow-sm lg:col-span-2 lg:p-8">
                 <h3 class="font-heading text-lg font-bold text-ink">{{ tr('ขั้นตอนการผลิต', 'Production stages') }} <span class="font-medium text-muted">(14 stage)</span></h3>
