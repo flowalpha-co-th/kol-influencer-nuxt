@@ -30,6 +30,3 @@ Thumbs.db
 
 # Claude
 .claude/settings.local.json
-
-# Cline tool local state
-.cline/
