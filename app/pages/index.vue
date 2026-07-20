@@ -11,6 +11,81 @@ function goCampaigns() {
   return navigateTo({ path: '/login', query: { redirect: '/portal/campaigns' } })
 }
 
+type Tone = 'open' | 'soon' | 'new'
+interface Campaign {
+  cat: string
+  catEn: string
+  brand: string
+  title: string
+  d: string
+  dEn: string
+  budget: string
+  spots: string
+  deadline: string
+  deadlineEn: string
+  plat: string
+  tone: Tone
+  img: string
+}
+
+const TONE: Record<Tone, { label: string, labelEn: string, cls: string, dot: boolean }> = {
+  open: { label: 'เปิดรับสมัคร', labelEn: 'Open', cls: 'bg-primary text-white', dot: true },
+  soon: { label: 'ใกล้ปิดรับ', labelEn: 'Closing soon', cls: 'bg-amber-400 text-[#0F2747]', dot: false },
+  new: { label: 'มาใหม่', labelEn: 'New', cls: 'bg-green-500 text-white', dot: false },
+}
+
+// จอแรก — แคมเปญแนะนำแบบเลื่อน (สูงสุด 5)
+const featured: Campaign[] = [
+  { cat: 'แฟชั่น', catEn: 'Fashion', brand: 'Fashion Brand Co.', title: 'Summer Collection 2026', d: 'ร่วมโปรโมทคอลเลกชั่นแฟชั่นใหม่ล่าสุดสำหรับซัมเมอร์นี้ มองหา Influencer ที่สไตล์การแต่งตัวโดดเด่นบน Instagram', dEn: 'Help promote the latest summer fashion collection. Looking for influencers with standout style on Instagram.', budget: '฿15,000 – 30,000', spots: '45/50', deadline: '30 เม.ย. 2026', deadlineEn: '30 Apr 2026', plat: 'Instagram', tone: 'open', img: 'photo-1483985988355-763728e1935b' },
+  { cat: 'ความงาม', catEn: 'Beauty', brand: "L'Oréal Thailand", title: "L'Oréal Serum Review", d: 'เปิดตัว serum บำรุงผิวสูตรใหม่ มองหา beauty influencer ที่มีความรู้ด้าน skincare มารีวิวการใช้งานจริง', dEn: 'Launching a new skincare serum. Looking for beauty influencers with skincare expertise to review real-world use.', budget: '฿12,000 – 24,000', spots: '28/50', deadline: '1 พ.ค. 2026', deadlineEn: '1 May 2026', plat: 'Instagram', tone: 'open', img: 'photo-1596462502278-27bfdc403348' },
+  { cat: 'ฟิตเนส', catEn: 'Fitness', brand: 'Nike Thailand', title: 'Nike Running Club', d: 'แคมเปญรองเท้าวิ่งคอลเลกชั่นใหม่ มองหา fitness influencer มาร่วมท้าทายการวิ่งและสร้างแรงบันดาลใจ', dEn: 'New running shoe collection campaign. Looking for fitness influencers to join the running challenge and inspire.', budget: '฿9,000 – 18,000', spots: '12/30', deadline: '30 มิ.ย. 2026', deadlineEn: '30 Jun 2026', plat: 'Instagram', tone: 'soon', img: 'photo-1542291026-7eec264c27ff' },
+  { cat: 'เทคโนโลยี', catEn: 'Technology', brand: 'TechZone', title: 'Tech Review Q2', d: 'รีวิวสมาร์ทโฟนและแกดเจ็ตใหม่ล่าสุด มองหา tech reviewer บน YouTube ที่เล่าฟีเจอร์ได้เข้าใจง่าย', dEn: 'Reviewing the latest smartphones and gadgets. Looking for YouTube tech reviewers who explain features clearly.', budget: '฿8,000 – 16,000', spots: '8/50', deadline: '15 มิ.ย. 2026', deadlineEn: '15 Jun 2026', plat: 'YouTube', tone: 'open', img: 'photo-1511707171634-5f897ff02aa9' },
+  { cat: 'อาหาร', catEn: 'Food', brand: 'Taste Kitchen', title: 'Food Festival Promo', d: 'โปรโมทเทศกาลอาหารสุดยิ่งใหญ่ มองหา food blogger มารีวิวเมนูเด็ดแบบน่ากิน กระตุ้นการสั่งซื้อ', dEn: 'Promoting a major food festival. Looking for food bloggers to review signature dishes appetisingly.', budget: '฿10,000 – 20,000', spots: '18/100', deadline: '28 มิ.ย. 2026', deadlineEn: '28 Jun 2026', plat: 'TikTok', tone: 'new', img: 'photo-1414235077428-338989a2e8c0' },
+]
+
+// ~4 จอด้านล่าง — grid ปกติ (ไม่เลื่อน)
+const more: Campaign[] = [
+  { cat: 'ความงาม', catEn: 'Beauty', brand: 'GlowLab Beauty', title: 'Skincare Glow Set', d: 'รีวิวเซ็ตสกินแคร์ตัวใหม่ เน้นผิวกระจ่างใส สำหรับสาย beauty บน TikTok & Instagram', dEn: 'Review the new skincare set focused on radiant skin — for beauty creators on TikTok & Instagram.', budget: '฿12,000 – 25,000', spots: '30/60', deadline: '5 ก.ค. 2026', deadlineEn: '5 Jul 2026', plat: 'TikTok', tone: 'open', img: 'photo-1556228578-8c89e6adf883' },
+  { cat: 'ฟิตเนส', catEn: 'Fitness', brand: 'FitPro Studio', title: '30-Day Fitness Challenge', d: 'ชวนสายเฮลท์ตี้ร่วมชาเลนจ์ออกกำลังกาย 30 วัน พร้อมรีวิวอุปกรณ์ฟิตเนสรุ่นใหม่', dEn: 'Inviting health-conscious creators to join a 30-day workout challenge and review the latest fitness gear.', budget: '฿9,000 – 18,000', spots: '22/40', deadline: '10 ก.ค. 2026', deadlineEn: '10 Jul 2026', plat: 'Instagram', tone: 'open', img: 'photo-1517838277536-f5f99be501cd' },
+  { cat: 'ไลฟ์สไตล์', catEn: 'Lifestyle', brand: 'Shopee Thailand', title: 'Shopee Mid-Year Sale', d: 'มหกรรมช้อปออนไลน์กลางปี มองหา influencer ทุกสายช่วยโปรโมทดีลเด็ดตลอดแคมเปญ', dEn: "The big mid-year online shopping festival. Looking for influencers across all niches to promote the best deals.", budget: '฿15,000 – 30,000', spots: '80/200', deadline: '30 มิ.ย. 2026', deadlineEn: '30 Jun 2026', plat: 'TikTok', tone: 'soon', img: 'photo-1607082349566-187342175e2f' },
+  { cat: 'ไลฟ์สไตล์', catEn: 'Lifestyle', brand: 'NimbusTV', title: 'Travel Essentials Guide', d: 'ไกด์ของใช้จำเป็นสำหรับการเดินทาง มองหา lifestyle creator มาเล่าเรื่องราวการใช้งานจริง', dEn: 'A travel essentials guide. Looking for lifestyle creators to tell relatable, real-use stories.', budget: '฿9,000 – 19,000', spots: '11/35', deadline: '28 ก.ค. 2026', deadlineEn: '28 Jul 2026', plat: 'Instagram', tone: 'open', img: 'photo-1542435503-956c469947f6' },
+]
+
+const heroImg = (id: string) => `https://images.unsplash.com/${id}?w=1600&q=80&fit=crop`
+const cardImg = (id: string) => `https://images.unsplash.com/${id}?w=600&q=80&fit=crop`
+
+// ---- carousel (เลื่อน + ลูกศร + จุด + เลื่อนอัตโนมัติ) ----
+const track = ref<HTMLElement | null>(null)
+const activeSlide = ref(0)
+let autoTimer: ReturnType<typeof setInterval> | null = null
+
+function scrollToSlide(i: number) {
+  const el = track.value
+  if (!el) return
+  const n = featured.length
+  const idx = ((i % n) + n) % n
+  el.scrollTo({ left: el.clientWidth * idx, behavior: 'smooth' })
+}
+function onTrackScroll() {
+  const el = track.value
+  if (!el) return
+  activeSlide.value = Math.round(el.scrollLeft / el.clientWidth)
+}
+function next() { scrollToSlide(activeSlide.value + 1) }
+function prev() { scrollToSlide(activeSlide.value - 1) }
+
+function startAuto() {
+  stopAuto()
+  autoTimer = setInterval(() => scrollToSlide(activeSlide.value + 1), 6000)
+}
+function stopAuto() {
+  if (autoTimer) { clearInterval(autoTimer); autoTimer = null }
+}
+onMounted(startAuto)
+onBeforeUnmount(stopAuto)
+
+const counter = computed(() => `${String(activeSlide.value + 1).padStart(2, '0')} / ${String(featured.length).padStart(2, '0')}`)
+
 const stats: [string, string, string][] = [
   ['10K+', 'ครีเอเตอร์ที่ใช้งาน', 'Active creators'],
   ['500+', 'แบรนด์ที่ตรวจสอบแล้ว', 'Verified brands'],
@@ -73,7 +148,7 @@ function splitName(b: Brand) {
 <template>
   <div>
     <!-- editorial intro -->
-    <section class="mb-5 lg:mb-6">
+    <section class="mb-6 lg:mb-8">
       <span class="inline-flex items-center gap-2 rounded-md border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-primary">
         <Icon name="sparkles" class="h-3.5 w-3.5" /> {{ tr('ครีเอเตอร์ มาร์เก็ตเพลส', 'Creator marketplace') }}
       </span>
@@ -90,77 +165,124 @@ function splitName(b: Brand) {
       </p>
     </section>
 
-    <!-- campaigns teaser -->
-    <section>
-      <div class="grid gap-5 lg:grid-cols-3">
-        <article role="button" tabindex="0" class="group relative cursor-pointer overflow-hidden rounded-xl border border-[#0F2747]/10 lg:col-span-2 lg:row-span-2" @click="goCampaigns" @keydown.enter="goCampaigns">
-          <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1000&q=80" alt="Summer Collection 2026" class="h-full min-h-[320px] w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-          <div class="absolute inset-0 bg-gradient-to-t from-[#0F2747] via-[#0F2747]/40 to-transparent" />
-          <div class="absolute left-6 right-6 top-6 flex items-center justify-between">
-            <span class="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white"><span class="h-1.5 w-1.5 animate-pulse rounded-full bg-white" /> {{ tr('เปิดรับ', 'Open') }}</span>
-            <span class="rounded-md bg-white/20 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white backdrop-blur">{{ tr('แฟชั่น', 'Fashion') }}</span>
-          </div>
-          <div class="absolute inset-x-0 bottom-0 p-6 text-white lg:p-8">
-            <p class="text-xs font-medium text-white/70">Fashion Brand Co.</p>
-            <h3 class="mt-1 font-heading text-2xl font-extrabold lg:text-3xl">Summer Collection 2026</h3>
-            <p class="mt-2 max-w-md text-xs text-white/70 lg:text-sm">{{ tr('ร่วมโปรโมทคอลเลกชั่นแฟชั่นใหม่ล่าสุดสำหรับซัมเมอร์นี้ มองหา Influencer ที่สไตล์การแต่งตัวโดดเด่นบน Instagram', 'Help promote the latest summer fashion collection. Looking for influencers with standout style on Instagram.') }}</p>
-            <div class="mt-4 flex items-center justify-between">
-              <div><span class="block text-[10px] uppercase tracking-widest text-white/50">{{ tr('งบประมาณ', 'Budget') }}</span><span class="font-bold">฿15,000 – 30,000</span></div>
-              <span class="flex h-11 w-11 items-center justify-center rounded-lg bg-white text-primary transition-transform group-hover:translate-x-1"><Icon name="arrow-right" class="h-5 w-5" /></span>
+    <!-- ============ campaigns teaser — จอแรกใหญ่สุด: HERO CAROUSEL (เลื่อนได้สูงสุด 5 แคมเปญ) ============ -->
+    <section
+      class="relative mb-6 overflow-hidden rounded-[2rem]"
+      @mouseenter="stopAuto"
+      @mouseleave="startAuto"
+    >
+      <!-- track -->
+      <div
+        ref="track"
+        class="no-scrollbar flex h-[68vh] min-h-[440px] max-h-[720px] snap-x snap-mandatory overflow-x-auto scroll-smooth"
+        @scroll.passive="onTrackScroll"
+      >
+        <article
+          v-for="(c, i) in featured"
+          :key="c.title"
+          role="button"
+          tabindex="0"
+          class="group relative h-full w-full shrink-0 cursor-pointer snap-center snap-always overflow-hidden"
+          @click="goCampaigns"
+          @keydown.enter="goCampaigns"
+        >
+          <img :src="heroImg(c.img)" :alt="c.title" class="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105" />
+          <div class="absolute inset-0 bg-gradient-to-t from-[#0F2747] via-[#0F2747]/55 to-[#0F2747]/10" />
+          <div class="absolute inset-0 bg-gradient-to-r from-[#0F2747]/70 via-transparent to-transparent" />
+
+          <div class="relative flex h-full flex-col justify-end p-6 pb-24 sm:p-10 sm:pb-24 lg:p-16 lg:pb-28">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="inline-flex items-center gap-1.5 rounded-md px-3 py-1 text-[10px] font-bold uppercase tracking-wide" :class="TONE[c.tone].cls">
+                <span v-if="TONE[c.tone].dot" class="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />{{ tr(TONE[c.tone].label, TONE[c.tone].labelEn) }}
+              </span>
+              <span class="rounded-md bg-white/15 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white backdrop-blur">{{ tr(c.cat, c.catEn) }}</span>
+              <span class="rounded-md bg-white/15 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white backdrop-blur">{{ c.plat }}</span>
             </div>
-          </div>
-        </article>
 
-        <article role="button" tabindex="0" class="group relative min-h-[200px] cursor-pointer overflow-hidden rounded-xl border border-[#0F2747]/10 shadow-sm" @click="goCampaigns" @keydown.enter="goCampaigns">
-          <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&q=80" alt="Tech Review Q2" class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-          <div class="absolute inset-0 bg-gradient-to-t from-[#0F2747] via-[#0F2747]/40 to-transparent" />
-          <div class="relative flex h-full flex-col justify-end p-5">
-            <span class="w-fit rounded-md bg-white/85 px-2 py-0.5 text-[9px] font-bold uppercase text-primary backdrop-blur">{{ tr('เทคโนโลยี', 'Technology') }}</span>
-            <h3 class="mt-2 font-heading text-lg font-bold text-white">Tech Review Q2</h3>
-            <p class="text-xs text-white/75">TechZone</p>
-            <span class="mt-1 text-sm font-bold text-white">฿8K – 16K</span>
-          </div>
-        </article>
+            <p class="mt-6 text-sm font-medium text-white/70">{{ c.brand }}</p>
+            <h2 class="mt-1 max-w-3xl font-heading text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-6xl">{{ c.title }}</h2>
+            <p class="mt-4 line-clamp-2 max-w-xl text-sm leading-relaxed text-white/75 lg:text-base">{{ tr(c.d, c.dEn) }}</p>
 
-        <article role="button" tabindex="0" class="group relative min-h-[200px] cursor-pointer overflow-hidden rounded-xl border border-[#0F2747]/10 shadow-sm" @click="goCampaigns" @keydown.enter="goCampaigns">
-          <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=80" alt="Food Festival Promo" class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-          <div class="absolute inset-0 bg-gradient-to-t from-[#0F2747] via-[#0F2747]/40 to-transparent" />
-          <div class="relative flex h-full flex-col justify-end p-5">
-            <span class="w-fit rounded-md bg-white/85 px-2 py-0.5 text-[9px] font-bold uppercase text-primary backdrop-blur">{{ tr('อาหาร', 'Food') }}</span>
-            <h3 class="mt-2 font-heading text-lg font-bold text-white">Food Festival Promo</h3>
-            <p class="text-xs text-white/75">Taste Kitchen</p>
-            <span class="mt-1 text-sm font-bold text-white">฿10K – 20K</span>
+            <div class="mt-6 flex flex-wrap items-center gap-x-8 gap-y-3 text-white">
+              <div>
+                <span class="block text-[10px] uppercase tracking-widest text-white/50">{{ tr('งบประมาณ', 'Budget') }}</span>
+                <span class="font-heading text-lg font-extrabold">{{ c.budget }}</span>
+              </div>
+              <div class="flex items-center gap-2 text-sm text-white/85"><Icon name="users" class="h-4 w-4" /> {{ c.spots }}</div>
+              <div class="flex items-center gap-2 text-sm text-white/85"><Icon name="calendar" class="h-4 w-4" /> {{ tr(c.deadline, c.deadlineEn) }}</div>
+            </div>
+
+            <div class="mt-8">
+              <span class="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3.5 text-sm font-bold text-primary shadow-[0_12px_30px_-10px_rgb(0_0_0_/_50%)] transition-transform group-hover:translate-x-1">
+                {{ tr('ดูแคมเปญนี้', 'View campaign') }} <Icon name="arrow-right" class="h-4 w-4" />
+              </span>
+            </div>
           </div>
         </article>
       </div>
 
-      <div class="mt-5 grid gap-5 sm:grid-cols-2">
-        <article role="button" tabindex="0" class="group cursor-pointer overflow-hidden rounded-xl border border-[#0F2747]/10 bg-white shadow-sm transition-shadow hover:shadow-[0_24px_50px_-30px_rgb(45_91_255_/_40%)]" @click="goCampaigns" @keydown.enter="goCampaigns">
-          <div class="relative h-40 overflow-hidden">
-            <img src="https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=600&q=80" alt="Skincare Glow Set" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-            <span class="absolute left-4 top-4 rounded-md bg-white/85 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-primary backdrop-blur">{{ tr('ความงาม', 'Beauty') }}</span>
+      <!-- eyebrow (บนซ้าย) -->
+      <span class="pointer-events-none absolute left-6 top-6 z-20 inline-flex items-center gap-2 rounded-md border border-white/25 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-white backdrop-blur lg:left-16 lg:top-8">
+        <Icon name="sparkles" class="h-3.5 w-3.5" /> {{ tr('แคมเปญแนะนำ', 'Featured campaigns') }}
+      </span>
+
+      <!-- arrows -->
+      <button type="button" :aria-label="tr('ก่อนหน้า', 'Previous')" class="absolute left-4 top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur transition hover:bg-white hover:text-primary sm:flex lg:left-6" @click.stop="prev">
+        <Icon name="chevron-left" class="h-6 w-6" />
+      </button>
+      <button type="button" :aria-label="tr('ถัดไป', 'Next')" class="absolute right-4 top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur transition hover:bg-white hover:text-primary sm:flex lg:right-6" @click.stop="next">
+        <Icon name="chevron-right" class="h-6 w-6" />
+      </button>
+
+      <!-- dots + counter -->
+      <div class="absolute inset-x-0 bottom-6 z-20 flex items-center justify-center gap-4 lg:bottom-8">
+        <div class="flex items-center gap-2">
+          <button
+            v-for="(c, i) in featured"
+            :key="`dot-${c.title}`"
+            type="button"
+            :aria-label="`${tr('ไปที่แคมเปญ', 'Go to campaign')} ${i + 1}`"
+            class="h-2 rounded-full transition-all"
+            :class="i === activeSlide ? 'w-8 bg-white' : 'w-2 bg-white/40 hover:bg-white/70'"
+            @click.stop="scrollToSlide(i)"
+          />
+        </div>
+        <span class="font-heading text-xs font-bold tabular-nums text-white/80">{{ counter }}</span>
+      </div>
+    </section>
+
+    <!-- ============ ด้านล่าง ~4 จอ: แคมเปญเพิ่มเติม (grid ปกติ ไม่เลื่อน) ============ -->
+    <section>
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <article
+          v-for="c in more"
+          :key="c.title"
+          role="button"
+          tabindex="0"
+          class="group flex cursor-pointer flex-col overflow-hidden rounded-xl border border-[#0F2747]/10 bg-white shadow-sm transition-shadow hover:shadow-[0_24px_50px_-30px_rgb(45_91_255_/_40%)]"
+          @click="goCampaigns"
+          @keydown.enter="goCampaigns"
+        >
+          <div class="relative h-44 overflow-hidden">
+            <img :src="cardImg(c.img)" :alt="c.title" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+            <span class="absolute left-4 top-4 rounded-md bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-primary backdrop-blur">{{ tr(c.cat, c.catEn) }}</span>
+            <span class="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-md px-3 py-1 text-[10px] font-bold uppercase tracking-wide" :class="TONE[c.tone].cls">
+              <span v-if="TONE[c.tone].dot" class="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />{{ tr(TONE[c.tone].label, TONE[c.tone].labelEn) }}
+            </span>
           </div>
-          <div class="p-5">
-            <p class="text-xs text-muted">GlowLab Beauty</p>
-            <h3 class="mt-0.5 font-heading text-lg font-bold text-ink">Skincare Glow Set</h3>
-            <p class="mt-1.5 line-clamp-2 text-xs leading-relaxed text-[#5B6B82]/80">{{ tr('รีวิวเซ็ตสกินแคร์ตัวใหม่ เน้นผิวกระจ่างใส สำหรับสาย beauty บน TikTok & Instagram', 'Review the new skincare set focused on radiant skin — for beauty creators on TikTok & Instagram.') }}</p>
-            <div class="mt-4 flex items-center justify-between">
-              <div><span class="block text-[10px] uppercase tracking-widest text-[#5B6B82]/40">{{ tr('งบประมาณ', 'Budget') }}</span><span class="font-bold text-primary">฿12,000 – 25,000</span></div>
-              <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary transition-transform group-hover:translate-x-1"><Icon name="arrow-right" class="h-4 w-4" /></span>
+          <div class="flex flex-1 flex-col p-5">
+            <p class="text-xs text-muted">{{ c.brand }} · {{ c.plat }}</p>
+            <h3 class="mt-1 font-heading text-lg font-bold text-ink">{{ c.title }}</h3>
+            <p class="mt-1.5 line-clamp-2 flex-1 text-xs leading-relaxed text-[#5B6B82]/80">{{ tr(c.d, c.dEn) }}</p>
+            <div class="mt-3 flex items-center gap-4 text-xs text-muted">
+              <span class="flex items-center gap-1.5"><Icon name="users" class="h-4 w-4 text-primary" /> {{ c.spots }}</span>
+              <span class="flex items-center gap-1.5"><Icon name="calendar" class="h-4 w-4 text-primary" /> {{ tr(c.deadline, c.deadlineEn) }}</span>
             </div>
-          </div>
-        </article>
-        <article role="button" tabindex="0" class="group cursor-pointer overflow-hidden rounded-xl border border-[#0F2747]/10 bg-white shadow-sm transition-shadow hover:shadow-[0_24px_50px_-30px_rgb(45_91_255_/_40%)]" @click="goCampaigns" @keydown.enter="goCampaigns">
-          <div class="relative h-40 overflow-hidden">
-            <img src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&q=80" alt="30-Day Fitness Challenge" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-            <span class="absolute left-4 top-4 rounded-md bg-white/85 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-primary backdrop-blur">{{ tr('ฟิตเนส', 'Fitness') }}</span>
-          </div>
-          <div class="p-5">
-            <p class="text-xs text-muted">FitPro Studio</p>
-            <h3 class="mt-0.5 font-heading text-lg font-bold text-ink">30-Day Fitness Challenge</h3>
-            <p class="mt-1.5 line-clamp-2 text-xs leading-relaxed text-[#5B6B82]/80">{{ tr('ชวนสายเฮลท์ตี้ร่วมชาเลนจ์ออกกำลังกาย 30 วัน พร้อมรีวิวอุปกรณ์ฟิตเนสรุ่นใหม่', 'Inviting health-conscious creators to join a 30-day workout challenge and review the latest fitness gear.') }}</p>
-            <div class="mt-4 flex items-center justify-between">
-              <div><span class="block text-[10px] uppercase tracking-widest text-[#5B6B82]/40">{{ tr('งบประมาณ', 'Budget') }}</span><span class="font-bold text-primary">฿9,000 – 18,000</span></div>
+            <div class="mt-4 flex items-center justify-between border-t border-[#0F2747]/10 pt-4">
+              <div>
+                <span class="block text-[10px] uppercase tracking-widest text-[#5B6B82]/40">{{ tr('งบประมาณ', 'Budget') }}</span>
+                <span class="font-bold text-primary">{{ c.budget }}</span>
+              </div>
               <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary transition-transform group-hover:translate-x-1"><Icon name="arrow-right" class="h-4 w-4" /></span>
             </div>
           </div>
@@ -246,3 +368,8 @@ function splitName(b: Brand) {
     </section>
   </div>
 </template>
+
+<style scoped>
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>

@@ -69,6 +69,8 @@ const PLAT_CLS: Record<Platform, string> = {
 }
 
 type Feedback = { u: string; t: string; d: string }
+// เงื่อนไขการจ่ายเงิน: upfront = จ่ายก่อนเริ่มงาน 100% (วางบิลได้เลย) · on_completion = จ่ายหลังเสร็จ 100% (วางบิลตอนส่งมอบ)
+type Pay = 'upfront' | 'on_completion'
 type Task = {
   id: number
   c: string
@@ -77,22 +79,28 @@ type Task = {
   due: string
   price: number
   stage: string
+  pay: Pay
   fb: Feedback[]
   rejected?: boolean
   rej?: [string, string]
 }
 
+const PAY: Record<Pay, { label: string; labelEn: string; icon: string }> = {
+  upfront: { label: 'จ่ายก่อนเริ่มงาน 100%', labelEn: 'Paid 100% upfront', icon: 'wallet' },
+  on_completion: { label: 'จ่ายหลังงานเสร็จ 100%', labelEn: 'Paid 100% on completion', icon: 'circle-check-big' },
+}
+
 const tasks: Task[] = [
-  { id: 1, c: 'Summer Collection 2026', brand: 'Fashion Brand Co.', plat: 'Instagram', due: '15 มี.ค. 2026', price: 18000, stage: 'brief_sent', fb: [] },
-  { id: 2, c: 'New Skincare Launch', brand: 'GlowLab Beauty', plat: 'TikTok', due: '20 มี.ค. 2026', price: 9500, stage: 'first_draft_feedback', fb: [{ u: 'Glow Beauty', t: 'วิดีโอดีมากค่ะ แต่รบกวนเพิ่มการแสดงวิธีใช้ผลิตภัณฑ์ในวินาทีที่ 15-25 ด้วยนะคะ', d: '19 มี.ค.' }] },
-  { id: 3, c: 'Gadget Review - Smartphone', brand: 'TechZone', plat: 'YouTube', due: '25 มี.ค. 2026', price: 22000, stage: 'draft_approved', fb: [] },
-  { id: 4, c: 'Fitness Challenge 30 Days', brand: 'FitPro Studio', plat: 'Instagram', due: '5 เม.ย. 2026', price: 12000, stage: 'waiting_capture_report', fb: [] },
-  { id: 5, c: 'Food Festival Promo', brand: 'Taste Kitchen', plat: 'TikTok', due: '28 ก.พ. 2026', price: 15000, stage: 'capture_report_sent', fb: [] },
-  { id: 6, c: 'Mineral Water รุ่นใหม่', brand: 'Pure Hydra', plat: 'Facebook', due: '10 เม.ย. 2026', price: 8000, stage: 'brief_sent', fb: [] },
-  { id: 7, c: 'Coffee Drop Teaser', brand: 'CafeNord', plat: 'Twitter', due: '3 เม.ย. 2026', price: 6000, stage: 'draft_approved', fb: [] },
-  { id: 8, c: 'Skincare Routine รีวิว', brand: 'Aura Cosmetics', plat: 'Lemon8', due: '18 เม.ย. 2026', price: 7000, stage: 'first_draft_feedback', fb: [{ u: 'Aura', t: 'รูปสวยมากค่ะ ขอเพิ่มข้อความบรรยายส่วนผสมในรูปที่ 3 ด้วยนะคะ', d: '17 เม.ย.' }] },
-  { id: 9, c: 'Energy Drink Launch', brand: 'Volt Beverage', plat: 'TikTok', due: '12 มี.ค. 2026', price: 11000, stage: 'brief_sent', fb: [], rejected: true, rej: ['ราคาที่เสนอสูงกว่างบของแคมเปญ จึงไม่ผ่านการพิจารณา', 'The quoted price was over the campaign budget, so it was not approved.'] },
-  { id: 10, c: 'Travel Vlog Bangkok', brand: 'Wander Co.', plat: 'YouTube', due: '8 มี.ค. 2026', price: 16000, stage: 'brief_sent', fb: [], rejected: true, rej: ['ไม่ได้รับเลือกสำหรับแคมเปญนี้ — แบรนด์เลือก KOL รายอื่น', 'Not selected for this campaign — the brand chose another creator.'] },
+  { id: 1, c: 'Summer Collection 2026', brand: 'Fashion Brand Co.', plat: 'Instagram', due: '15 มี.ค. 2026', price: 18000, stage: 'brief_sent', pay: 'upfront', fb: [] },
+  { id: 2, c: 'New Skincare Launch', brand: 'GlowLab Beauty', plat: 'TikTok', due: '20 มี.ค. 2026', price: 9500, stage: 'first_draft_feedback', pay: 'on_completion', fb: [{ u: 'Glow Beauty', t: 'วิดีโอดีมากค่ะ แต่รบกวนเพิ่มการแสดงวิธีใช้ผลิตภัณฑ์ในวินาทีที่ 15-25 ด้วยนะคะ', d: '19 มี.ค.' }] },
+  { id: 3, c: 'Gadget Review - Smartphone', brand: 'TechZone', plat: 'YouTube', due: '25 มี.ค. 2026', price: 22000, stage: 'draft_approved', pay: 'on_completion', fb: [] },
+  { id: 4, c: 'Fitness Challenge 30 Days', brand: 'FitPro Studio', plat: 'Instagram', due: '5 เม.ย. 2026', price: 12000, stage: 'waiting_capture_report', pay: 'on_completion', fb: [] },
+  { id: 5, c: 'Food Festival Promo', brand: 'Taste Kitchen', plat: 'TikTok', due: '28 ก.พ. 2026', price: 15000, stage: 'capture_report_sent', pay: 'upfront', fb: [] },
+  { id: 6, c: 'Mineral Water รุ่นใหม่', brand: 'Pure Hydra', plat: 'Facebook', due: '10 เม.ย. 2026', price: 8000, stage: 'brief_sent', pay: 'upfront', fb: [] },
+  { id: 7, c: 'Coffee Drop Teaser', brand: 'CafeNord', plat: 'Twitter', due: '3 เม.ย. 2026', price: 6000, stage: 'draft_approved', pay: 'upfront', fb: [] },
+  { id: 8, c: 'Skincare Routine รีวิว', brand: 'Aura Cosmetics', plat: 'Lemon8', due: '18 เม.ย. 2026', price: 7000, stage: 'first_draft_feedback', pay: 'on_completion', fb: [{ u: 'Aura', t: 'รูปสวยมากค่ะ ขอเพิ่มข้อความบรรยายส่วนผสมในรูปที่ 3 ด้วยนะคะ', d: '17 เม.ย.' }] },
+  { id: 9, c: 'Energy Drink Launch', brand: 'Volt Beverage', plat: 'TikTok', due: '12 มี.ค. 2026', price: 11000, stage: 'brief_sent', pay: 'on_completion', fb: [], rejected: true, rej: ['ราคาที่เสนอสูงกว่างบของแคมเปญ จึงไม่ผ่านการพิจารณา', 'The quoted price was over the campaign budget, so it was not approved.'] },
+  { id: 10, c: 'Travel Vlog Bangkok', brand: 'Wander Co.', plat: 'YouTube', due: '8 มี.ค. 2026', price: 16000, stage: 'brief_sent', pay: 'on_completion', fb: [], rejected: true, rej: ['ไม่ได้รับเลือกสำหรับแคมเปญนี้ — แบรนด์เลือก KOL รายอื่น', 'Not selected for this campaign — the brand chose another creator.'] },
 ]
 
 const BUCKET: Record<Bucket, { label: string; labelEn: string; cls: string; dot: string }> = {
@@ -200,6 +208,15 @@ const chatMessages = ref<ChatMsg[]>([])
 const chatInput = ref('')
 const chatThread = ref<HTMLElement | null>(null)
 
+// files chosen in the current action panel (one dropzone visible at a time) — reset per task
+const uploadFiles = ref<File[]>([])
+
+// ── billing ──
+// billed via <BillingSection>; upfront tasks can bill anytime, on_completion tasks bill at delivery
+const billingSettled = ref(false)
+// upfront tasks may deliver without re-billing; on_completion tasks must settle billing to deliver
+const canConfirmPost = computed(() => current.value?.pay === 'upfront' || billingSettled.value)
+
 async function scrollChatToBottom() {
   await nextTick()
   const el = chatThread.value
@@ -211,6 +228,8 @@ function openTask(id: number) {
   const t = tasks.find((x) => x.id === id)
   chatMessages.value = t ? buildChat(t.brand) : []
   chatInput.value = ''
+  uploadFiles.value = []
+  billingSettled.value = false
   scrollChatToBottom()
 }
 function closeTask() {
@@ -317,6 +336,9 @@ function sendChat() {
                 <span class="flex items-center gap-1.5">
                   <Icon name="calendar" class="h-4 w-4" /> {{ t.due }}
                 </span>
+                <span v-if="!t.rejected" class="flex items-center gap-1.5" :class="t.pay === 'upfront' ? 'text-green-600' : ''">
+                  <Icon :name="PAY[t.pay].icon" class="h-4 w-4" /> {{ tr(PAY[t.pay].label, PAY[t.pay].labelEn) }}
+                </span>
               </div>
             </div>
           </div>
@@ -379,6 +401,9 @@ function sendChat() {
                   <span class="h-1.5 w-1.5 rounded-full" :class="currentBucket.dot" />{{ tr(currentBucket.label, currentBucket.labelEn) }}
                 </span>
                 <span class="rounded-md bg-white/15 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur">{{ current.plat }}</span>
+                <span v-if="!current.rejected" class="inline-flex items-center gap-1.5 rounded-md bg-white/15 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur">
+                  <Icon :name="PAY[current.pay].icon" class="h-3.5 w-3.5" />{{ tr(PAY[current.pay].label, PAY[current.pay].labelEn) }}
+                </span>
               </div>
               <h1 class="mt-4 font-heading text-3xl font-extrabold leading-tight text-white lg:text-4xl">{{ current.c }}</h1>
               <p class="mt-1 text-white/70">{{ current.brand }}</p>
@@ -525,6 +550,25 @@ function sendChat() {
 
               <!-- right column: action panel + chat -->
               <div class="space-y-6 lg:col-span-3">
+                <!-- upfront billing — available from the start for pay-upfront tasks -->
+                <div v-if="current.pay === 'upfront'" class="rounded-2xl border border-green-200 bg-green-50/50 p-6 shadow-sm">
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <h3 class="flex items-center gap-2 font-heading text-lg font-bold text-ink">
+                      <Icon name="receipt" class="h-5 w-5 text-green-600" /> {{ tr('วางบิลได้เลย', 'Bill now') }}
+                    </h3>
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-[11px] font-bold text-green-700">
+                      <Icon name="wallet" class="h-3.5 w-3.5" /> {{ tr(PAY.upfront.label, PAY.upfront.labelEn) }}
+                    </span>
+                  </div>
+                  <p class="mt-1 text-sm text-muted">{{ tr('งานนี้จ่ายก่อนเริ่มงาน 100% — แนบใบแจ้งหนี้ หรือกดยินยอมให้เราตั้งเบิกได้ทันที ไม่ต้องรอส่งงาน', 'This task pays 100% upfront — attach an invoice or give consent to file the billing right away, no need to wait for delivery.') }}</p>
+                  <div class="mt-4">
+                    <BillingSection :key="`bill-up-${current.id}`" v-model:settled="billingSettled" :price="current.price" :campaign-name="current.c" />
+                  </div>
+                  <div v-if="billingSettled" class="mt-4 flex items-center gap-2 rounded-lg bg-green-100/70 px-3 py-2.5 text-sm font-semibold text-green-800">
+                    <Icon name="check-circle" class="h-4 w-4 shrink-0" /> {{ tr('รับเรื่องวางบิลแล้ว — ทีมงานจะดำเนินการตั้งเบิกให้', 'Billing received — the team will process the reimbursement for you.') }}
+                  </div>
+                </div>
+
                 <div class="rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/[0.07] to-transparent p-6 shadow-sm">
                   <h3 class="mb-4 flex items-center gap-2 font-heading text-lg font-bold text-ink">
                     <Icon name="circle-dot" class="h-5 w-5 text-primary" /> {{ tr('สิ่งที่ต้องทำตอนนี้', 'What to do now') }}
@@ -551,9 +595,7 @@ function sendChat() {
                       </div>
                       <div>
                         <label class="mb-1 block text-sm font-semibold text-ink">{{ tr('แนบ moodboard (ถ้ามี)', 'Attach moodboard (optional)') }}</label>
-                        <label class="flex cursor-pointer items-center gap-3 rounded-xl border-2 border-dashed border-[#0F2747]/15 p-3 transition hover:border-primary/50">
-                          <Icon name="upload" class="h-5 w-5 text-[#5B6B82]/60" /><span class="text-sm text-muted">{{ tr('คลิกเพื่อเลือกไฟล์', 'Click to choose a file') }}</span>
-                        </label>
+                        <FileDropzone v-model:files="uploadFiles" :hint="tr('รูป, PDF, ไฟล์อื่นๆ', 'Images, PDF, any file')" />
                       </div>
                       <button type="button" class="w-full rounded-lg bg-primary px-4 py-3 text-sm font-bold text-white transition hover:bg-primaryDark" @click="closeTask">{{ tr('ส่ง Storyline', 'Submit storyline') }}</button>
                     </template>
@@ -569,9 +611,7 @@ function sendChat() {
                     <template v-else-if="currentStage.act === 'first_draft'">
                       <div>
                         <label class="mb-1 block text-sm font-semibold text-ink">{{ tr('First Draft (รูป / วิดีโอ)', 'First draft (photo / video)') }}</label>
-                        <label class="flex cursor-pointer items-center gap-3 rounded-xl border-2 border-dashed border-[#0F2747]/15 p-3 transition hover:border-primary/50">
-                          <Icon name="upload" class="h-5 w-5 text-[#5B6B82]/60" /><span class="text-sm text-muted">{{ tr('คลิกเพื่อเลือกไฟล์', 'Click to choose a file') }}</span>
-                        </label>
+                        <FileDropzone v-model:files="uploadFiles" :hint="tr('รูป, วิดีโอ, PDF, ไฟล์อื่นๆ', 'Photo, video, PDF, any file')" />
                       </div>
                       <div>
                         <label class="mb-1 block text-sm font-semibold text-ink">Caption</label>
@@ -583,9 +623,7 @@ function sendChat() {
                     <template v-else-if="currentStage.act === 'second_draft'">
                       <div>
                         <label class="mb-1 block text-sm font-semibold text-ink">{{ tr('Second Draft (แก้ตาม feedback)', 'Second draft (revised per feedback)') }}</label>
-                        <label class="flex cursor-pointer items-center gap-3 rounded-xl border-2 border-dashed border-[#0F2747]/15 p-3 transition hover:border-primary/50">
-                          <Icon name="upload" class="h-5 w-5 text-[#5B6B82]/60" /><span class="text-sm text-muted">{{ tr('คลิกเพื่อเลือกไฟล์', 'Click to choose a file') }}</span>
-                        </label>
+                        <FileDropzone v-model:files="uploadFiles" :hint="tr('รูป, วิดีโอ, PDF, ไฟล์อื่นๆ', 'Photo, video, PDF, any file')" />
                       </div>
                       <button type="button" class="w-full rounded-lg bg-primary px-4 py-3 text-sm font-bold text-white transition hover:bg-primaryDark" @click="closeTask">{{ tr('ส่ง Second Draft', 'Submit second draft') }}</button>
                     </template>
@@ -593,23 +631,41 @@ function sendChat() {
                     <template v-else-if="currentStage.act === 'final_draft'">
                       <div>
                         <label class="mb-1 block text-sm font-semibold text-ink">Final Draft</label>
-                        <label class="flex cursor-pointer items-center gap-3 rounded-xl border-2 border-dashed border-[#0F2747]/15 p-3 transition hover:border-primary/50">
-                          <Icon name="upload" class="h-5 w-5 text-[#5B6B82]/60" /><span class="text-sm text-muted">{{ tr('คลิกเพื่อเลือกไฟล์', 'Click to choose a file') }}</span>
-                        </label>
+                        <FileDropzone v-model:files="uploadFiles" :hint="tr('รูป, วิดีโอ, PDF, ไฟล์อื่นๆ', 'Photo, video, PDF, any file')" />
                       </div>
                       <button type="button" class="w-full rounded-lg bg-primary px-4 py-3 text-sm font-bold text-white transition hover:bg-primaryDark" @click="closeTask">{{ tr('ส่ง Final Draft', 'Submit final draft') }}</button>
                     </template>
 
                     <template v-else-if="currentStage.act === 'post_link'">
                       <div class="rounded-xl border border-green-200 bg-green-50 p-4">
-                        <p class="flex items-center gap-2 font-bold text-green-900"><Icon name="rocket" class="h-4 w-4" /> {{ tr('Draft อนุมัติแล้ว — โพสต์ได้เลย!', 'Draft approved — you can post now!') }}</p>
+                        <p class="flex items-center gap-2 font-bold text-green-900">{{ tr('Draft อนุมัติแล้ว — โพสต์ได้เลย!', 'Draft approved — you can post now!') }}</p>
                         <p class="mt-1 text-sm text-green-700">{{ tr('เผยแพร่งานจริงแล้วแนบลิงก์โพสต์ด้านล่าง', 'Publish the content live, then attach the post link below.') }}</p>
                       </div>
                       <div>
                         <label class="mb-1 block text-sm font-semibold text-ink">{{ tr('ลิงก์โพสต์จริง (Post URL)', 'Live post link (Post URL)') }}</label>
                         <input placeholder="https://www.instagram.com/p/..." class="w-full rounded-lg border border-[#0F2747]/15 bg-surface px-4 py-3 text-sm outline-none focus:border-primary/50" />
                       </div>
-                      <button type="button" class="w-full rounded-lg bg-green-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-green-700" @click="closeTask">{{ tr('ยืนยันโพสต์ + แนบลิงก์', 'Confirm post + attach link') }}</button>
+
+                      <!-- billing at delivery — only for pay-on-completion (upfront tasks bill earlier) -->
+                      <div v-if="current.pay === 'on_completion'" class="rounded-xl border border-[#0F2747]/10 bg-surface/60 p-4">
+                        <p class="flex items-center gap-2 text-sm font-bold text-ink">
+                          <Icon name="receipt" class="h-4 w-4 text-primary" /> {{ tr('การวางบิล', 'Billing') }}
+                        </p>
+                        <p class="mt-1 text-xs text-muted">{{ tr('งานนี้จ่ายหลังเสร็จ 100% — แนบใบแจ้งหนี้ หรือกดยินยอมให้เราตั้งเบิกแทน (เลือก 1 กรณี)', 'This task pays 100% on completion — attach an invoice, or give consent so we can file the billing for you (choose one).') }}</p>
+                        <div class="mt-3">
+                          <BillingSection :key="`bill-del-${current.id}`" v-model:settled="billingSettled" :price="current.price" :campaign-name="current.c" />
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        class="w-full rounded-lg px-4 py-3 text-sm font-bold text-white transition"
+                        :class="canConfirmPost ? 'bg-green-600 hover:bg-green-700' : 'cursor-not-allowed bg-[#0F2747]/20'"
+                        :disabled="!canConfirmPost"
+                        @click="closeTask"
+                      >
+                        {{ canConfirmPost ? tr('ยืนยันโพสต์ + แนบลิงก์', 'Confirm post + attach link') : tr('กรุณาแนบใบแจ้งหนี้ หรือกดยินยอมก่อน', 'Attach an invoice or give consent first') }}
+                      </button>
                     </template>
 
                     <template v-else-if="currentStage.act === 'capture'">
@@ -619,9 +675,7 @@ function sendChat() {
                       </div>
                       <div>
                         <label class="mb-1 block text-sm font-semibold text-ink">{{ tr('Capture Report (สกรีนช็อตสถิติ)', 'Capture report (stats screenshots)') }}</label>
-                        <label class="flex cursor-pointer items-center gap-3 rounded-xl border-2 border-dashed border-[#0F2747]/15 p-3 transition hover:border-primary/50">
-                          <Icon name="upload" class="h-5 w-5 text-[#5B6B82]/60" /><span class="text-sm text-muted">{{ tr('คลิกเพื่อเลือกไฟล์', 'Click to choose a file') }}</span>
-                        </label>
+                        <FileDropzone v-model:files="uploadFiles" :hint="tr('รูป, PDF, ไฟล์อื่นๆ', 'Images, PDF, any file')" />
                       </div>
                       <button type="button" class="w-full rounded-lg bg-violet-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-violet-700" @click="closeTask">{{ tr('ส่ง Capture Report', 'Submit capture report') }}</button>
                     </template>

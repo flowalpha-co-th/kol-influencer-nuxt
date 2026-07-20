@@ -113,17 +113,58 @@ const socials = reactive<Social[]>([
 
 /* ---------- Tab 3 data ---------- */
 interface RatePlatform { platform: PlatformName, formats: [string, string, number | null][] }
+const CROSS_TH = 'โพสต์ข้ามแพลตฟอร์ม (TikTok / Facebook / Instagram / YouTube / X)'
+const CROSS_EN = 'Post Cross Platform (TikTok / Facebook / Instagram / YouTube / X)'
 const rates = reactive<RatePlatform[]>([
-  { platform: 'Instagram', formats: [['โพสต์', 'Post', 8000], ['สตอรี่', 'Story', 4000], ['รีล', 'Reel', 12000], ['ไลฟ์', 'Live', null]] },
-  { platform: 'TikTok', formats: [['วิดีโอ', 'Video', 15000], ['ไลฟ์', 'Live', 10000]] },
-  { platform: 'Facebook', formats: [['โพสต์', 'Post', 6000], ['สตอรี่', 'Story', 3000], ['รีล', 'Reel', 8000], ['ไลฟ์', 'Live', null]] },
-  { platform: 'YouTube', formats: [['วิดีโอ', 'Video', 25000], ['Shorts', 'Shorts', 9000], ['ไลฟ์', 'Live', null]] },
-  { platform: 'Twitter', formats: [['โพสต์', 'Post', null]] },
+  { platform: 'TikTok', formats: [
+    ['รีวิววิดีโอสั้น', 'Short VDO Review', null],
+    ['โพสต์ภาพเดี่ยว', 'Create Single Photo', null],
+    ['โพสต์ภาพอัลบั้ม', 'Create Album Photo', null],
+    ['รีวิววิดีโอยาว', 'Long VDO Review', null],
+    ['สร้างโค้ดส่วนลด', 'Gen Code', null],
+    ['เพิ่มตะกร้า', 'Add Basket', null],
+    ['โพสต์ PR', 'PR POST', null],
+    ['สตอรี่', 'Story', null],
+    [CROSS_TH, CROSS_EN, null],
+  ] },
+  { platform: 'Facebook', formats: [
+    ['โพสต์ภาพเดี่ยว', 'Create Single Photo', null],
+    ['โพสต์ภาพอัลบั้ม', 'Create Album Photo', null],
+    ['โพสต์ PR', 'PR POST', null],
+    ['รีวิววิดีโอสั้น', 'Short VDO Review', null],
+    ['รีวิววิดีโอยาว', 'Long VDO Review', null],
+    ['เพิ่ม Advertiser', 'Add Advertiser', null],
+    ['ค่าบริหารจัดการ', 'Management Fee', null],
+    ['แท็ก Branded Content', 'Tag Branded', null],
+    [CROSS_TH, CROSS_EN, null],
+  ] },
+  { platform: 'Instagram', formats: [
+    ['โพสต์ภาพเดี่ยว', 'Create Single Photo', null],
+    ['โพสต์ภาพอัลบั้ม', 'Create Album Photo', null],
+    ['สตอรี่', 'Story', null],
+    ['โพสต์ PR', 'PR POST', null],
+    ['รีวิววิดีโอสั้น', 'Short VDO Review', null],
+    ['รีวิววิดีโอยาว', 'Long VDO Review', null],
+    ['แท็ก Branded / Paid Partnership', 'Tag Branded / Paid Partnership', null],
+    [CROSS_TH, CROSS_EN, null],
+  ] },
+  { platform: 'YouTube', formats: [
+    ['สปอนเซอร์คอนเทนต์หลัก', 'Sponsorship Main Content', null],
+    ['สปอนเซอร์คอนเทนต์ Tie-In', 'Sponsorship Tie-In Content', null],
+    [CROSS_TH, CROSS_EN, null],
+  ] },
+  { platform: 'Twitter', formats: [
+    ['โพสต์ภาพเดี่ยว', 'Create Single Photo', null],
+    ['โพสต์ภาพอัลบั้ม', 'Create Album Photo', null],
+    ['โพสต์ PR', 'PR POST', null],
+    ['รีวิววิดีโอสั้น', 'Short VDO Review', null],
+    ['รีวิววิดีโอยาว', 'Long VDO Review', null],
+    ['ค่า Boost', 'Boost Fee', null],
+    [CROSS_TH, CROSS_EN, null],
+  ] },
   { platform: 'Lemon8', formats: [['โพสต์', 'Post', 5000], ['วิดีโอ', 'Video', 7000]] },
 ])
-const rateTerms = reactive({ usage: '30 วัน บน owned media', exclusivity: '14', turnaround: '7' })
-const brandHistory = ['Luxe Beauty', 'GlowLab', 'Taste Kitchen']
-const addAdvertiser = ref(true)
+const rateTerms = reactive({ travel: '', usage1m: '', buyout: '', deleteAfter: 'ไม่ใช่', affiliate: '' })
 
 /* ---------- Tab 4 data ---------- */
 const kyc = reactive({
@@ -148,6 +189,15 @@ const kycDocs = [
   { key: 'selfie', label: 'เซลฟี่คู่บัตรประชาชน', labelEn: 'Selfie with ID card' },
   { key: 'bankBook', label: 'หน้าสมุดบัญชีธนาคาร', labelEn: 'Bankbook front page' },
 ]
+
+/* ---------- availability (accepting work) ---------- */
+const acceptingWork = ref(true)
+function toggleAcceptingWork() {
+  acceptingWork.value = !acceptingWork.value
+  toast.success(acceptingWork.value
+    ? tr('เปิดรับงานแล้ว — โปรไฟล์ของคุณจะแสดงต่อแบรนด์', 'You\'re now open for work — your profile is visible to brands')
+    : tr('ปิดรับงานแล้ว — โปรไฟล์จะถูกซ่อนจากการจับคู่แคมเปญ', 'You\'re not accepting work — your profile is hidden from campaign matching'))
+}
 
 /* ---------- runtime state (review switcher) ---------- */
 const editing = ref(false)
@@ -206,9 +256,11 @@ const consentRows = computed(() => consent.map((c) => {
 
 /* ---------- Tab 3 rate terms fields ---------- */
 const rateTermsFields = computed<FieldOpt[]>(() => [
-  { label: 'ลิขสิทธิ์การใช้งาน (Usage rights)', labelEn: 'Usage rights', value: rateTerms.usage, note: 'แบรนด์นำคอนเทนต์ไปใช้ได้นานแค่ไหน/ที่ไหน', noteEn: 'How long and where the brand may use your content' },
-  { label: 'Exclusivity (วัน)', labelEn: 'Exclusivity (days)', value: rateTerms.exclusivity, note: 'ห้ามรับงานคู่แข่งกี่วัน', noteEn: 'How many days you won\'t take competing work' },
-  { label: 'Turnaround (วัน)', labelEn: 'Turnaround (days)', value: rateTerms.turnaround, note: 'ส่งงานได้ภายในกี่วันหลังรับบรีฟ', noteEn: 'How many days to deliver after receiving the brief' },
+  { label: 'ค่าเดินทางถ่ายทำนอกสถานที่ภายในกทม. (ถ้ามี)', labelEn: 'On-location travel fee within Bangkok (if any)', value: rateTerms.travel, note: 'ระบุเป็นบาท เว้นว่างถ้าไม่คิดค่าเดินทาง', noteEn: 'In THB — leave blank if not charged' },
+  { label: 'ค่าใช้จ่ายสำหรับแบรนด์นำคลิปไปใช้ 1 เดือน', labelEn: 'Fee for the brand to use the clip for 1 month', value: rateTerms.usage1m, note: 'ค่าลิขสิทธิ์นำคลิปไปใช้บนสื่อแบรนด์ 1 เดือน', noteEn: 'Usage rights for the brand to run the clip on their media for 1 month' },
+  { label: 'ค่าใช้จ่ายสำหรับแบรนด์นำคลิปไปใช้แบบซื้อขาด', labelEn: 'Fee for the brand to buy out the clip', value: rateTerms.buyout, note: 'ค่าลิขสิทธิ์แบบซื้อขาด ใช้ได้ไม่จำกัดเวลา', noteEn: 'Full buyout — unlimited usage with no time limit' },
+  { label: 'ถ้าครบกำหนดทางแบรนด์ต้องลบคลิปหรือไม่', labelEn: 'Must the brand delete the clip when the term ends?', value: rateTerms.deleteAfter, type: 'select', options: ['ใช่', 'ไม่ใช่'], optionsEn: ['Yes', 'No'], note: 'เงื่อนไขหลังหมดสัญญาการใช้งาน', noteEn: 'Condition after the usage term expires' },
+  { label: 'ค่าใช้จ่ายสำหรับติดตะกร้า หรือ Affiliate', labelEn: 'Fee for adding a shopping basket / Affiliate', value: rateTerms.affiliate, note: 'ค่าติดตะกร้าสินค้า/ลิงก์ Affiliate ในคอนเทนต์', noteEn: 'Fee for adding a product basket / Affiliate link in the content' },
 ])
 
 /* ---------- Tab 4 KYC computed ---------- */
@@ -363,6 +415,40 @@ function formatRate(v: number) { return v.toLocaleString() }
       </div>
     </section>
 
+    <!-- availability: accepting work on/off -->
+    <div class="mb-6">
+      <div :class="['flex flex-col gap-4 rounded-xl border p-5 shadow-sm transition sm:flex-row sm:items-center sm:justify-between', acceptingWork ? 'border-green-200 bg-green-50' : 'border-[#0F2747]/10 bg-white']">
+        <div class="flex items-center gap-3.5">
+          <div :class="['flex h-11 w-11 shrink-0 items-center justify-center rounded-xl', acceptingWork ? 'bg-green-100' : 'bg-surface']">
+            <Icon :name="acceptingWork ? 'briefcase' : 'circle-slash'" :class="['h-5 w-5', acceptingWork ? 'text-green-600' : 'text-[#5B6B82]/60']" />
+          </div>
+          <div>
+            <p class="flex items-center gap-2 font-heading text-base font-bold text-ink">
+              {{ tr('สถานะรับงาน', 'Work availability') }}
+              <span :class="['inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold', acceptingWork ? 'bg-green-100 text-green-700' : 'bg-surface text-muted']">
+                <span :class="['h-1.5 w-1.5 rounded-full', acceptingWork ? 'bg-green-500' : 'bg-[#5B6B82]/50']" />
+                {{ acceptingWork ? tr('เปิดรับงาน', 'Open for work') : tr('ไม่รับงาน', 'Not accepting work') }}
+              </span>
+            </p>
+            <p class="mt-0.5 text-xs leading-relaxed text-muted">
+              {{ acceptingWork
+                ? tr('แบรนด์และแอดมินสามารถเห็นโปรไฟล์และชวนคุณร่วมแคมเปญได้', 'Brands and admins can see your profile and invite you to campaigns')
+                : tr('โปรไฟล์ถูกซ่อนจากการจับคู่ — คุณจะไม่ได้รับข้อเสนองานใหม่', 'Your profile is hidden from matching — you won\'t receive new work offers') }}
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          :aria-checked="acceptingWork"
+          :class="['relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors', acceptingWork ? 'bg-green-500' : 'bg-[#0F2747]/20']"
+          @click="toggleAcceptingWork"
+        >
+          <span :class="['inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform', acceptingWork ? 'translate-x-6' : 'translate-x-1']" />
+        </button>
+      </div>
+    </div>
+
     <!-- review-only state switcher -->
     <div class="mb-5">
       <div class="flex flex-wrap items-center gap-x-5 gap-y-3 rounded-xl border-2 border-dashed border-violet-300 bg-violet-50/60 px-4 py-3">
@@ -419,7 +505,7 @@ function formatRate(v: number) { return v.toLocaleString() }
               <Icon :name="completeness.readyWork ? 'check-circle' : 'lock'" :class="['h-5 w-5 shrink-0', completeness.readyWork ? 'text-green-600' : 'text-[#5B6B82]/50']" />
               <div>
                 <p :class="['text-sm font-bold', completeness.readyWork ? 'text-green-800' : 'text-ink']">{{ tr('พร้อมรับงาน', 'Ready for work') }}</p>
-                <p :class="['text-[11px]', completeness.readyWork ? 'text-green-600' : 'text-muted']">{{ completeness.readyWork ? tr('ข้อมูล + โซเชียล + rate ครบ', 'Info + social + rate complete') : tr('ทำข้อมูลให้ครบเพื่อรับงาน', 'Complete your profile to get work') }}</p>
+                <p :class="['text-[11px]', completeness.readyWork ? 'text-green-600' : 'text-muted']">{{ completeness.readyWork ? tr('ข้อมูลครบถ้วน', 'Information complete') : tr('ทำข้อมูลให้ครบเพื่อรับงาน', 'Complete your profile to get work') }}</p>
               </div>
             </div>
             <div :class="['flex items-center gap-2.5 rounded-xl border p-3', completeness.readyEarn ? 'border-green-200 bg-green-50' : 'border-[#0F2747]/10 bg-surface']">
@@ -720,33 +806,16 @@ function formatRate(v: number) { return v.toLocaleString() }
 
               <!-- terms -->
               <div class="mt-6 rounded-xl bg-surface p-5">
-                <h3 class="font-bold text-ink">{{ tr('เงื่อนไขการรับงาน', 'Work terms') }}</h3>
-                <div class="mt-3 grid gap-4 sm:grid-cols-3">
+                <h3 class="font-bold text-ink">{{ tr('เรทการ์ดอื่น ๆ เพิ่มเติม', 'Additional rate card items') }}</h3>
+                <div class="mt-3 grid gap-4 sm:grid-cols-2">
                   <div v-for="f in rateTermsFields" :key="f.label">
                     <label class="mb-1.5 flex flex-wrap items-center gap-2 text-sm font-semibold text-ink">{{ tr(f.label, f.labelEn) }}</label>
-                    <input :disabled="fieldDisabled(f)" :value="f.value" :class="fieldClass(f)" />
+                    <select v-if="f.type === 'select'" :disabled="fieldDisabled(f)" :class="fieldClass(f)">
+                      <option v-for="(opt, oi) in f.options" :key="opt" :value="opt" :selected="opt === f.value">{{ f.optionsEn ? tr(opt, f.optionsEn[oi]!) : opt }}</option>
+                    </select>
+                    <input v-else :disabled="fieldDisabled(f)" :value="f.value" :class="fieldClass(f)" />
                     <p v-if="f.note" class="mt-1.5 text-xs leading-relaxed text-[#5B6B82]/80">{{ f.noteEn ? tr(f.note, f.noteEn) : f.note }}</p>
                   </div>
-                </div>
-              </div>
-
-              <!-- extra -->
-              <div class="mt-5 rounded-xl border border-[#0F2747]/10 p-5">
-                <div class="flex items-center justify-between gap-3">
-                  <div>
-                    <h3 class="font-bold text-ink">{{ tr('แบรนด์ที่เคยร่วมงาน', 'Brands you\'ve worked with') }} <span class="text-xs font-normal text-muted">{{ tr('(ออปชัน)', '(optional)') }}</span></h3>
-                    <p class="mt-0.5 text-xs text-muted">{{ tr('ช่วยให้แบรนด์เห็นประสบการณ์ของคุณ', 'Helps brands see your experience') }}</p>
-                  </div>
-                  <label class="flex items-center gap-2 text-sm font-semibold text-ink">
-                    {{ tr('รับงานโฆษณา', 'Accept ads') }}
-                    <button type="button" :class="['relative h-7 w-12 shrink-0 rounded-full transition', addAdvertiser ? 'bg-primary' : 'bg-[#0F2747]/15']" @click="addAdvertiser = !addAdvertiser">
-                      <span :class="['absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-all', addAdvertiser ? 'left-6' : 'left-1']" />
-                    </button>
-                  </label>
-                </div>
-                <div class="mt-4 flex flex-wrap gap-2">
-                  <span v-for="b in brandHistory" :key="b" class="rounded-full bg-surface px-3.5 py-1.5 text-sm font-semibold text-ink">{{ b }}</span>
-                  <button v-if="editing" type="button" class="rounded-full border border-dashed border-primary/40 px-3.5 py-1.5 text-sm font-bold text-primary">{{ tr('+ เพิ่ม', '+ Add') }}</button>
                 </div>
               </div>
             </div>

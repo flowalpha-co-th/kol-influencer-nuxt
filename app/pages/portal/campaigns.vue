@@ -122,9 +122,10 @@ const BUDGET_MIN = 0
 const BUDGET_MAX = 30000
 const budgetPresets: { label: string, labelEn: string, lo: number, hi: number }[] = [
   { label: 'ทั้งหมด', labelEn: 'All', lo: 0, hi: 30000 },
-  { label: 'ต่ำกว่า ฿10K', labelEn: 'Under ฿10K', lo: 0, hi: 10000 },
-  { label: '฿10K–20K', labelEn: '฿10K–20K', lo: 10000, hi: 20000 },
-  { label: '฿20K ขึ้นไป', labelEn: '฿20K and up', lo: 20000, hi: 30000 },
+  { label: 'ต่ำกว่า ฿1,000', labelEn: 'Under ฿1,000', lo: 0, hi: 1000 },
+  { label: '฿1,000+', labelEn: '฿1,000+', lo: 1000, hi: 30000 },
+  { label: '฿5,000+', labelEn: '฿5,000+', lo: 5000, hi: 30000 },
+  { label: '฿10,000+', labelEn: '฿10,000+', lo: 10000, hi: 30000 },
 ]
 
 const money = (n: number) => `฿${n.toLocaleString()}`
@@ -205,8 +206,6 @@ const resultCount = computed(() => anyFilter.value
   : tr(`แสดงทั้งหมด ${campaigns.value.length} แคมเปญ`, `Showing all ${campaigns.value.length} campaigns`))
 
 const budgetHiLabel = computed(() => bHi.value >= BUDGET_MAX ? `${money(BUDGET_MAX)}+` : money(bHi.value))
-const budgetFillLeft = computed(() => (bLo.value - BUDGET_MIN) / (BUDGET_MAX - BUDGET_MIN) * 100)
-const budgetFillWidth = computed(() => (bHi.value - BUDGET_MIN) / (BUDGET_MAX - BUDGET_MIN) * 100 - budgetFillLeft.value)
 const budgetActive = computed(() => !(bLo.value === BUDGET_MIN && bHi.value === BUDGET_MAX))
 
 // active summary chips
@@ -245,12 +244,12 @@ const remain = computed(() => filteredList.value.length - shown.value)
 
 // actions / mutations (local ref)
 function onBudgetMin(e: Event) {
-  const v = +(e.target as HTMLInputElement).value
-  bLo.value = Math.max(BUDGET_MIN, Math.min(v, bHi.value - 1000))
+  const raw = (e.target as HTMLInputElement).value
+  bLo.value = raw === '' ? BUDGET_MIN : Math.max(BUDGET_MIN, Math.min(+raw, BUDGET_MAX))
 }
 function onBudgetMax(e: Event) {
-  const v = +(e.target as HTMLInputElement).value
-  bHi.value = Math.min(BUDGET_MAX, Math.max(v, bLo.value + 1000))
+  const raw = (e.target as HTMLInputElement).value
+  bHi.value = raw === '' ? BUDGET_MAX : Math.max(BUDGET_MIN, Math.min(+raw, BUDGET_MAX))
 }
 function setPreset(p: { lo: number, hi: number }) {
   bLo.value = p.lo
@@ -373,15 +372,28 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
           <div class="flex flex-wrap gap-2">
             <button v-for="p in budgetPresets" :key="p.label" type="button" class="whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-bold transition" :class="bLo === p.lo && bHi === p.hi ? CHIP_ON : CHIP_OFF" @click="setPreset(p)">{{ tr(p.label, p.labelEn) }}</button>
           </div>
-          <div class="mt-5 flex items-center gap-3 rounded-xl border border-[#0F2747]/[0.07] bg-surface/60 p-4">
-            <span class="min-w-[78px] rounded-lg border border-[#0F2747]/10 bg-white px-3 py-2 text-center text-sm font-bold tabular-nums text-ink">{{ money(bLo) }}</span>
-            <div class="rng flex-1">
-              <div class="pointer-events-none absolute left-0 top-1/2 h-1.5 w-full -translate-y-1/2 rounded-full bg-[#0F2747]/10" />
-              <div class="pointer-events-none absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-primary" :style="{ left: `${budgetFillLeft}%`, width: `${budgetFillWidth}%` }" />
-              <input type="range" min="0" max="30000" step="1000" :value="bLo" :aria-label="tr('งบต่ำสุด', 'Minimum budget')" @input="onBudgetMin" />
-              <input type="range" min="0" max="30000" step="1000" :value="bHi" :aria-label="tr('งบสูงสุด', 'Maximum budget')" @input="onBudgetMax" />
-            </div>
-            <span class="min-w-[78px] rounded-lg border border-[#0F2747]/10 bg-white px-3 py-2 text-center text-sm font-bold tabular-nums text-ink">{{ budgetHiLabel }}</span>
+          <div class="mt-4 flex items-center gap-3 rounded-xl border border-[#0F2747]/[0.07] bg-surface/60 p-4">
+            <label class="flex flex-1 items-center gap-1.5 rounded-lg border border-[#0F2747]/10 bg-white px-3 py-2 focus-within:border-primary/50">
+              <span class="text-sm font-bold text-muted">฿</span>
+              <input
+                type="number" inputmode="numeric" min="0" max="30000" step="500"
+                :value="bLo || ''" :placeholder="tr('ต่ำสุด', 'Min')"
+                :aria-label="tr('งบต่ำสุด', 'Minimum budget')"
+                class="w-full min-w-0 bg-transparent text-sm font-bold tabular-nums text-ink outline-none placeholder:font-normal placeholder:text-muted/60"
+                @input="onBudgetMin"
+              >
+            </label>
+            <span class="text-muted">–</span>
+            <label class="flex flex-1 items-center gap-1.5 rounded-lg border border-[#0F2747]/10 bg-white px-3 py-2 focus-within:border-primary/50">
+              <span class="text-sm font-bold text-muted">฿</span>
+              <input
+                type="number" inputmode="numeric" min="0" max="30000" step="500"
+                :value="bHi >= BUDGET_MAX ? '' : bHi" :placeholder="tr('สูงสุด', 'Max')"
+                :aria-label="tr('งบสูงสุด', 'Maximum budget')"
+                class="w-full min-w-0 bg-transparent text-sm font-bold tabular-nums text-ink outline-none placeholder:font-normal placeholder:text-muted/60"
+                @input="onBudgetMax"
+              >
+            </label>
           </div>
         </div>
       </div>
@@ -466,11 +478,8 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 </template>
 
 <style scoped>
-/* dual range slider */
-.rng { position: relative; height: 36px; }
-.rng input[type=range] { position: absolute; left: 0; top: 0; width: 100%; margin: 0; height: 36px; -webkit-appearance: none; appearance: none; background: transparent; pointer-events: none; }
-.rng input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; height: 20px; width: 20px; border-radius: 9999px; background: #fff; border: 3px solid #2D5BFF; box-shadow: 0 2px 6px rgb(15 39 71 / 25%); cursor: pointer; pointer-events: auto; margin-top: -8px; }
-.rng input[type=range]::-moz-range-thumb { height: 20px; width: 20px; border-radius: 9999px; background: #fff; border: 3px solid #2D5BFF; box-shadow: 0 2px 6px rgb(15 39 71 / 25%); cursor: pointer; pointer-events: auto; }
-.rng input[type=range]::-webkit-slider-runnable-track { height: 4px; background: transparent; }
-.rng input[type=range]::-moz-range-track { height: 4px; background: transparent; }
+/* hide number-input spinners for a cleaner min/max entry */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; }
 </style>
