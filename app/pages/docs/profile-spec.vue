@@ -40,7 +40,7 @@ const tab1: FieldRow[] = [
   { field: 'ชื่อจริง / นามสกุล', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['text', 'required · ตรงกับ KYC', 'ชื่อตามบัตรประชาชน'] },
   { field: 'ชื่อในวงการ (display_name)', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['text', 'required · 2–40 ตัว', 'ชื่อที่โชว์ในระบบ/ให้แอดมินเห็น แยกจากชื่อจริง'] },
   { field: 'อีเมล', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['email + verify', 'รูปแบบอีเมล · ต้องยืนยัน', 'ใช้ login + แจ้งเตือน · badge "ยืนยันแล้ว"'] },
-  { field: 'เบอร์โทรศัพท์', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['tel + verify', 'ตัวเลข 10 หลัก · OTP', 'ปุ่ม "ส่งรหัสยืนยัน" เมื่อยังไม่ verified'] },
+  { field: 'เบอร์โทรศัพท์', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['tel', 'ตัวเลข 10 หลัก', 'ข้อมูลติดต่อล้วน — ระบบไม่มี OTP ทาง SMS จึงไม่มีสถานะ "ยืนยันเบอร์"'] },
   { field: 'LINE ID', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['text', 'optional', 'ช่องทางติดต่อสำรอง'] },
   { field: 'เพศ (gender)', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['select', 'optional', 'หญิง/ชาย/ไม่ระบุ/อื่น ๆ'] },
   { field: 'ช่วงอายุ (age_range)', sources: [{ kind: 'sync', label: 'KYC' }], cells: ['select', 'auto จากวันเกิด', 'ดึงจากวันเกิดใน KYC เมื่อยืนยันแล้ว'] },
@@ -49,7 +49,9 @@ const tab1: FieldRow[] = [
   { field: 'จังหวัด/พื้นที่หลัก', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['select', 'required', 'ที่อยู่อาศัยหลัก'] },
   { field: 'พื้นที่ทำคอนเทนต์ (coverage)', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['multi-chips', '≥ 1 ค่า', 'ใช้จับคู่แคมเปญที่ระบุพื้นที่'] },
   { field: 'อาชีพ (occupation)', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['text', 'optional', 'อาชีพหลัก'] },
-  { field: 'หมวดหมู่ / Niche', sources: [{ kind: 'kol', label: 'KOL' }, { kind: 'admin', label: 'list' }], cells: ['multi-chips', '≥ 1 หมวด', 'ค่าตัวเลือกใช้ชุดเดียวกับฝั่งแอดมิน (sync)'] },
+  { field: 'อาชีพอื่น ๆ (occupations[])', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['multi-chips', 'optional', 'สายอาชีพเสริม — แอดมินใช้ filter หา KOL ตามอาชีพ'] },
+  { field: 'หมวดหมู่ / Niche', sources: [{ kind: 'kol', label: 'KOL' }, { kind: 'admin', label: 'list' }], cells: ['multi-chips', '≥ 1 หมวด', '15 หมวด ตรงกับ categoryOptions ฝั่งแอดมิน · ส่ง `value` ภาษาอังกฤษ ไม่ใช่ชื่อไทย'] },
+  { field: 'บัญชีที่ผูกไว้สำหรับเข้าสู่ระบบ (linked_socials)', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['ผูก/ยกเลิก', 'ต้องเหลือ ≥ 1 ช่องทาง', 'Facebook / Google / TikTok — คนละเรื่องกับการเชื่อมโซเชียลในแท็บ 2 ที่ใช้ sync สถิติ'] },
   { field: 'Consent: Terms / Privacy / PDPA', sources: [{ kind: 'sync', label: 'ระบบ' }], cells: ['read + re-accept', 'เก็บ version + วันที่', 'มี version ใหม่ → บังคับยอมรับผ่าน gate ทันทีหลัง login ก่อนใช้งาน + อัปเดตวันที่'] },
   { field: 'Marketing consent', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['toggle', '—', 'เปิด/ปิดได้ในหน้านี้ + บันทึกวันที่'] },
 ]
@@ -72,20 +74,25 @@ interface RateFormat {
   note?: string
 }
 
+// ชื่อรูปแบบใช้คำศัพท์ SOW ชุดเดียวกับ platformCostFields() ฝั่งแอดมิน — ห้ามคิดชื่อใหม่
 const rateFormats: RateFormat[] = [
-  { platform: 'Instagram', formats: 'โพสต์ · สตอรี่ · รีล · ไลฟ์' },
-  { platform: 'TikTok', formats: 'วิดีโอ · ไลฟ์ ', note: '(ไม่ใช่ "รีล")' },
-  { platform: 'Facebook', formats: 'โพสต์ · สตอรี่ · รีล · ไลฟ์' },
-  { platform: 'YouTube', formats: 'วิดีโอ · Shorts · ไลฟ์' },
-  { platform: 'X (Twitter)', formats: 'โพสต์' },
-  { platform: 'Lemon8', formats: 'โพสต์ · วิดีโอ' },
+  { platform: 'TikTok', formats: 'Short VDO Review · Create Single Photo · Create Album Photo · Long VDO Review · Gen Code · Add Basket · PR Post · Story · Post Cross Platform' },
+  { platform: 'Facebook', formats: 'Create Single Photo · Create Album Photo · PR Post · Short VDO Review · Long VDO Review · Add Advertiser · Management Fee · Tag Branded · Post Cross Platform' },
+  { platform: 'Instagram', formats: 'Create Single Photo · Create Album Photo · Story · PR Post · Short VDO Review · Long VDO Review · Tag Branded / Paid Partnership · Post Cross Platform' },
+  { platform: 'YouTube', formats: 'Sponsorship Main Content · Sponsorship Tie-In Content · Post Cross Platform' },
+  { platform: 'X (Twitter)', formats: 'Create Single Photo · Create Album Photo · PR Post · Short VDO Review · Long VDO Review · Boost Fee · Post Cross Platform' },
+  { platform: 'Lemon8', formats: 'Short VDO Review · Create Single Photo · Create Album Photo · Long VDO Review · PR Post' },
 ]
 
 // TAB 3b — fields · cols: Validation · Note
 const tab3: FieldRow[] = [
+  { field: 'ราคาต่อโพสต์ (ราคาฐาน · cost_per_post)', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['ตัวเลข ≥ 0 · ว่างได้', 'แถวแรกของทุกแพลตฟอร์ม — แอดมินใช้คำนวณ cost/reach และ cost/engagement'] },
   { field: 'ราคาต่อรูปแบบ', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['ตัวเลข ≥ 0 · ว่างได้', 'ว่าง = ไม่รับงานรูปแบบนั้น'] },
-  { field: 'Usage rights / Exclusivity (วัน) / Turnaround (วัน)', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['ตัวเลขวัน ≥ 0', 'กล่อง "เงื่อนไขการรับงาน"'] },
-  { field: 'แบรนด์ที่เคยร่วมงาน · รับงานโฆษณา (Yes/No)', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['optional', 'ออปชันเสริม'] },
+  { field: 'ค่าเดินทางถ่ายนอกสถานที่ใน กทม.', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['ตัวเลข ≥ 0 · ว่างได้', 'ว่าง = ไม่คิดค่าเดินทาง'] },
+  { field: 'ค่าให้แบรนด์ใช้คลิป 1 เดือน · ค่าซื้อขาด', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['ตัวเลข ≥ 0', 'ค่าลิขสิทธิ์การนำคลิปไปใช้'] },
+  { field: 'ครบกำหนดแล้วแบรนด์ต้องลบคลิปไหม', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['ใช่ / ไม่ใช่', 'เงื่อนไขหลังหมดสัญญาการใช้งาน'] },
+  { field: 'ค่าติดตะกร้า / Affiliate', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['ตัวเลข ≥ 0', 'ค่าติดตะกร้าสินค้าหรือลิงก์ Affiliate'] },
+  { field: 'เงื่อนไขพิเศษอื่น ๆ (special_terms)', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['textarea · optional', 'เงื่อนไขอิสระที่ไม่เข้าช่องไหน — ตรงกับ special_terms ฝั่งแอดมิน'] },
 ]
 
 // TAB 4 — KYC · cols: Validation · Note
@@ -93,11 +100,13 @@ const tab4: FieldRow[] = [
   { field: 'ชื่อ-นามสกุล ไทย / อังกฤษ', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['required', 'ตามบัตร/พาสปอร์ต'] },
   { field: 'เลขบัตรประชาชน', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['13 หลัก · checksum', 'ตรวจหลักสุดท้ายอัตโนมัติ'] },
   { field: 'วันเกิด', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['date · อายุ ≥ 15', 'ใช้คำนวณช่วงอายุ'] },
+  { field: 'วันออกบัตร · วันหมดอายุบัตร', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['date', 'บัตรหมดอายุ = ยืนยันตัวตนไม่ผ่าน'] },
   { field: 'ที่อยู่ตามทะเบียนบ้าน', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['required', 'สำหรับเอกสารภาษี'] },
   { field: 'ธนาคาร / เลขบัญชี / ชื่อบัญชี', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['เลขบัญชี 10–12 หลัก · ชื่อตรงกับบัตร', 'สำหรับรับเงิน'] },
   { field: 'เลขผู้เสียภาษี', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['13 หลัก (บุคคล=เลขบัตร)', '—'] },
   { field: 'ประเภทผู้เสียภาษี · จด VAT', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['บุคคล/นิติบุคคล', 'นิติบุคคล → โชว์ ชื่อบริษัท, เลขสาขา, ที่อยู่จดทะเบียน, ประเภทธุรกิจ'] },
-  { field: 'เอกสาร: บัตร (หน้า/หลัง), เซลฟี่คู่บัตร, หน้าสมุดบัญชี', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['JPG/PNG/PDF ≤ 10MB', 'หน้า/หลังแยกไฟล์'] },
+  { field: 'เอกสาร — บุคคลธรรมดา: บัตรประชาชน, เซลฟี่คู่บัตร, หน้าสมุดบัญชี', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['JPG/PNG/PDF ≤ 10MB', 'ไม่มี "หลังบัตรประชาชน" แล้ว (ตัดออก 2026-08-09)'] },
+  { field: 'เอกสาร — นิติบุคคล: บัตรผู้มีอำนาจลงนาม, เซลฟี่คู่บัตร, หนังสือรับรองบริษัท, ภ.พ.20, สมุดบัญชีบริษัท', sources: [{ kind: 'kol', label: 'KOL' }], cells: ['JPG/PNG/PDF ≤ 10MB', 'สลับชุดอัตโนมัติเมื่อเลือกประเภทผู้เสียภาษี = นิติบุคคล · ภ.พ.20 ไม่บังคับ (แนบเมื่อจด VAT)'] },
   { field: 'สถานะ KYC · เหตุผลปฏิเสธ', sources: [{ kind: 'admin', label: 'แอดมิน' }], cells: ['read-only', 'none / pending / approved / rejected (+reason)'] },
 ]
 
@@ -138,7 +147,7 @@ const edgeCases: EdgeCase[] = [
   { lead: 'KYC ถูกปฏิเสธ', rest: ' → แถบแดง + เหตุผล · ฟอร์มกลับมาแก้ได้ · ปุ่ม "แก้ไขแล้วส่งใหม่"' },
   { lead: 'มี Consent version ใหม่', rest: ' → แสดง consent gate แบบบล็อกทันทีหลัง login · ต้องติ๊กยอมรับก่อนจึงกดปุ่มได้ · มีปุ่ม "ออกจากระบบ" ถ้าไม่ยอมรับ' },
   { lead: 'TikTok / YouTube ไม่มี reach', rest: ' → แสดงเท่าที่มี + หมายเหตุ "ER คิดจากยอดวิว"' },
-  { lead: 'เบอร์/อีเมลยังไม่ยืนยัน', rest: ' → badge เตือน + ปุ่มส่งรหัสยืนยัน · บล็อกการรับเงินถ้าจำเป็น' },
+  { lead: 'อีเมลยังไม่ยืนยัน', rest: ' → badge เตือน + ปุ่ม "ส่งอีเมลยืนยัน" · บล็อกการรับเงินถ้าจำเป็น (เบอร์โทรไม่มีสถานะยืนยัน — ไม่มี OTP)' },
 ]
 
 const deferred: string[] = [

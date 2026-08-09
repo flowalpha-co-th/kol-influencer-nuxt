@@ -21,8 +21,8 @@ interface FieldOpt {
   note?: string
   noteEn?: string
   source?: Source
-  /** badge marker: 'email' | 'phone' to render verify badge */
-  verify?: 'email' | 'phone'
+  /** badge marker — อีเมลเท่านั้น: ระบบไม่มี OTP ทาง SMS เบอร์โทรจึงเป็นข้อมูลติดต่อล้วน */
+  verify?: 'email'
 }
 
 type KycState = 'none' | 'pending' | 'approved' | 'rejected'
@@ -52,6 +52,8 @@ const user = reactive({
   province: 'กรุงเทพมหานคร',
   coverage: ['กรุงเทพฯ', 'ปริมณฑล', 'เชียงใหม่'] as string[],
   occupation: 'ครีเอเตอร์เต็มเวลา',
+  // อาชีพอื่นนอกจากอาชีพหลัก — ตรงกับ `occupations[]` ฝั่งแอดมิน (ใช้ filter หา KOL ตามสายอาชีพ)
+  occupations: ['นักแสดง'] as string[],
 })
 
 const genders = ['หญิง', 'ชาย', 'ไม่ระบุ', 'อื่น ๆ']
@@ -60,19 +62,29 @@ const ageRanges = ['ต่ำกว่า 18 ปี', '18–24 ปี', '25–34
 const ageRangesEn = ['Under 18', '18–24', '25–34', '35–44', '45 and over']
 const provinces = ['กรุงเทพมหานคร', 'นนทบุรี', 'ปทุมธานี', 'สมุทรปราการ', 'เชียงใหม่', 'ขอนแก่น', 'ชลบุรี', 'ภูเก็ต', 'สงขลา', 'นครราชสีมา']
 const provincesEn = ['Bangkok', 'Nonthaburi', 'Pathum Thani', 'Samut Prakan', 'Chiang Mai', 'Khon Kaen', 'Chonburi', 'Phuket', 'Songkhla', 'Nakhon Ratchasima']
+const occupationOptions = ['ครีเอเตอร์เต็มเวลา', 'นักแสดง', 'นักร้อง', 'นักศึกษา', 'พนักงานประจำ', 'เจ้าของธุรกิจ', 'แพทย์ / พยาบาล', 'ครู / อาจารย์', 'นักกีฬา', 'ฟรีแลนซ์']
+const occupationOptionsEn = ['Full-time creator', 'Actor', 'Singer', 'Student', 'Full-time employee', 'Business owner', 'Doctor / Nurse', 'Teacher / Lecturer', 'Athlete', 'Freelancer']
 const coverageOptions = ['กรุงเทพฯ', 'ปริมณฑล', 'ภาคเหนือ', 'เชียงใหม่', 'ภาคอีสาน', 'ภาคตะวันออก', 'ภาคใต้', 'ทั่วประเทศ', 'ออนไลน์ทั้งหมด']
 const coverageOptionsEn = ['Bangkok', 'Greater Bangkok', 'Northern Thailand', 'Chiang Mai', 'Northeastern Thailand', 'Eastern Thailand', 'Southern Thailand', 'Nationwide', 'Fully online']
 
+// ชุดหมวดหมู่ต้องตรงกับ categoryOptions ฝั่งแอดมิน (kol-admin-nuxt · influencers/[id]/edit.vue)
+// `value` = ค่าที่ส่งเข้า API — ห้ามส่งชื่อไทยไป ไม่งั้น filter ฝั่งแอดมินหาไม่เจอ
 const niches = reactive([
-  { name: 'ความงาม & สกินแคร์', nameEn: 'Beauty & Skincare', on: true },
-  { name: 'อาหาร & เครื่องดื่ม', nameEn: 'Food & Drink', on: false },
-  { name: 'ไลฟ์สไตล์', nameEn: 'Lifestyle', on: true },
-  { name: 'สุขภาพ & การแพทย์', nameEn: 'Health & Medical', on: false },
-  { name: 'เด็ก & ครอบครัว', nameEn: 'Kids & Family', on: false },
-  { name: 'บันเทิง & ตลก', nameEn: 'Entertainment & Comedy', on: true },
-  { name: 'รีวิว ป้ายยา', nameEn: 'Product Reviews', on: false },
-  { name: 'โปรโมชั่น', nameEn: 'Promotions', on: false },
-  { name: 'การเงิน & การลงทุน', nameEn: 'Finance & Investing', on: false },
+  { value: 'Beauty', name: 'ความงาม & สกินแคร์', nameEn: 'Beauty & Skincare', on: true },
+  { value: 'Food', name: 'อาหาร & เครื่องดื่ม', nameEn: 'Food & Beverage', on: false },
+  { value: 'Lifestyle', name: 'ไลฟ์สไตล์', nameEn: 'Lifestyle', on: true },
+  { value: 'Health', name: 'สุขภาพ & การแพทย์', nameEn: 'Doctor & Health', on: false },
+  { value: 'Family', name: 'เด็ก & ครอบครัว', nameEn: 'Kids & Family', on: false },
+  { value: 'Entertainment', name: 'บันเทิง & ตลก', nameEn: 'Ent. & Comedy', on: true },
+  { value: 'Review', name: 'รีวิว ป้ายยา', nameEn: 'Review ป้ายยา', on: false },
+  { value: 'Promotion', name: 'โปรโมชั่น', nameEn: 'Promotion', on: false },
+  { value: 'Finance', name: 'การเงิน & การลงทุน', nameEn: 'Finance & Invest', on: false },
+  { value: 'Travel', name: 'ท่องเที่ยว', nameEn: 'Travel', on: false },
+  { value: 'Home & Urban design', name: 'บ้าน & ตกแต่ง', nameEn: 'Home & Urban design', on: false },
+  { value: 'Education', name: 'การศึกษา', nameEn: 'Education', on: false },
+  { value: 'Sport', name: 'กีฬา', nameEn: 'Sport', on: false },
+  { value: 'PET', name: 'สัตว์เลี้ยง', nameEn: 'PET', on: false },
+  { value: 'Couple', name: 'คู่รัก', nameEn: 'Couple', on: false },
 ])
 
 interface ConsentItem { key: string, label: string, labelEn: string, version: string, acceptedAt: string, latest: string }
@@ -112,11 +124,13 @@ const socials = reactive<Social[]>([
 ])
 
 /* ---------- Tab 3 data ---------- */
-interface RatePlatform { platform: PlatformName, formats: [string, string, number | null][] }
+// `base` = ราคาต่อโพสต์มาตรฐาน (ตรงกับ cost_per_post ฝั่งแอดมิน) — แอดมินใช้เป็นตัวตั้ง
+// คำนวณ cost/reach และ cost/engagement ถ้าไม่มีค่านี้ metric ฝั่งแอดมินจะว่างทั้งแถว
+interface RatePlatform { platform: PlatformName, base: number | null, formats: [string, string, number | null][] }
 const CROSS_TH = 'โพสต์ข้ามแพลตฟอร์ม (TikTok / Facebook / Instagram / YouTube / X)'
 const CROSS_EN = 'Post Cross Platform (TikTok / Facebook / Instagram / YouTube / X)'
 const rates = reactive<RatePlatform[]>([
-  { platform: 'TikTok', formats: [
+  { platform: 'TikTok', base: null, formats: [
     ['รีวิววิดีโอสั้น', 'Short VDO Review', null],
     ['โพสต์ภาพเดี่ยว', 'Create Single Photo', null],
     ['โพสต์ภาพอัลบั้ม', 'Create Album Photo', null],
@@ -127,7 +141,7 @@ const rates = reactive<RatePlatform[]>([
     ['สตอรี่', 'Story', null],
     [CROSS_TH, CROSS_EN, null],
   ] },
-  { platform: 'Facebook', formats: [
+  { platform: 'Facebook', base: null, formats: [
     ['โพสต์ภาพเดี่ยว', 'Create Single Photo', null],
     ['โพสต์ภาพอัลบั้ม', 'Create Album Photo', null],
     ['โพสต์ PR', 'PR POST', null],
@@ -138,7 +152,7 @@ const rates = reactive<RatePlatform[]>([
     ['แท็ก Branded Content', 'Tag Branded', null],
     [CROSS_TH, CROSS_EN, null],
   ] },
-  { platform: 'Instagram', formats: [
+  { platform: 'Instagram', base: null, formats: [
     ['โพสต์ภาพเดี่ยว', 'Create Single Photo', null],
     ['โพสต์ภาพอัลบั้ม', 'Create Album Photo', null],
     ['สตอรี่', 'Story', null],
@@ -148,12 +162,12 @@ const rates = reactive<RatePlatform[]>([
     ['แท็ก Branded / Paid Partnership', 'Tag Branded / Paid Partnership', null],
     [CROSS_TH, CROSS_EN, null],
   ] },
-  { platform: 'YouTube', formats: [
+  { platform: 'YouTube', base: null, formats: [
     ['สปอนเซอร์คอนเทนต์หลัก', 'Sponsorship Main Content', null],
     ['สปอนเซอร์คอนเทนต์ Tie-In', 'Sponsorship Tie-In Content', null],
     [CROSS_TH, CROSS_EN, null],
   ] },
-  { platform: 'Twitter', formats: [
+  { platform: 'Twitter', base: null, formats: [
     ['โพสต์ภาพเดี่ยว', 'Create Single Photo', null],
     ['โพสต์ภาพอัลบั้ม', 'Create Album Photo', null],
     ['โพสต์ PR', 'PR POST', null],
@@ -162,9 +176,15 @@ const rates = reactive<RatePlatform[]>([
     ['ค่า Boost', 'Boost Fee', null],
     [CROSS_TH, CROSS_EN, null],
   ] },
-  { platform: 'Lemon8', formats: [['โพสต์', 'Post', 5000], ['วิดีโอ', 'Video', 7000]] },
+  { platform: 'Lemon8', base: 5000, formats: [
+    ['รีวิววิดีโอสั้น', 'Short VDO Review', null],
+    ['โพสต์ภาพเดี่ยว', 'Create Single Photo', 5000],
+    ['โพสต์ภาพอัลบั้ม', 'Create Album Photo', null],
+    ['รีวิววิดีโอยาว', 'Long VDO Review', 7000],
+    ['โพสต์ PR', 'PR POST', null],
+  ] },
 ])
-const rateTerms = reactive({ travel: '', usage1m: '', buyout: '', deleteAfter: 'ไม่ใช่', affiliate: '' })
+const rateTerms = reactive({ travel: '', usage1m: '', buyout: '', deleteAfter: 'ไม่ใช่', affiliate: '', special: '' })
 
 /* ---------- Tab 4 data ---------- */
 const kyc = reactive({
@@ -172,6 +192,7 @@ const kyc = reactive({
     nameTh: 'สมใจ ใจดี', nameEn: 'Somjai Jaidee',
     idNumber: '1 1019 01234 56 7', dob: '15 ม.ค. 2541',
     regAddress: '123/45 ถนนสุขุมวิท แขวงคลองเตย เขตคลองเตย กรุงเทพฯ 10110',
+    issuedDate: '10 มี.ค. 2563', expiryDate: '14 ม.ค. 2571',
   },
   bank: { bank: 'กสิกรไทย (KBANK)', account: '123-4-56789-0', name: 'สมใจ ใจดี' },
   tax: {
@@ -183,12 +204,26 @@ const kyc = reactive({
 })
 const banks = ['กสิกรไทย (KBANK)', 'ไทยพาณิชย์ (SCB)', 'กรุงเทพ (BBL)', 'กรุงไทย (KTB)', 'กรุงศรี (BAY)', 'ทหารไทยธนชาต (ttb)', 'ออมสิน (GSB)']
 const banksEn = ['Kasikornbank (KBANK)', 'Siam Commercial Bank (SCB)', 'Bangkok Bank (BBL)', 'Krungthai Bank (KTB)', 'Krungsri (BAY)', 'TMBThanachart (ttb)', 'Government Savings Bank (GSB)']
-const kycDocs = [
-  { key: 'idFront', label: 'บัตรประชาชน (ด้านหน้า)', labelEn: 'ID card (front)' },
-  { key: 'idBack', label: 'บัตรประชาชน (ด้านหลัง)', labelEn: 'ID card (back)' },
-  { key: 'selfie', label: 'เซลฟี่คู่บัตรประชาชน', labelEn: 'Selfie with ID card' },
-  { key: 'bankBook', label: 'หน้าสมุดบัญชีธนาคาร', labelEn: 'Bankbook front page' },
+// ชุดเอกสาร KYC ต้องตรงกับ kycDocSpecs() ฝั่งแอดมิน — `key` คือ doc_type ที่ส่งขึ้น API
+// นิติบุคคลใช้คนละชุด (เอกสารบริษัท + สมุดบัญชีบริษัท) · ไม่มี "หลังบัตรประชาชน" แล้ว (ตัดออก 2026-08-09)
+interface KycDocSpec { key: string, label: string, labelEn: string, required: boolean, note?: string, noteEn?: string }
+
+const KYC_DOCS_INDIVIDUAL: KycDocSpec[] = [
+  { key: 'id_card_front', label: 'บัตรประชาชน', labelEn: 'ID card', required: true },
+  { key: 'selfie', label: 'เซลฟี่คู่บัตรประชาชน', labelEn: 'Selfie with ID card', required: true },
+  { key: 'book_bank', label: 'หน้าสมุดบัญชีธนาคาร', labelEn: 'Bankbook front page', required: true, note: 'ชื่อบัญชีต้องตรงกับชื่อในบัตรประชาชน', noteEn: 'The account name must match the name on your ID card' },
 ]
+
+const KYC_DOCS_CORPORATE: KycDocSpec[] = [
+  { key: 'id_card_front', label: 'บัตรประชาชนผู้มีอำนาจลงนาม', labelEn: 'ID card of the authorised signatory', required: true },
+  { key: 'selfie', label: 'เซลฟี่คู่บัตรประชาชน', labelEn: 'Selfie with ID card', required: true },
+  { key: 'company_certificate', label: 'หนังสือรับรองบริษัท', labelEn: 'Company certificate', required: true },
+  { key: 'por_por_20', label: 'ภ.พ.20', labelEn: 'Por Por 20 (VAT certificate)', required: false, note: 'แนบหากจดทะเบียน VAT', noteEn: 'Attach if you are VAT registered' },
+  { key: 'company_book_bank', label: 'หน้าสมุดบัญชีธนาคารของบริษัท', labelEn: 'Company bankbook front page', required: true, note: 'ชื่อบัญชีต้องตรงกับชื่อบริษัท', noteEn: 'The account name must match the company name' },
+]
+
+const isCorporate = computed(() => kyc.tax.type === 'นิติบุคคล')
+const kycDocs = computed<KycDocSpec[]>(() => isCorporate.value ? KYC_DOCS_CORPORATE : KYC_DOCS_INDIVIDUAL)
 
 /* ---------- availability (accepting work) ---------- */
 const acceptingWork = ref(true)
@@ -246,6 +281,26 @@ const secRows = computed(() => [
   { icon: 'mail', label: 'อีเมล', labelEn: 'Email', val: user.email, ok: user.emailVerified },
 ])
 
+/* บัญชีที่ผูกไว้สำหรับ "เข้าสู่ระบบ" (OAuth login) — ตรงกับ linked_socials ฝั่งแอดมิน
+   คนละเรื่องกับแท็บ "บัญชีโซเชียล" ซึ่งเชื่อมเพื่อ sync สถิติ (ผูก login ไม่ได้แปลว่าดึงสถิติได้) */
+const loginProviders = reactive([
+  { key: 'facebook', label: 'Facebook', linked: true },
+  { key: 'google', label: 'Google', linked: true },
+  { key: 'tiktok', label: 'TikTok', linked: false },
+])
+function toggleLoginProvider(i: number) {
+  const p = loginProviders[i]!
+  // กันผูกหลุดหมด: ถ้าไม่มีรหัสผ่านและเหลือ provider เดียว จะ login ไม่ได้อีกเลย
+  if (p.linked && loginProviders.filter(x => x.linked).length === 1) {
+    toast.error(tr('ยกเลิกไม่ได้ — ต้องเหลือช่องทางเข้าสู่ระบบอย่างน้อย 1 ช่อง', 'Can\'t unlink — you must keep at least one sign-in method'))
+    return
+  }
+  p.linked = !p.linked
+  toast.success(p.linked
+    ? tr(`ผูกบัญชี ${p.label} แล้ว`, `${p.label} account linked`)
+    : tr(`ยกเลิกการผูกบัญชี ${p.label} แล้ว`, `${p.label} account unlinked`))
+}
+
 const nichesOnCount = computed(() => niches.filter(n => n.on).length)
 
 /* consent computed */
@@ -261,6 +316,8 @@ const rateTermsFields = computed<FieldOpt[]>(() => [
   { label: 'ค่าใช้จ่ายสำหรับแบรนด์นำคลิปไปใช้แบบซื้อขาด', labelEn: 'Fee for the brand to buy out the clip', value: rateTerms.buyout, note: 'ค่าลิขสิทธิ์แบบซื้อขาด ใช้ได้ไม่จำกัดเวลา', noteEn: 'Full buyout — unlimited usage with no time limit' },
   { label: 'ถ้าครบกำหนดทางแบรนด์ต้องลบคลิปหรือไม่', labelEn: 'Must the brand delete the clip when the term ends?', value: rateTerms.deleteAfter, type: 'select', options: ['ใช่', 'ไม่ใช่'], optionsEn: ['Yes', 'No'], note: 'เงื่อนไขหลังหมดสัญญาการใช้งาน', noteEn: 'Condition after the usage term expires' },
   { label: 'ค่าใช้จ่ายสำหรับติดตะกร้า หรือ Affiliate', labelEn: 'Fee for adding a shopping basket / Affiliate', value: rateTerms.affiliate, note: 'ค่าติดตะกร้าสินค้า/ลิงก์ Affiliate ในคอนเทนต์', noteEn: 'Fee for adding a product basket / Affiliate link in the content' },
+  // ตรงกับ special_terms ฝั่งแอดมิน — เงื่อนไขอิสระที่ไม่เข้าช่องไหนข้างบน
+  { label: 'เงื่อนไขพิเศษอื่น ๆ', labelEn: 'Other special terms', value: rateTerms.special, type: 'textarea', span: 2, note: 'เช่น แก้ไขงานได้ 2 ครั้ง / เมื่อโพสต์ครบ 3 เดือนจะลบโพสต์ออก / ไม่รับงานคู่แข่งในหมวดเดียวกัน', noteEn: 'E.g. up to 2 rounds of revisions / posts are removed after 3 months / no competing brands in the same category' },
 ])
 
 /* ---------- Tab 4 KYC computed ---------- */
@@ -270,6 +327,8 @@ const identityFields = computed<FieldOpt[]>(() => [
   { label: 'ชื่อ-นามสกุล (อังกฤษ)', labelEn: 'Full name (English)', value: kyc.identity.nameEn, ro: kycRo.value, note: 'ตามที่ปรากฏบนบัตร/พาสปอร์ต', noteEn: 'As it appears on your ID card/passport' },
   { label: 'เลขบัตรประชาชน (13 หลัก)', labelEn: 'ID card number (13 digits)', value: kyc.identity.idNumber, ro: kycRo.value, note: 'ตัวเลข 13 หลัก ระบบตรวจ checksum อัตโนมัติ', noteEn: '13 digits, checksum verified automatically' },
   { label: 'วันเกิด', labelEn: 'Date of birth', value: kyc.identity.dob, ro: kycRo.value, note: 'ใช้คำนวณช่วงอายุในโปรไฟล์', noteEn: 'Used to calculate the age range in your profile' },
+  { label: 'วันออกบัตร', labelEn: 'Date of issue', value: kyc.identity.issuedDate, ro: kycRo.value, note: 'ตามที่ระบุบนบัตรประชาชน', noteEn: 'As printed on your ID card' },
+  { label: 'วันหมดอายุบัตร', labelEn: 'Expiry date', value: kyc.identity.expiryDate, ro: kycRo.value, note: 'บัตรหมดอายุแล้วจะยืนยันตัวตนไม่ผ่าน', noteEn: 'An expired ID card can\'t pass verification' },
   { label: 'ที่อยู่ตามทะเบียนบ้าน', labelEn: 'Registered (house registration) address', value: kyc.identity.regAddress, ro: kycRo.value, span: 2, note: 'ใช้สำหรับเอกสารภาษี — อาจต่างจากที่อยู่ติดต่อ', noteEn: 'Used for tax documents — may differ from your contact address' },
 ])
 const bankFields = computed<FieldOpt[]>(() => [
@@ -321,7 +380,7 @@ const docTitle = computed(() => tr(
 /* ---------- completeness ---------- */
 const completeness = computed(() => {
   const social1 = !socialEmpty.value && socials.some(s => s.connected)
-  const rate1 = rates.some(r => r.formats.some(f => f[2] !== null))
+  const rate1 = rates.some(r => r.base !== null || r.formats.some(f => f[2] !== null))
   const niche1 = niches.some(n => n.on)
   const checks = [
     { label: 'ข้อมูลพื้นฐานครบ', labelEn: 'Basic info complete', done: true },
@@ -368,12 +427,18 @@ function toggleCoverage(c: string) {
   if (i === -1) user.coverage.push(c)
   else user.coverage.splice(i, 1)
 }
+function toggleOccupation(o: string) {
+  const i = user.occupations.indexOf(o)
+  if (i === -1) user.occupations.push(o)
+  else user.occupations.splice(i, 1)
+}
 function submitKyc() {
   kycState.value = 'pending'
   toast.success(tr('ส่งเอกสารแล้ว — ทีมงานตรวจสอบใน 1–2 วันทำการ', 'Documents submitted — our team will review within 1–2 business days'))
 }
-function verifyToast() { toast(tr('ส่งรหัสยืนยันแล้ว — ตรวจสอบ SMS/อีเมล', 'Verification code sent — check your SMS/email')) }
-function secVerifyToast() { toast(tr('ส่งรหัสยืนยันแล้ว', 'Verification code sent')) }
+// ยืนยันได้เฉพาะอีเมล — ระบบไม่มี OTP ทาง SMS (ตรงกับฝั่งแอดมินที่ตัด phone_verified ออก)
+function verifyToast() { toast(tr('ส่งอีเมลยืนยันแล้ว — ตรวจสอบกล่องจดหมายของคุณ', 'Verification email sent — check your inbox')) }
+function secVerifyToast() { toast(tr('ส่งอีเมลยืนยันแล้ว — ตรวจสอบกล่องจดหมายของคุณ', 'Verification email sent — check your inbox')) }
 
 /* review switcher */
 function setMode(m: string) { editing.value = m === 'edit' }
@@ -553,7 +618,7 @@ function formatRate(v: number) { return v.toLocaleString() }
                       {{ tr(f.label, f.labelEn) }}
                       <template v-if="f.verify === 'email'">
                         <span v-if="user.emailVerified" class="inline-flex items-center gap-1 rounded bg-green-50 px-1.5 py-0.5 text-[10px] font-bold text-green-600"><Icon name="badge-check" class="h-3 w-3" /> {{ tr('ยืนยันแล้ว', 'Verified') }}</span>
-                        <button v-else type="button" class="rounded bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700 transition hover:bg-amber-100" @click="verifyToast">{{ tr('ส่งรหัสยืนยัน', 'Send verification code') }}</button>
+                        <button v-else type="button" class="rounded bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700 transition hover:bg-amber-100" @click="verifyToast">{{ tr('ส่งอีเมลยืนยัน', 'Send verification email') }}</button>
                       </template>
                     </label>
                     <textarea v-if="f.type === 'textarea'" rows="3" :disabled="fieldDisabled(f)" :value="f.value" :class="fieldClass(f)" />
@@ -596,6 +661,20 @@ function formatRate(v: number) { return v.toLocaleString() }
                     >{{ tr(c, coverageOptionsEn[ci]!) }}</button>
                   </div>
                   <p class="mt-1.5 text-xs leading-relaxed text-[#5B6B82]/80">{{ tr('พื้นที่ที่คุณถ่ายทำ/รีวิวได้จริง ใช้จับคู่แคมเปญที่ระบุพื้นที่', 'Areas where you can actually shoot/review — used to match location-specific campaigns') }}</p>
+                </div>
+                <div class="sm:col-span-2">
+                  <label class="mb-1.5 block text-sm font-semibold text-ink">{{ tr('อาชีพอื่น ๆ (เลือกได้หลายค่า)', 'Other occupations (select multiple)') }}</label>
+                  <div class="flex flex-wrap gap-2.5">
+                    <button
+                      v-for="(o, oi) in occupationOptions"
+                      :key="o"
+                      type="button"
+                      :disabled="!editing"
+                      :class="['rounded-full px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed', user.occupations.includes(o) ? 'bg-primary text-white' : 'bg-surface text-muted enabled:hover:bg-primary/10 enabled:hover:text-primary']"
+                      @click="toggleOccupation(o)"
+                    >{{ tr(o, occupationOptionsEn[oi]!) }}</button>
+                  </div>
+                  <p class="mt-1.5 text-xs leading-relaxed text-[#5B6B82]/80">{{ tr('นอกจากอาชีพหลัก ถ้าคุณทำงานสายอื่นด้วย เลือกเพิ่มได้ — ช่วยให้แบรนด์หาคุณเจอจากสายอาชีพ', 'If you work in other fields besides your main occupation, add them here — it helps brands find you by profession') }}</p>
                 </div>
               </div>
             </div>
@@ -644,6 +723,30 @@ function formatRate(v: number) { return v.toLocaleString() }
                   </div>
                   <div class="flex shrink-0 flex-col items-end gap-1.5">
                     <button type="button" class="rounded-lg border border-[#0F2747]/10 bg-white px-4 py-2 text-xs font-bold text-ink transition hover:text-primary" @click="openPwd">{{ tr('เปลี่ยนรหัสผ่าน', 'Change password') }}</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- linked login providers -->
+              <div class="mt-6">
+                <p class="text-sm font-semibold text-ink">{{ tr('บัญชีที่ผูกไว้สำหรับเข้าสู่ระบบ', 'Linked sign-in accounts') }}</p>
+                <p class="mt-0.5 text-xs leading-relaxed text-[#5B6B82]/80">{{ tr('ใช้กดเข้าสู่ระบบได้โดยไม่ต้องกรอกรหัสผ่าน — คนละอย่างกับการเชื่อมโซเชียลในแท็บ "บัญชีโซเชียล" ที่ใช้ดึงสถิติ', 'Use these to sign in without a password — separate from connecting your socials in the "Social accounts" tab, which syncs your stats') }}</p>
+                <div class="mt-3 space-y-3">
+                  <div v-for="(p, pi) in loginProviders" :key="p.key" class="flex items-center justify-between gap-3 rounded-xl bg-surface p-4">
+                    <div class="flex items-center gap-3">
+                      <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm">
+                        <Icon :name="p.linked ? 'link-2' : 'unlink'" :class="['h-5 w-5', p.linked ? 'text-primary' : 'text-[#5B6B82]/50']" />
+                      </div>
+                      <div>
+                        <p class="font-bold text-ink">{{ p.label }}</p>
+                        <p class="text-xs text-muted">{{ p.linked ? tr('ผูกไว้แล้ว', 'Linked') : tr('ยังไม่ได้ผูก', 'Not linked') }}</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      :class="['shrink-0 rounded-lg px-4 py-2 text-xs font-bold transition', p.linked ? 'border border-[#0F2747]/10 bg-white text-ink hover:text-primary' : 'bg-primary text-white hover:bg-primaryDark']"
+                      @click="toggleLoginProvider(pi)"
+                    >{{ p.linked ? tr('ยกเลิกการผูก', 'Unlink') : tr('ผูกบัญชี', 'Link account') }}</button>
                   </div>
                 </div>
               </div>
@@ -781,13 +884,28 @@ function formatRate(v: number) { return v.toLocaleString() }
                     </thead>
                     <tbody>
                       <template v-for="r in rates" :key="r.platform">
-                        <tr v-for="(f, idx) in r.formats" :key="r.platform + f[0]" class="border-t border-[#0F2747]/10">
-                          <td v-if="idx === 0" :rowspan="r.formats.length" class="py-3 pr-3 align-top">
+                        <!-- base rate: แถวแรกของแต่ละแพลตฟอร์ม ถือเซลล์ชื่อแพลตฟอร์มไว้ด้วย (rowspan) -->
+                        <tr class="border-t border-[#0F2747]/10 bg-primary/[0.04]">
+                          <td :rowspan="r.formats.length + 1" class="py-3 pr-3 align-top">
                             <div class="flex items-center gap-2.5">
                               <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-surface" v-html="platformSvg[r.platform]" />
                               <span class="font-bold text-ink">{{ r.platform }}</span>
                             </div>
                           </td>
+                          <td class="py-2.5 pr-3">
+                            <span class="font-semibold text-ink">{{ tr('ราคาต่อโพสต์ (ราคาฐาน)', 'Price per post (base rate)') }}</span>
+                            <span class="block text-[11px] leading-relaxed text-[#5B6B82]/80">{{ tr('ราคากลางของแพลตฟอร์มนี้ ใช้อ้างอิงเมื่อยังไม่ได้ระบุรูปแบบงาน', 'Your standard rate for this platform, used as a reference when no specific format is set') }}</span>
+                          </td>
+                          <td class="py-2.5 text-right align-top">
+                            <input
+                              :disabled="!editing"
+                              :value="r.base === null ? '' : formatRate(r.base)"
+                              :placeholder="tr('ยังไม่ระบุ', 'Not set')"
+                              :class="['w-36 rounded-lg border border-[#0F2747]/15 px-3 py-2 text-right text-sm outline-none focus:border-primary/50', !editing ? 'bg-surface text-muted' : 'bg-white text-ink']"
+                            />
+                          </td>
+                        </tr>
+                        <tr v-for="f in r.formats" :key="r.platform + f[0]" class="border-t border-[#0F2747]/10">
                           <td class="py-2.5 pr-3 text-muted">{{ tr(f[0], f[1]) }}</td>
                           <td class="py-2.5 text-right">
                             <input
@@ -808,9 +926,10 @@ function formatRate(v: number) { return v.toLocaleString() }
               <div class="mt-6 rounded-xl bg-surface p-5">
                 <h3 class="font-bold text-ink">{{ tr('เรทการ์ดอื่น ๆ เพิ่มเติม', 'Additional rate card items') }}</h3>
                 <div class="mt-3 grid gap-4 sm:grid-cols-2">
-                  <div v-for="f in rateTermsFields" :key="f.label">
+                  <div v-for="f in rateTermsFields" :key="f.label" :class="f.span === 2 ? 'sm:col-span-2' : ''">
                     <label class="mb-1.5 flex flex-wrap items-center gap-2 text-sm font-semibold text-ink">{{ tr(f.label, f.labelEn) }}</label>
-                    <select v-if="f.type === 'select'" :disabled="fieldDisabled(f)" :class="fieldClass(f)">
+                    <textarea v-if="f.type === 'textarea'" rows="3" :disabled="fieldDisabled(f)" :value="f.value" :class="fieldClass(f)" />
+                    <select v-else-if="f.type === 'select'" :disabled="fieldDisabled(f)" :class="fieldClass(f)">
                       <option v-for="(opt, oi) in f.options" :key="opt" :value="opt" :selected="opt === f.value">{{ f.optionsEn ? tr(opt, f.optionsEn[oi]!) : opt }}</option>
                     </select>
                     <input v-else :disabled="fieldDisabled(f)" :value="f.value" :class="fieldClass(f)" />
@@ -877,7 +996,7 @@ function formatRate(v: number) { return v.toLocaleString() }
               </div>
 
               <!-- company fields (นิติบุคคล) -->
-              <div v-if="kyc.tax.type === 'นิติบุคคล'" class="mt-3 grid gap-4 rounded-xl bg-surface p-4 sm:grid-cols-2">
+              <div v-if="isCorporate" class="mt-3 grid gap-4 rounded-xl bg-surface p-4 sm:grid-cols-2">
                 <p class="text-xs font-bold uppercase tracking-wider text-[#5B6B82]/70 sm:col-span-2">{{ tr('ข้อมูลนิติบุคคล', 'Company details') }}</p>
                 <div v-for="f in taxCompanyFields" :key="f.label" :class="f.span === 2 ? 'sm:col-span-2' : ''">
                   <label class="mb-1.5 flex flex-wrap items-center gap-2 text-sm font-semibold text-ink">{{ tr(f.label, f.labelEn) }}</label>
@@ -888,10 +1007,16 @@ function formatRate(v: number) { return v.toLocaleString() }
 
               <!-- docs -->
               <h3 class="mt-7 font-bold text-ink">{{ docTitle }}</h3>
-              <div class="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <p class="mt-1 text-xs leading-relaxed text-[#5B6B82]/80">{{ isCorporate
+                ? tr('คุณเลือกประเภทผู้เสียภาษีเป็น "นิติบุคคล" — ต้องแนบเอกสารบริษัทเพิ่มและใช้สมุดบัญชีของบริษัท', 'You selected "Juristic person" as your taxpayer type — company documents are required and the bankbook must be the company\'s')
+                : tr('ชุดเอกสารสำหรับบุคคลธรรมดา — ถ้าเปลี่ยนประเภทผู้เสียภาษีเป็นนิติบุคคล รายการจะเปลี่ยนตาม', 'Document set for individuals — the list changes if you switch your taxpayer type to juristic person') }}</p>
+              <div class="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <div v-for="d in kycDocs" :key="d.key" class="flex flex-col rounded-xl border border-[#0F2747]/10 p-4">
                   <div class="mb-3 flex min-h-[2.75rem] items-start justify-between gap-2">
-                    <span class="text-sm font-semibold leading-tight text-ink">{{ tr(d.label, d.labelEn) }}</span>
+                    <span class="text-sm font-semibold leading-tight text-ink">
+                      {{ tr(d.label, d.labelEn) }}
+                      <span v-if="!d.required" class="ml-1 whitespace-nowrap rounded bg-surface px-1.5 py-0.5 text-[10px] font-bold text-muted">{{ tr('ไม่บังคับ', 'Optional') }}</span>
+                    </span>
                     <template v-if="!kycNoneOrRejected">
                       <span v-if="kycState === 'approved'" class="shrink-0 whitespace-nowrap rounded-md bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700">{{ tr('อนุมัติ', 'Approved') }}</span>
                       <span v-else class="shrink-0 whitespace-nowrap rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700">{{ tr('รอตรวจ', 'Reviewing') }}</span>
@@ -904,6 +1029,7 @@ function formatRate(v: number) { return v.toLocaleString() }
                   <div v-else :class="['flex aspect-video items-center justify-center rounded-lg', kycState === 'approved' ? 'bg-green-50' : 'bg-amber-50']">
                     <Icon :name="kycState === 'approved' ? 'file-check' : 'clock'" :class="['h-8 w-8', kycState === 'approved' ? 'text-green-500' : 'text-amber-500']" />
                   </div>
+                  <p v-if="d.note" class="mt-2 text-[11px] leading-relaxed text-[#5B6B82]/80">{{ d.noteEn ? tr(d.note, d.noteEn) : d.note }}</p>
                 </div>
               </div>
               <p class="mt-1.5 text-xs leading-relaxed text-[#5B6B82]/80">{{ tr('ไฟล์ JPG/PNG/PDF ≤ 10MB ต่อรายการ · เซลฟี่ต้องเห็นหน้าและบัตรชัดเจน', 'JPG/PNG/PDF files ≤ 10MB each · your selfie must clearly show your face and ID card') }}</p>
