@@ -6,7 +6,7 @@ export interface User {
   firstName: string
   lastName: string
   avatar?: string
-  role: 'influencer' | 'brand' | 'admin'
+  //role: 'influencer' | 'brand' | 'admin'
   status: 'pending' | 'approved' | 'rejected'
   createdAt: string
   updatedAt: string
@@ -170,8 +170,11 @@ export interface RegisterData {
   username: string
   email: string
   password: string
+  confirmPassword: string
   firstName: string
   lastName: string
+  isConsentToTerms: boolean
+  isConsentMarketing?: boolean
 }
 
 export interface AuthState {

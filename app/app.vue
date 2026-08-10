@@ -15,7 +15,7 @@ const { lang } = useLocale()
 useHead({ htmlAttrs: { lang } })
 
 onMounted(() => {
-  authStore.init()
+  authStore.restore()
   languageStore.init()
 })
 </script>

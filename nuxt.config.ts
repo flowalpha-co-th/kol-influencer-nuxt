@@ -31,6 +31,11 @@ export default defineNuxtConfig({
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000/api',
     },
   },
+  vite: {
+    server: {
+      allowedHosts: process.env.NUXT_PUBLIC_ALLOWED_HOSTS ? [process.env.NUXT_PUBLIC_ALLOWED_HOSTS] : ['kol-influencer-nuxt.test']
+    },
+  },
   routeRules: {
     '/campaigns': { redirect: '/portal/campaigns' },
     '/campaigns/**': { redirect: '/portal/campaigns' },
