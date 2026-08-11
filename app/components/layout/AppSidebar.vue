@@ -14,14 +14,14 @@ function isActive(item: NavItem) {
 
 const displayName = computed(() => {
   const u = authStore.user
-  return u ? `${u.firstName} ${u.lastName}`.trim() : 'สมใจ ใจดี'
+  return u ? `${u.influencer.firstName} ${u.influencer.lastName}`.trim() : ''
 })
-const handle = computed(() => authStore.user?.username || 'somsai_jd')
-const avatar = computed(() => authStore.user?.avatar || 'https://i.pravatar.cc/120?img=32')
 
-function logout() {
-  authStore.logout()
-  navigateTo('/')
+const handle = computed(() => authStore.user?.username)
+const avatar = computed(() => authStore.user?.influencer.avatar || '')
+async function logout() {
+  await authStore.logout()
+  await navigateTo('/')
 }
 </script>
 
@@ -34,7 +34,11 @@ function logout() {
 
     <!-- identity (portal) / login CTA (public) -->
     <div v-if="mode === 'portal'" class="mt-7 flex items-center gap-3 rounded-xl border border-[#0F2747]/10 bg-surface p-3">
-      <img :src="avatar" :alt="displayName" class="h-11 w-11 shrink-0 rounded-full object-cover" />
+      <UIAvatar 
+        :alt="handle" 
+        :src="avatar" 
+        class="h-11 w-11 shrink-0 rounded-full object-cover"
+      />
       <div class="min-w-0 flex-1">
         <p class="truncate text-sm font-bold text-ink">{{ displayName }}</p>
         <p class="text-xs text-muted">Creator · @{{ handle }}</p>

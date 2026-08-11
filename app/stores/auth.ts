@@ -8,9 +8,9 @@ const REFRESH_KEY = 'auth_refresh_token'
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null as User | null,
-    token: null as string | null,
-    refreshToken: null as string | null,
-    isAuthenticated: false,
+    token: useCookie(ACCESS_KEY).value as string | null,
+    refreshToken: useCookie(REFRESH_KEY).value as string | null | undefined,
+    isAuthenticated: !!useCookie(ACCESS_KEY).value,
     loading: false,
     error: null as string | null,
     /** true เมื่อ bootstrap ตอนเปิดแอปเสร็จแล้ว — กัน middleware เด้งออกก่อนรู้ผล */
@@ -26,9 +26,8 @@ export const useAuthStore = defineStore('auth', {
     setTokens(accessToken: string, refreshToken: string) {
       this.token = accessToken
       this.refreshToken = refreshToken
-      if (typeof window === 'undefined') return
-      localStorage.setItem(ACCESS_KEY, accessToken)
-      localStorage.setItem(REFRESH_KEY, refreshToken)
+      useCookie(ACCESS_KEY, { maxAge: 60 * 60 * 24 * 30, path: '/' }).value = accessToken
+      useCookie(REFRESH_KEY, { maxAge: 60 * 60 * 24 * 30, path: '/' }).value = refreshToken
     },
 
     clearTokens() {
@@ -36,19 +35,17 @@ export const useAuthStore = defineStore('auth', {
       this.refreshToken = null
       this.user = null
       this.isAuthenticated = false
-      if (typeof window === 'undefined') return
-      localStorage.removeItem(ACCESS_KEY)
-      localStorage.removeItem(REFRESH_KEY)
+      useCookie(ACCESS_KEY, { path: '/' }).value = null
+      useCookie(REFRESH_KEY, { path: '/' }).value = null
     },
 
     /**
-     * bootstrap ตอนเปิดแอป — อ่าน token จาก localStorage แล้ว **ถาม server ว่าเราเป็นใคร**
+     * bootstrap ตอนเปิดแอป — อ่าน token จาก cookie แล้ว **ถาม server ว่าเราเป็นใคร**
      */
     async restore(): Promise<boolean> {
-      if (typeof window === 'undefined') return false
-
-      const token = localStorage.getItem(ACCESS_KEY)
-      const refresh = localStorage.getItem(REFRESH_KEY)
+      const nuxtApp = useNuxtApp()
+      const token = useCookie(ACCESS_KEY).value
+      const refresh = useCookie(REFRESH_KEY).value
 
       if (!token) {
         this.ready = true
@@ -64,7 +61,7 @@ export const useAuthStore = defineStore('auth', {
         return true
       } catch {
         // useApi พยายาม refresh ให้แล้วก่อนจะโยนออกมา — ถึงตรงนี้คือกู้ไม่ได้จริง
-        this.clearTokens()
+        nuxtApp.runWithContext(() => this.clearTokens())
         return false
       } finally {
         this.ready = true
@@ -73,6 +70,7 @@ export const useAuthStore = defineStore('auth', {
 
     /** ต่ออายุ access token — เรียกจาก useApi ตอนเจอ 401 (อย่าเรียกเองจากหน้า) */
     async refreshSession(): Promise<boolean> {
+      const nuxtApp = useNuxtApp()
       if (!this.refreshToken) return false
 
       try {
@@ -81,7 +79,7 @@ export const useAuthStore = defineStore('auth', {
           { refreshToken: this.refreshToken },
           { auth: false },
         )
-        this.setTokens(data.accessToken, data.refreshToken)
+        nuxtApp.runWithContext(() => this.setTokens(data.accessToken, data.refreshToken))
         return true
       } catch {
         return false
@@ -89,6 +87,7 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async login(username: string, password: string, rememberMe = false) {
+      const nuxtApp = useNuxtApp()
       this.loading = true
       this.error = null
 
@@ -99,7 +98,9 @@ export const useAuthStore = defineStore('auth', {
           { auth: false },
         )
 
-        this.setTokens(data.accessToken, data.refreshToken)
+        nuxtApp.runWithContext(() => {
+          this.setTokens(data.accessToken, data.refreshToken)
+        })
         this.user = data.user
         this.isAuthenticated = true
         this.ready = true
@@ -124,16 +125,18 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async logout() {
+      const nuxtApp = useNuxtApp()
       try {
         await useApi().post('/auth/logout', { refreshToken: this.refreshToken ?? undefined })
       } catch {
         // server ตอบ 200 เสมอ ถึงพลาดก็ต้องล้างฝั่ง client อยู่ดี
       } finally {
-        this.clearTokens()
+        nuxtApp.runWithContext(() => this.clearTokens())
       }
     },
 
     async register(registerData: RegisterData) {
+      const nuxtApp = useNuxtApp()
       this.loading = true
       this.error = null
 
@@ -144,7 +147,9 @@ export const useAuthStore = defineStore('auth', {
           { auth: false },
         )
 
-        this.setTokens(data.accessToken, data.refreshToken)
+        nuxtApp.runWithContext(() => {
+          this.setTokens(data.accessToken, data.refreshToken)
+        })
         this.user = data.user
         this.isAuthenticated = true
         this.ready = true

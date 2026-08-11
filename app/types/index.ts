@@ -3,18 +3,19 @@ export interface User {
   id: string
   username: string
   email: string
-  firstName: string
-  lastName: string
-  avatar?: string
+  phone?: string
   //role: 'influencer' | 'brand' | 'admin'
   status: 'pending' | 'approved' | 'rejected'
   createdAt: string
   updatedAt: string
+  influencer: InfluencerProfile
 }
 
 export interface InfluencerProfile extends User {
+  firstName: string
+  lastName: string
+  avatar?: string
   bio?: string
-  phone?: string
   location?: string
   categories: string[]
   socialAccounts: SocialAccount[]

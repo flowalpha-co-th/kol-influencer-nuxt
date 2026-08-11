@@ -7,10 +7,15 @@ definePageMeta({ layout: 'portal', middleware: 'auth' })
 useHead(() => ({ title: tr('แดชบอร์ด — Ripples', 'Dashboard — Ripples') }))
 
 const notifications = useNotificationsStore()
+const authStore = useAuthStore()
+const user = computed(() => authStore.$state.user)
+const displayName = computed(() => {
+  return user.value ? `${user.value.influencer.firstName}`.trim() : ''
+})
 
 type Stat = { icon: string; label: string; labelEn: string; value: string; to: string }
 const stats: Stat[] = [
-  { icon: 'wallet', label: 'ยอดเงินในกระเป๋า', labelEn: 'Wallet balance', value: '฿125,000', to: '/portal/wallet' },
+  { icon: 'wallet', label: 'ยอดเงินในกระเป๋า', labelEn: 'Wallet balance', value: `฿${user.value?.influencer.walletBalance}`, to: '/portal/wallet' },
   { icon: 'briefcase', label: 'แคมเปญที่กำลังทำ', labelEn: 'Active campaigns', value: '3', to: '/portal/campaigns' },
   { icon: 'clock', label: 'งานที่ต้องส่ง', labelEn: 'Tasks to submit', value: '1', to: '/portal/tasks' },
   { icon: 'alert-circle', label: 'งานที่ต้องแก้ไข', labelEn: 'Tasks to revise', value: '1', to: '/portal/tasks' },
@@ -39,7 +44,7 @@ const fmt = (n: number) => n.toLocaleString()
 <template>
   <main class="mx-auto max-w-6xl px-6 py-10 lg:px-12 lg:py-14">
     <section class="mb-8">
-      <h1 class="font-heading text-3xl font-extrabold tracking-tight text-ink lg:text-4xl">{{ tr('ยินดีต้อนรับกลับ, สมใจ!', 'Welcome back, Somjai!') }}</h1>
+      <h1 class="font-heading text-3xl font-extrabold tracking-tight text-ink lg:text-4xl">{{ tr(`ยินดีต้อนรับกลับ, ${displayName}!`, `Welcome back, ${displayName}!`) }}</h1>
       <p class="mt-1 text-sm text-muted">{{ tr('สรุปกิจกรรมในบัญชีของคุณวันนี้', "Here's a summary of your account activity today") }}</p>
     </section>
 
