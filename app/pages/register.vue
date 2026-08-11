@@ -52,6 +52,7 @@ async function onSubmit() {
     authStore.error = tr('รหัสผ่านไม่ตรงกัน', 'Passwords do not match')
     return
   }
+  
   if (!acceptedTerms.value) {
     authStore.error = tr('กรุณายอมรับเงื่อนไขก่อนดำเนินการต่อ', 'Please accept the terms before continuing')
     return
